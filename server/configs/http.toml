@@ -1,0 +1,12 @@
+
+# 是否启用http服务器
+enable = true
+
+# 监听ip/域名 默认全部
+host = ""
+
+# 监听Web端口 默认8080
+port = 8888
+
+# 静态资源路径，为空则不开启静态文件响应
+static = "./web/static"
