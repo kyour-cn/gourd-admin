@@ -1,8 +1,8 @@
-package controller
+package ctl
 
 import (
 	"github.com/go-gourd/gourd/event"
-	"gourd/internal/http/api/common"
+	"gourd/internal/http/admin/common"
 	"net/http"
 )
 

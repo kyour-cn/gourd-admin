@@ -16,34 +16,64 @@ import (
 )
 
 var (
-	Q    = new(Query)
-	User *user
+	Q        = new(Query)
+	App      *app
+	Log      *log
+	LogLevel *logLevel
+	Menu     *menu
+	Role     *role
+	Rule     *rule
+	User     *user
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	App = &Q.App
+	Log = &Q.Log
+	LogLevel = &Q.LogLevel
+	Menu = &Q.Menu
+	Role = &Q.Role
+	Rule = &Q.Rule
 	User = &Q.User
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:   db,
-		User: newUser(db, opts...),
+		db:       db,
+		App:      newApp(db, opts...),
+		Log:      newLog(db, opts...),
+		LogLevel: newLogLevel(db, opts...),
+		Menu:     newMenu(db, opts...),
+		Role:     newRole(db, opts...),
+		Rule:     newRule(db, opts...),
+		User:     newUser(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	User user
+	App      app
+	Log      log
+	LogLevel logLevel
+	Menu     menu
+	Role     role
+	Rule     rule
+	User     user
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:   db,
-		User: q.User.clone(db),
+		db:       db,
+		App:      q.App.clone(db),
+		Log:      q.Log.clone(db),
+		LogLevel: q.LogLevel.clone(db),
+		Menu:     q.Menu.clone(db),
+		Role:     q.Role.clone(db),
+		Rule:     q.Rule.clone(db),
+		User:     q.User.clone(db),
 	}
 }
 
@@ -57,18 +87,36 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:   db,
-		User: q.User.replaceDB(db),
+		db:       db,
+		App:      q.App.replaceDB(db),
+		Log:      q.Log.replaceDB(db),
+		LogLevel: q.LogLevel.replaceDB(db),
+		Menu:     q.Menu.replaceDB(db),
+		Role:     q.Role.replaceDB(db),
+		Rule:     q.Rule.replaceDB(db),
+		User:     q.User.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	User IUserDo
+	App      IAppDo
+	Log      ILogDo
+	LogLevel ILogLevelDo
+	Menu     IMenuDo
+	Role     IRoleDo
+	Rule     IRuleDo
+	User     IUserDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		User: q.User.WithContext(ctx),
+		App:      q.App.WithContext(ctx),
+		Log:      q.Log.WithContext(ctx),
+		LogLevel: q.LogLevel.WithContext(ctx),
+		Menu:     q.Menu.WithContext(ctx),
+		Role:     q.Role.WithContext(ctx),
+		Rule:     q.Rule.WithContext(ctx),
+		User:     q.User.WithContext(ctx),
 	}
 }
 

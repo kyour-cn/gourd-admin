@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/go-chi/chi/v5"
 	"gourd/internal/config"
-	apiRoute "gourd/internal/http/api/route"
+	adminRoute "gourd/internal/http/admin/route"
 	"net/http"
 	"os"
 )
@@ -52,7 +52,7 @@ func Register() {
 	})
 
 	// 注册api相关路由
-	r.Mount("/api", chi.NewRouter().
-		Group(apiRoute.RegisterRoute))
+	r.Mount("/admin", chi.NewRouter().
+		Group(adminRoute.RegisterRoute))
 
 }
