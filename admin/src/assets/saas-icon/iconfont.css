@@ -1,0 +1,139 @@
+@font-face {
+  font-family: "saas-icon"; /* Project id 3930566 */
+  src: url('iconfont.woff2?t=1679673344009') format('woff2'),
+       url('iconfont.woff?t=1679673344009') format('woff'),
+       url('iconfont.ttf?t=1679673344009') format('truetype');
+}
+
+.saas-icon {
+  font-family: "saas-icon" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sa-list-line:before {
+  content: "\e607";
+}
+
+.sa-up-fill:before {
+  content: "\e60a";
+}
+
+.sa-shequ-line:before {
+  content: "\e60b";
+}
+
+.sa-down-fill:before {
+  content: "\e60c";
+}
+
+.sa-live-line:before {
+  content: "\e8ab";
+}
+
+.sa-sale-line:before {
+  content: "\e8ac";
+}
+
+.sa-help-line:before {
+  content: "\e8ad";
+}
+
+.sa-record-line:before {
+  content: "\e8ae";
+}
+
+.sa-edit-line:before {
+  content: "\e8af";
+}
+
+.sa-success-line:before {
+  content: "\e8b0";
+}
+
+.sa-phone-line:before {
+  content: "\e8b1";
+}
+
+.sa-location-line:before {
+  content: "\e8b2";
+}
+
+.sa-map-line:before {
+  content: "\e8b3";
+}
+
+.sa-order-line:before {
+  content: "\e8b4";
+}
+
+.sa-find-line:before {
+  content: "\e8b5";
+}
+
+.sa-copy-line:before {
+  content: "\e8b6";
+}
+
+.sa-fenxiang:before {
+  content: "\e8b7";
+}
+
+.sa-pass-line:before {
+  content: "\e8b8";
+}
+
+.sa-stat-line:before {
+  content: "\e8ba";
+}
+
+.sa-calendar-line:before {
+  content: "\e8bb";
+}
+
+.sa-delete-line:before {
+  content: "\e8bc";
+}
+
+.sa-setting-line:before {
+  content: "\e8bd";
+}
+
+.sa-upload-line:before {
+  content: "\e8be";
+}
+
+.sa-community-line:before {
+  content: "\e8bf";
+}
+
+.sa-mobie-line:before {
+  content: "\e8c0";
+}
+
+.sa-image-line:before {
+  content: "\e8c1";
+}
+
+.sa-form-line:before {
+  content: "\e8c2";
+}
+
+.sa-message-line:before {
+  content: "\e8c3";
+}
+
+.sa-add-line:before {
+  content: "\e8c4";
+}
+
+.sa-star-line:before {
+  content: "\e8b9";
+}
+
+.sa-todo-line:before {
+  content: "\e63e";
+}
+
