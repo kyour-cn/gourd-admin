@@ -12,6 +12,7 @@ func RegisterRoute(r chi.Router) {
 	r.Use(middleware.CorsMiddleware)
 
 	authCtl := ctl.AuthCtl{}
+	r.HandleFunc("/auth/captcha", authCtl.Captcha)
 	r.HandleFunc("/auth/login", authCtl.Login)
 
 	testsCtl := ctl.TestsCtl{}
