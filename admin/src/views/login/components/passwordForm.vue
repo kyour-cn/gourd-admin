@@ -1,5 +1,5 @@
 <template>
-	<el-form ref="loginForm" :model="form" :rules="rules" label-width="0" size="large" @keyup.enter="login">
+	<el-form ref="loginForm" :model="form" :rules="rules" label-width="0" size="large" @keyup.enter="onVerify">
 		<el-form-item prop="user">
 			<el-input v-model="form.user" prefix-icon="el-icon-user" clearable :placeholder="$t('login.userPlaceholder')">
 				<!--				<template #append>-->
@@ -16,14 +16,6 @@
 								:placeholder="$t('login.PWPlaceholder')"></el-input>
 		</el-form-item>
 
-<!--		<el-form-item prop="code">-->
-<!--			<el-input v-model="form.code" prefix-icon="el-icon-picture" clearable placeholder="图形验证码">-->
-<!--				<template #append>-->
-<!--					<img @click="onRefresh" style="height: 30px;" :src="codeSrc+ '?number=' + codeNumber" alt="">-->
-<!--				</template>-->
-<!--			</el-input>-->
-<!--		</el-form-item>-->
-
 		<el-form-item style="margin-bottom: 10px;">
 			<el-col :span="12">
 				<el-checkbox :label="$t('login.rememberMe')" v-model="form.autologin"></el-checkbox>
@@ -33,9 +25,22 @@
 			</el-col>
 		</el-form-item>
 		<el-form-item>
-			<el-button type="primary" style="width: 100%;" :loading="islogin" round @click="login">
-				{{ $t('login.signIn') }}
-			</el-button>
+            <el-popover :visible="captchaShow" placement="top-start" width="350">
+                <gocaptcha-slide
+                    v-if="captchaShow"
+                    :data="captchaData"
+                    :events="{
+                        close: closeCaptcha,
+                        refresh: refreshCaptcha,
+                        confirm: confirmEvent,
+                    }"
+                />
+                <template #reference>
+                    <el-button type="primary" style="width: 100%;" :loading="islogin" round @click="onVerify">
+                        {{ $t('login.signIn') }}
+                    </el-button>
+                </template>
+            </el-popover>
 		</el-form-item>
 		<div class="login-reg">
 			{{ $t('login.noAccount') }}
@@ -66,9 +71,9 @@ export default {
 				]
 			},
 			islogin: false,
-
-			codeNumber: Math.round(Math.random() * (100000 - 999999) + 999999), //验证码编号
-			codeSrc: config.API_URL + this.$API.common.auth.captchaImg
+            captchaShow: false,
+            captchaConfig: null,
+            captchaData: null
 		}
 	},
 	// watch: {
@@ -83,10 +88,36 @@ export default {
 	// 	}
 	// },
 	methods: {
-		onRefresh() {
-			this.codeNumber = Math.round(Math.random() * (100000 - 999999) + 999999) //验证码编号
-		},
-		async login() {
+        onVerify() {
+            this.captchaShow = false
+            this.$API.common.auth.captcha.get().then(res => {
+                if(res.code === 0) {
+
+                    this.captchaData = {
+                        image: res.data.image_base64,
+                        thumb: res.data.tile_base64,
+                        captKey: res.data.captcha_key,
+                        thumbX: res.data.tile_x,
+                        thumbY: res.data.tile_y,
+                        thumbWidth: res.data.tile_width,
+                        thumbHeight: res.data.tile_height,
+                    }
+
+                    this.captchaShow = true
+                }else{
+                    this.$message.error(res.message)
+                }
+            })
+        },
+        refreshCaptcha() {
+            this.onVerify()
+        },
+        closeCaptcha() {
+            this.captchaShow = false
+        },
+        async confirmEvent(point, clear) {
+
+            this.closeCaptcha()
 
 			const validate = await this.$refs.loginForm.validate().catch()
 			if (!validate) {
@@ -98,8 +129,8 @@ export default {
 				username: this.form.user,
 				password: this.$TOOL.crypto.MD5(this.form.password),
 				md5: true,
-				code: this.form.code,
-				number: this.codeNumber
+                point: point,
+                captcha_key: this.captchaData.captKey
 			};
 			//获取token
 			const user = await this.$API.common.auth.token.post(data);
@@ -109,6 +140,9 @@ export default {
 				})
 				this.$TOOL.data.set("USER_INFO", user.data.userInfo)
 			} else {
+                if(user.code === 103) {
+                    this.onVerify()
+                }
 				this.islogin = false
 				this.$message.warning(user.message)
 				this.onRefresh()

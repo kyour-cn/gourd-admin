@@ -3,13 +3,15 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/display.css'
 import scui from './scui'
-import sword from './sword'
 import i18n from './locales'
 import router from './router'
 import store from './store'
 import App from './App.vue'
 // 引入mock index.js 执行一遍
 // import '@/mock/index.js'
+
+import "go-captcha-vue/dist/style.css"
+import GoCaptcha from "go-captcha-vue"
 
 const app = createApp(App);
 
@@ -18,7 +20,7 @@ app.use(router);
 app.use(ElementPlus);
 app.use(i18n);
 app.use(scui);
-app.use(sword);
+app.use(GoCaptcha)
 
 //挂载app
 app.mount('#app');

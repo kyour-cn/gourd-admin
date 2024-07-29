@@ -2,7 +2,13 @@ import config from "@/config"
 import http from "@/utils/request"
 
 export default {
-	captchaImg: '/admin/Login/captcha',
+	captcha: {
+		url: `${config.API_URL}/admin/auth/captcha`,
+		name: "验证码数据",
+		get: async function () {
+			return await http.get(this.url);
+		}
+	},
 	token: {
 		url: `${config.API_URL}/admin/auth/login`,
 		name: "登录获取TOKEN",
