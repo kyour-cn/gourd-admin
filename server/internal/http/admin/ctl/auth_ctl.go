@@ -1,13 +1,17 @@
 package ctl
 
 import (
+	"crypto/md5"
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 	"gourd/internal/http/admin/common"
+	"gourd/internal/http/admin/service"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
 	"gourd/internal/repositories/user"
 	"gourd/internal/util/captcha"
+	"io"
 	"net/http"
 )
 
@@ -41,8 +45,8 @@ type LoginReq struct {
 }
 
 type LoginResp struct {
-	Token    string     `json:"token"`
-	UserInfo model.User `json:"userInfo"`
+	Token    string      `json:"token"`
+	UserInfo *model.User `json:"userInfo"`
 }
 
 // Login 登录
@@ -67,53 +71,54 @@ func (ctl *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := LoginResp{}
+	if !req.Md5 {
+		hash := md5.New()
+		_, _ = io.WriteString(hash, req.Password)
+		req.Password = string(hash.Sum(nil))
+	}
+
+	userData, err := service.LoginUser(req.Username, req.Password)
+	if err != nil {
+		_ = ctl.Fail(w, 104, "账号或密码错误", err)
+		return
+	}
+
+	// 生成token
+	token, err := service.GenerateToken(userData)
+	if err != nil {
+		_ = ctl.Fail(w, 105, "生成token失败", err.Error())
+		return
+	}
+
+	res := LoginResp{
+		Token:    token,
+		UserInfo: userData,
+	}
 
 	_ = ctl.Success(w, "", res)
 }
 
-// Info 获取用户信息
-func (ctl *AuthCtl) Info(w http.ResponseWriter, r *http.Request) {
+func (ctl *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
+	// 获取jwt
+	token := r.Context().Value("jwt").(jwt.MapClaims)
 
-	repository := user.Repository{
+	userId := int32(token["id"].(float64))
+
+	ur := user.Repository{
 		Ctx: r.Context(),
 	}
 
-	qu := query.User
+	uq := query.User
 
-	userData, _ := repository.Query().
-		Where(qu.ID.Eq(1)).
-		Select(
-			qu.ID,
-		).
+	userInfo, err := ur.Query().
+		Where(uq.ID.Eq(userId)).
 		First()
-
-	// 响应结果
-	_ = ctl.Success(w, "", userData)
-}
-
-// Add 创建用户
-func (ctl *AuthCtl) Add(w http.ResponseWriter, r *http.Request) {
-
-	repository := user.Repository{
-		Ctx: r.Context(),
-	}
-
-	_ = repository.Begin()
-
-	userData := model.User{
-		Username: "go_create",
-	}
-
-	err := repository.Create(&userData)
 	if err != nil {
-		_ = ctl.Fail(w, 1, "添加失败："+err.Error(), nil)
-		_ = repository.Rollback()
+		_ = ctl.Fail(w, 101, "获取用户信息失败", err.Error())
 		return
 	}
 
-	_ = repository.Commit()
+	//TODO: 查询菜单
 
-	// 响应结果
-	_ = ctl.Success(w, "", userData)
+	_ = ctl.Success(w, "", userInfo)
 }

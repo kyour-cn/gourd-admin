@@ -14,6 +14,7 @@ func RegisterRoute(r chi.Router) {
 	authCtl := ctl.AuthCtl{}
 	r.HandleFunc("/auth/captcha", authCtl.Captcha)
 	r.HandleFunc("/auth/login", authCtl.Login)
+	r.With(middleware.AuthJwtMiddleware).HandleFunc("/auth/menu", authCtl.GetMenu)
 
 	testsCtl := ctl.TestsCtl{}
 	r.HandleFunc("/tests/test", testsCtl.Test)

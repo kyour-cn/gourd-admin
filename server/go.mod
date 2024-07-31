@@ -7,6 +7,7 @@ require (
 	github.com/go-gourd/gourd v1.2.2
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/pelletier/go-toml/v2 v2.2.2
 	github.com/wenlng/go-captcha-assets v1.0.1
 	github.com/wenlng/go-captcha/v2 v2.0.0

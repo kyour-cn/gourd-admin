@@ -1,0 +1,6 @@
+
+# JWT密钥
+secret = "secret"
+
+# TOKEN过期时间（秒）
+expire = 3600

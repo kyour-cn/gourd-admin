@@ -19,7 +19,6 @@ type User struct {
 	Username     string                `gorm:"column:username;not null;comment:用户名" json:"username"`            // 用户名
 	Mobile       string                `gorm:"column:mobile;not null;comment:手机号" json:"mobile"`                // 手机号
 	Avatar       string                `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                 // 头像
-	Sex          int32                 `gorm:"column:sex;not null;default:1;comment:性别 0=女 1=男" json:"sex"`     // 性别 0=女 1=男
 	Password     string                `gorm:"column:password;not null;comment:密码 md5" json:"password"`         // 密码 md5
 	RegisterTime int32                 `gorm:"column:register_time;not null;comment:注册时间" json:"register_time"` // 注册时间
 	LoginTime    int32                 `gorm:"column:login_time;not null;comment:登录时间" json:"login_time"`       // 登录时间
