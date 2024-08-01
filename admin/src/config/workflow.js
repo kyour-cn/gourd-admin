@@ -42,7 +42,7 @@ export default {
 		},
 		request: {
 			page: 'page',
-			pageSize: 'pageSize',
+			pageSize: 'page_size',
 			groupId: 'groupId',
 			keyword: 'keyword'
 		}

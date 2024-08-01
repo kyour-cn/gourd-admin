@@ -5,7 +5,7 @@ export default {
 	parseData: function (res) {
 		return {
 			data: res.data,
-			rows: res.data.data,		//分析行数据字段结构
+			rows: res.data.rows,		//分析行数据字段结构
 			total: res.data.total,		//分析总数字段结构
 			msg: res.message,			//分析描述字段结构
 			code: res.code				//分析状态字段结构
@@ -13,7 +13,7 @@ export default {
 	},
 	request: {
 		page: 'page',					//规定当前分页字段
-		pageSize: 'pageSize',			//规定一页条数字段
+		pageSize: 'page_size',			//规定一页条数字段
 		keyword: 'keyword'				//规定搜索字段
 	},
 	props: {

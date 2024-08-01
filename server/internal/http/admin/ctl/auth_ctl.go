@@ -2,8 +2,6 @@ package ctl
 
 import (
 	"crypto/md5"
-	"encoding/json"
-	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"gourd/internal/http/admin/common"
 	"gourd/internal/http/admin/service"
@@ -21,53 +19,47 @@ type AuthCtl struct {
 }
 
 // Captcha 获取验证码
-func (ctl *AuthCtl) Captcha(w http.ResponseWriter, r *http.Request) {
+func (c *AuthCtl) Captcha(w http.ResponseWriter, r *http.Request) {
 
 	data, err := captcha.GenerateSlide()
 	if err != nil {
-		_ = ctl.Fail(w, 1, "生成验证码失败："+err.Error(), nil)
+		_ = c.Fail(w, 1, "生成验证码失败："+err.Error(), nil)
 		return
 	}
 
-	_ = ctl.Success(w, "", data)
+	_ = c.Success(w, "", data)
 
-}
-
-type LoginReq struct {
-	Username   string `json:"username" validate:"required,min=5,max=20"`
-	Password   string `json:"password" validate:"required,min=6,max=32"`
-	CaptchaKey string `json:"captcha_key" validate:"required"`
-	Md5        bool   `json:"md5"`
-	Point      struct {
-		X int64 `json:"x"`
-		Y int64 `json:"y"`
-	}
-}
-
-type LoginResp struct {
-	Token    string      `json:"token"`
-	UserInfo *model.User `json:"userInfo"`
 }
 
 // Login 登录
-func (ctl *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
+func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 
-	req := LoginReq{}
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		_ = ctl.Fail(w, 101, "请求参数异常："+err.Error(), nil)
-		return
+	type Req struct {
+		Username   string `json:"username" validate:"required,min=5,max=20"`
+		Password   string `json:"password" validate:"required,min=6,max=32"`
+		CaptchaKey string `json:"captcha_key" validate:"required"`
+		Md5        bool   `json:"md5"`
+		Point      struct {
+			X int64 `json:"x"`
+			Y int64 `json:"y"`
+		}
 	}
 
-	err = validator.New().Struct(req)
+	type Resp struct {
+		Token    string      `json:"token"`
+		UserInfo *model.User `json:"userInfo"`
+	}
+
+	req := Req{}
+	err := c.JsonReqUnmarshal(r, &req)
 	if err != nil {
-		_ = ctl.Fail(w, 102, "请求参数错误", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
 	// 验证码校验
 	if !captcha.VerifySlide(req.CaptchaKey, req.Point.X, req.Point.Y) {
-		_ = ctl.Fail(w, 103, "验证失败", nil)
+		_ = c.Fail(w, 102, "验证失败", nil)
 		return
 	}
 
@@ -79,26 +71,26 @@ func (ctl *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 
 	userData, err := service.LoginUser(req.Username, req.Password)
 	if err != nil {
-		_ = ctl.Fail(w, 104, "账号或密码错误", err)
+		_ = c.Fail(w, 104, "账号或密码错误", err)
 		return
 	}
 
 	// 生成token
 	token, err := service.GenerateToken(userData)
 	if err != nil {
-		_ = ctl.Fail(w, 105, "生成token失败", err.Error())
+		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return
 	}
 
-	res := LoginResp{
+	res := Resp{
 		Token:    token,
 		UserInfo: userData,
 	}
 
-	_ = ctl.Success(w, "", res)
+	_ = c.Success(w, "", res)
 }
 
-func (ctl *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
+func (c *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
 	// 获取jwt
 	token := r.Context().Value("jwt").(jwt.MapClaims)
 
@@ -114,15 +106,15 @@ func (ctl *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
 		Where(uq.ID.Eq(userId)).
 		First()
 	if err != nil {
-		_ = ctl.Fail(w, 101, "获取用户信息失败", err.Error())
+		_ = c.Fail(w, 101, "获取用户信息失败", err.Error())
 		return
 	}
 
 	menus, err := service.GetMenu(userInfo)
 	if err != nil {
-		_ = ctl.Fail(w, 102, "获取菜单失败", err.Error())
+		_ = c.Fail(w, 102, "获取菜单失败", err.Error())
 		return
 	}
 
-	_ = ctl.Success(w, "", menus)
+	_ = c.Success(w, "", menus)
 }

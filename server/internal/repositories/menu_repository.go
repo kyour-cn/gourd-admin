@@ -20,7 +20,6 @@ func (r *Menu) Query() query.IMenuDo {
 }
 
 func (r *Menu) Create(ud *model.Menu) error {
-	userQ := r.Query()
-	// TODO: add more fields
-	return userQ.Create(ud)
+	q := r.Query()
+	return q.Create(ud)
 }

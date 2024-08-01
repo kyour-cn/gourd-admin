@@ -20,7 +20,6 @@ func (r *Rule) Query() query.IRuleDo {
 }
 
 func (r *Rule) Create(ud *model.Rule) error {
-	userQ := r.Query()
-	// TODO: add more fields
-	return userQ.Create(ud)
+	q := r.Query()
+	return q.Create(ud)
 }

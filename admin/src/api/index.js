@@ -3,10 +3,10 @@
  */
 
 // 系统模块
-let files = import.meta.glob('./system/*.js', { eager: true });
-const system = {}
+let files = import.meta.glob('./admin/*.js', { eager: true });
+const admin = {}
 Object.keys(files).forEach(key => {
-	system[key.replace(/^\.\/system\/(.*)\.js$/g, '$1')] = files[key].default
+	admin[key.replace(/^\.\/admin\/(.*)\.js$/g, '$1')] = files[key].default
 })
 
 // 系统模块
@@ -17,6 +17,6 @@ Object.keys(files).forEach(key => {
 })
 
 export default {
-	system,
+	admin,
 	common,
 }

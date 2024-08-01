@@ -2,6 +2,7 @@ package common
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"net/http"
 )
 
@@ -40,4 +41,16 @@ func (*BaseCtl) Fail(w http.ResponseWriter, code int, message string, data any) 
 	str, _ := json.Marshal(res)
 	_, err = w.Write(str)
 	return
+}
+
+// JsonReqUnmarshal 解析json请求参数
+func (*BaseCtl) JsonReqUnmarshal(r *http.Request, req any) error {
+	// 解析json参数
+	err := json.NewDecoder(r.Body).Decode(req)
+	if err != nil {
+		return err
+	}
+
+	// 校验参数
+	return validator.New().Struct(req)
 }

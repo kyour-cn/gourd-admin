@@ -68,7 +68,7 @@ export default {
                 info: false
             },
             list: {
-                apiObj: this.$API.system.system.app.list
+                apiObj: this.$API.admin.app.list
             },
             selection: []
         }
@@ -98,7 +98,7 @@ export default {
         //删除明细
         async table_del(row, index) {
             var reqData = {ids: row.id}
-            var res = await this.$API.system.system.app.del.post(reqData);
+            var res = await this.$API.admin.app.delete.post(reqData);
             if (res.code === 0) {
                 this.$refs.table.removeIndex(index)
                 this.$message.success("删除成功")
@@ -120,7 +120,7 @@ export default {
             }
 
             var ids = this.selection.map(v => v.id)
-            var res = await this.$API.system.system.app.del.post({ids});
+            var res = await this.$API.admin.app.delete.post({ids});
             if (res.code === 0) {
                 this.$refs.table.removeKeys(ids)
                 this.$message.success("操作成功")

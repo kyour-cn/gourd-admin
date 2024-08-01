@@ -26,7 +26,7 @@ export default {
 	},
 	request: {
 		page: 'page',
-		pageSize: 'pageSize',
+		pageSize: 'page_size',
 		keyword: 'keyword',
 		menuKey: 'groupId'
 	},

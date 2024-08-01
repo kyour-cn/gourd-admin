@@ -16,7 +16,7 @@
         </el-form>
         <template #footer>
             <el-button @click="visible=false">取 消</el-button>
-            <el-button v-if="mode!='show'" type="primary" :loading="isSaveing" @click="submit()">保 存</el-button>
+            <el-button v-if="mode!=='show'" type="primary" :loading="isSaveing" @click="submit()">保 存</el-button>
         </template>
     </el-dialog>
 </template>
@@ -83,7 +83,12 @@ export default {
             this.isSaveing = true;
             const data = this.form
             data.status = data.status ? 1 : 0;
-            const res = await this.$API.system.system.app.edit.post(data);
+            let res;
+            if (this.mode === 'add') {
+                res = await this.$API.admin.app.add.post(data);
+            } else {
+                res = await this.$API.admin.app.edit.post(data);
+            }
             this.isSaveing = false;
             this.visible = false;
             if (res.code === 0) {

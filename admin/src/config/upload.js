@@ -2,7 +2,7 @@ import api from "../api";
 
 //上传配置
 export default {
-    apiObj: api.system.common.upload,			//上传请求API对象
+    apiObj: 'api.admin.common.upload',			//TODO:上传请求API对象
     filename: "file",					//form请求时文件的key
     successCode: 0,					    //请求完成代码
     maxSize: 10,						//最大文件大小 默认10MB

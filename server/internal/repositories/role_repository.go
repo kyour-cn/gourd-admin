@@ -20,7 +20,6 @@ func (r *Role) Query() query.IRoleDo {
 }
 
 func (r *Role) Create(ud *model.Role) error {
-	userQ := r.Query()
-	// TODO: add more fields
-	return userQ.Create(ud)
+	q := r.Query()
+	return q.Create(ud)
 }

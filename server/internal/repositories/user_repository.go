@@ -20,7 +20,7 @@ func (r *User) Query() query.IUserDo {
 }
 
 func (r *User) Create(ud *model.User) error {
-	userQ := r.Query()
+	q := r.Query()
 	// TODO: add more fields
-	return userQ.Create(ud)
+	return q.Create(ud)
 }
