@@ -9,7 +9,7 @@ import (
 	"gourd/internal/http/admin/service"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
-	"gourd/internal/repositories/user"
+	"gourd/internal/repositories"
 	"gourd/internal/util/captcha"
 	"io"
 	"net/http"
@@ -104,13 +104,13 @@ func (ctl *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
 
 	userId := int32(token["id"].(float64))
 
-	ur := user.Repository{
+	ru := repositories.User{
 		Ctx: r.Context(),
 	}
 
 	uq := query.User
 
-	userInfo, err := ur.Query().
+	userInfo, err := ru.Query().
 		Where(uq.ID.Eq(userId)).
 		First()
 	if err != nil {
@@ -118,7 +118,11 @@ func (ctl *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//TODO: 查询菜单
+	menus, err := service.GetMenu(userInfo)
+	if err != nil {
+		_ = ctl.Fail(w, 102, "获取菜单失败", err.Error())
+		return
+	}
 
-	_ = ctl.Success(w, "", userInfo)
+	_ = ctl.Success(w, "", menus)
 }

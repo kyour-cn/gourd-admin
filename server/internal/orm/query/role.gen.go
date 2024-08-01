@@ -37,7 +37,7 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 	_role.Remark = field.NewString(tableName, "remark")
 	_role.Status = field.NewInt32(tableName, "status")
 	_role.Sort = field.NewInt32(tableName, "sort")
-	_role.IsAuto = field.NewInt32(tableName, "is_auto")
+	_role.IsAdmin = field.NewInt32(tableName, "is_admin")
 
 	_role.fillFieldMap()
 
@@ -59,7 +59,7 @@ type role struct {
 	Remark      field.String // 简介
 	Status      field.Int32  // 状态
 	Sort        field.Int32  // 排序
-	IsAuto      field.Int32  // 是否为系统自动创建
+	IsAdmin     field.Int32  // 是否为管理员（所有权限）
 
 	fieldMap map[string]field.Expr
 }
@@ -86,7 +86,7 @@ func (r *role) updateTableName(table string) *role {
 	r.Remark = field.NewString(table, "remark")
 	r.Status = field.NewInt32(table, "status")
 	r.Sort = field.NewInt32(table, "sort")
-	r.IsAuto = field.NewInt32(table, "is_auto")
+	r.IsAdmin = field.NewInt32(table, "is_admin")
 
 	r.fillFieldMap()
 
@@ -114,7 +114,7 @@ func (r *role) fillFieldMap() {
 	r.fieldMap["remark"] = r.Remark
 	r.fieldMap["status"] = r.Status
 	r.fieldMap["sort"] = r.Sort
-	r.fieldMap["is_auto"] = r.IsAuto
+	r.fieldMap["is_admin"] = r.IsAdmin
 }
 
 func (r role) clone(db *gorm.DB) role {

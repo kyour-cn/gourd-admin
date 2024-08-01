@@ -145,13 +145,13 @@ export default {
                 }
 				this.islogin = false
 				this.$message.warning(user.message)
-				this.onRefresh()
+				this.refreshCaptcha()
 				return false
 			}
 			//获取菜单
 			const menu = await this.$API.common.auth.menu.get();
 			if (menu.code === 0) {
-				if (menu.data.menu.length === 0) {
+				if (menu.data.length === 0) {
 					this.islogin = false
 					await this.$alert("当前用户无任何菜单权限，请联系系统管理员", "无权限访问", {
 						type: 'error',
@@ -159,7 +159,7 @@ export default {
 					})
 					return false
 				}
-				this.$TOOL.data.set("MENU", menu.data.menu)
+				this.$TOOL.data.set("MENU", menu.data)
 				// this.$TOOL.data.set("PERMISSIONS", menu.data.permissions)
 			} else {
 				this.islogin = false
@@ -182,9 +182,9 @@ export default {
 				return false
 			}
 			//不存在默认路由，跳转到第一个菜单
-			if (!findDefaultRoute(menu.data.menu)) {
+			if (!findDefaultRoute(menu.data)) {
 				//取第一个菜单
-				let menuItem = menu.data.menu[0];
+				let menuItem = menu.data[0];
 				if (menuItem.children?.length) {
 					menuItem = menuItem.children[0]
 				}

@@ -1,4 +1,4 @@
-package user
+package repositories
 
 import (
 	"context"
@@ -7,19 +7,19 @@ import (
 	"gourd/internal/repositories/base"
 )
 
-type Repository struct {
+type Role struct {
 	base.Repository
 	Ctx context.Context
 }
 
-func (r *Repository) Query() query.IUserDo {
+func (r *Role) Query() query.IRoleDo {
 	if r.Tx != nil {
-		return r.Tx.User.WithContext(r.Ctx)
+		return r.Tx.Role.WithContext(r.Ctx)
 	}
-	return query.User.WithContext(r.Ctx)
+	return query.Role.WithContext(r.Ctx)
 }
 
-func (r *Repository) Create(ud *model.User) error {
+func (r *Role) Create(ud *model.Role) error {
 	userQ := r.Query()
 	// TODO: add more fields
 	return userQ.Create(ud)
