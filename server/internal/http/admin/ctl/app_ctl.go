@@ -57,3 +57,11 @@ func (c *AppCtl) List(w http.ResponseWriter, r *http.Request) {
 
 	_ = c.Success(w, "", res)
 }
+
+func (c *AppCtl) Add(w http.ResponseWriter, r *http.Request) {
+	_ = c.Success(w, "success", nil)
+}
+
+func (c *AppCtl) Edit(w http.ResponseWriter, r *http.Request) {
+	_ = c.Success(w, "success", nil)
+}

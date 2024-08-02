@@ -3,7 +3,7 @@ package route
 import (
 	"github.com/go-chi/chi/v5"
 	"gourd/internal/http/admin/ctl"
-	"gourd/internal/http/admin/middleware"
+	"gourd/internal/http/middleware"
 )
 
 // RegisterRoute 注册路由组
@@ -23,6 +23,8 @@ func RegisterRoute(r chi.Router) {
 			appCtl := ctl.AppCtl{}
 			r.Use(middleware.AuthJwtMiddleware)
 			r.HandleFunc("/list", appCtl.List)
+			r.HandleFunc("/add", appCtl.Add)
+			r.HandleFunc("/edit", appCtl.Edit)
 		}))
 
 	// 测试相关路由

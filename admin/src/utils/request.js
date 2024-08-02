@@ -42,7 +42,12 @@ axios.interceptors.response.use(
 	},
 	(error) => {
 		if (error.response) {
-			if (error.response.status === 404) {
+			if (error.response.status === 403) {
+				ElNotification.error({
+					title: '无权限访问',
+					message: "Status:403，您没有权限访问该资源！"
+				});
+			} else if (error.response.status === 404) {
 				ElNotification.error({
 					title: '请求错误',
 					message: "Status:404，正在请求不存在的服务器记录！"

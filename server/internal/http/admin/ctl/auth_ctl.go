@@ -71,12 +71,30 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 
 	userData, err := service.LoginUser(req.Username, req.Password)
 	if err != nil {
-		_ = c.Fail(w, 104, "账号或密码错误", err)
+		_ = c.Fail(w, 103, "账号或密码错误", err)
+		return
+	}
+	if userData.Status != 1 {
+		_ = c.Fail(w, 104, "账号异常或被锁定", err)
+		return
+	}
+
+	rr := repositories.Role{}
+	roleData, err := rr.Query().
+		Where(query.Role.ID.Eq(userData.RoleID)).
+		First()
+	if err != nil {
+		_ = c.Fail(w, 104, "账号异常", err)
 		return
 	}
 
 	// 生成token
-	token, err := service.GenerateToken(userData)
+	tokenData := map[string]any{
+		"id":   userData.ID,
+		"role": userData.RoleID,
+		"app":  roleData.AppID,
+	}
+	token, err := service.GenerateToken(tokenData)
 	if err != nil {
 		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return

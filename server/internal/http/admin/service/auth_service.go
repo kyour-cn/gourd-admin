@@ -8,6 +8,7 @@ import (
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
 	"gourd/internal/repositories"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -45,19 +46,22 @@ func LoginUser(username string, password string) (*model.User, error) {
 }
 
 // GenerateToken 生成token
-func GenerateToken(user *model.User) (string, error) {
+func GenerateToken(data map[string]any) (string, error) {
 
 	conf, err := config.GetJwtConfig()
 	if err != nil {
 		return "", err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":  user.ID,
-		"iss": "gourd_admin",
+	claims := jwt.MapClaims{
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Second * time.Duration(conf.Expire)).Unix(),
-	})
+	}
+	for k, v := range data {
+		claims[k] = v
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Sign and get the complete encoded token as a string using the secret
 	return token.SignedString([]byte(conf.Secret))
@@ -153,4 +157,72 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 		}
 	}
 	return menuTreeArr
+}
+
+// CheckJwtPermission 检查Token权限
+func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
+
+	rr := repositories.Rule{
+		Ctx: r.Context(),
+	}
+	ro := repositories.Role{
+		Ctx: r.Context(),
+	}
+
+	// 取出
+	roleId, ok1 := jwtData["role"].(float64)
+	appId, ok2 := jwtData["role"].(float64)
+	if !ok1 || !ok2 {
+		return false
+	}
+
+	url := r.URL.Path
+	rules, err := rr.Query().
+		Where(
+			query.Rule.Path.Eq(url),
+			query.Rule.AppID.Eq(int32(appId)),
+		).
+		Select(query.Rule.ID).
+		Find()
+	if err != nil {
+		// 路由未定义，不限制
+		return true
+	}
+
+	// 获取用户角色
+	role, err := ro.Query().
+		Where(query.Role.ID.Eq(int32(roleId))).
+		Select(
+			query.Role.ID,
+			query.Role.IsAdmin,
+			query.Role.Rules,
+		).
+		First()
+	if err != nil {
+		return false
+	}
+	// 管理员角色拥有所有权限
+	if role.IsAdmin == 1 {
+		return true
+	}
+
+	var ruleIds []int32
+	for _, rule := range rules {
+		ruleIds = append(ruleIds, rule.ID)
+	}
+
+	ruleArr := strings.Split(role.Rules, ",")
+
+	// 判断 ruleIds 和 role.Rules 是否有交集
+	for _, rid := range ruleIds {
+		for _, rid2 := range ruleArr {
+			_id, _ := strconv.Atoi(rid2)
+			if rid == int32(_id) {
+				// 权限匹配成功
+				return true
+			}
+		}
+	}
+
+	return false
 }

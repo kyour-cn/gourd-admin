@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/golang-jwt/jwt/v5"
 	"gourd/internal/config"
+	"gourd/internal/http/admin/service"
 	"net/http"
 )
 
@@ -38,7 +39,11 @@ func AuthJwtMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// TODO: 验证 JWT token 权限
+		// 验证 JWT token 权限
+		if !service.CheckJwtPermission(jwtData, r) {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
 
 		ctx := context.WithValue(r.Context(), "jwt", jwtData)
 
