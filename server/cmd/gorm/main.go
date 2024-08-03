@@ -3,7 +3,9 @@ package main
 import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gen"
+	"gorm.io/gen/field"
 	"gorm.io/gorm"
+	"gourd/cmd/gorm/gen_tool"
 	"gourd/cmd/gorm/methods"
 	"gourd/cmd/gorm/tags"
 	"gourd/internal/config"
@@ -45,11 +47,30 @@ func main() {
 
 	g.UseDB(mysqlDb)
 
-	// 生成所有表
-	tables := g.GenerateAllTable(comOpts...)
+	// 使用工具生成模型
+	db := gen_tool.Database{
+		Generator: g,
+		ComOpts:   &comOpts,
+		Tables: []gen_tool.Table{
+			{Name: "app"},
+			{Name: "log"},
+			{Name: "log_level"},
+			{
+				Name: "menu",
+				Relate: &[]gen_tool.TableRelate{
+					{
+						TableName:  "menu_api",
+						FieldName:  "MenuApis",
+						Type:       field.HasMany,
+						ForeignKey: "menu_id",
+						LocalKey:   "id",
+					},
+				},
+			},
+			{Name: "user"},
+			{Name: "role"},
+		},
+	}
 
-	g.ApplyBasic(tables...)
-
-	g.Execute()
-
+	db.GenTable()
 }
