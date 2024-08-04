@@ -7,19 +7,19 @@ import (
 	"gourd/internal/repositories/base"
 )
 
-type Rule struct {
+type MenuApi struct {
 	base.Repository
 	Ctx context.Context
 }
 
-func (r *Rule) Query() query.IRuleDo {
+func (r *MenuApi) Query() query.IMenuAPIDo {
 	if r.Tx != nil {
-		return r.Tx.Rule.WithContext(r.Ctx)
+		return r.Tx.MenuAPI.WithContext(r.Ctx)
 	}
-	return query.Rule.WithContext(r.Ctx)
+	return query.MenuAPI.WithContext(r.Ctx)
 }
 
-func (r *Rule) Create(ud *model.Rule) error {
+func (r *MenuApi) Create(ud *model.MenuAPI) error {
 	q := r.Query()
 	return q.Create(ud)
 }

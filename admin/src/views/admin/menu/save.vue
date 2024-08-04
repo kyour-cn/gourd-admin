@@ -4,7 +4,7 @@
             <el-empty description="请选择左侧菜单后操作" :image-size="100"></el-empty>
         </el-col>
         <template v-else>
-            <el-col :lg="24">
+            <el-col :lg="12">
                 <h2>{{ form.meta.title || "新增菜单" }}</h2>
                 <el-form :model="form" :rules="rules" ref="dialogForm" label-width="80px" label-position="left">
                     <el-form-item label="显示名称" prop="meta.title">
@@ -20,11 +20,11 @@
                             <el-radio-button label="menu">菜单</el-radio-button>
                             <el-radio-button label="iframe">Iframe</el-radio-button>
                             <el-radio-button label="link">外链</el-radio-button>
-                            <el-radio-button label="button">按钮</el-radio-button>
+                            <el-radio-button label="rule">权限</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="组件名" prop="name">
-                        <el-input v-model="form.name" clearable placeholder="菜单别名"></el-input>
+                    <el-form-item label="别名" prop="name">
+                        <el-input v-model="form.name" clearable placeholder="别名"></el-input>
                         <div class="el-form-item-msg">
                             系统唯一且与内置组件名一致，否则导致缓存失效。如类型为Iframe的菜单，别名将代替源地址显示在地址栏
                         </div>
@@ -74,7 +74,21 @@
                         <el-button type="primary" @click="save" :loading="loading">保 存</el-button>
                     </el-form-item>
                 </el-form>
-
+            </el-col>
+            <el-col :lg="12" class="apilist">
+                <h2>接口权限</h2>
+                <sc-form-table v-model="form.apiList" :addTemplate="apiListAddTemplate" placeholder="暂无匹配接口权限">
+                    <el-table-column prop="tag" label="标识" width="150">
+                        <template #default="scope">
+                            <el-input v-model="scope.row.tag" placeholder="请输入内容"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="path" label="Api url">
+                        <template #default="scope">
+                            <el-input v-model="scope.row.path" placeholder="请输入内容"></el-input>
+                        </template>
+                    </el-table-column>
+                </sc-form-table>
             </el-col>
         </template>
     </el-row>
@@ -113,6 +127,8 @@ export default {
                     type: "menu",
                     fullpage: false,
                     tag: "",
+                    hidden: false,
+                    hiddenBreadcrumb: false
                 },
                 apiList: []
             },
@@ -125,6 +141,10 @@ export default {
             },
             rules: {
                 required: false //避免表单验证错误
+            },
+            apiListAddTemplate: {
+                tag: "",
+                path: ""
             },
             loading: false,
             appId: 0
@@ -156,9 +176,9 @@ export default {
         //保存
         async save() {
             this.loading = true
-            const res = await this.$API.system.system.menu.edit.post(this.form)
+            const res = await this.$API.admin.menu.edit.post(this.form)
             this.loading = false
-            if (res.code == 0) {
+            if (res.code === 0) {
                 this.$message.success("保存成功")
                 if (this.checkPid !== this.form.parentId) {
                     this.$emit('refreshMenu')

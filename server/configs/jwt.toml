@@ -3,4 +3,4 @@
 secret = "secret"
 
 # TOKEN过期时间（秒）
-expire = 3600
+expire = 86400

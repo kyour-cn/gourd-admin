@@ -29,7 +29,6 @@ func newMenu(db *gorm.DB, opts ...gen.DOOption) menu {
 	_menu.ALL = field.NewAsterisk(tableName)
 	_menu.ID = field.NewInt32(tableName, "id")
 	_menu.AppID = field.NewInt32(tableName, "app_id")
-	_menu.RuleID = field.NewInt32(tableName, "rule_id")
 	_menu.Pid = field.NewInt32(tableName, "pid")
 	_menu.Name = field.NewString(tableName, "name")
 	_menu.Title = field.NewString(tableName, "title")
@@ -39,6 +38,11 @@ func newMenu(db *gorm.DB, opts ...gen.DOOption) menu {
 	_menu.Status = field.NewInt32(tableName, "status")
 	_menu.Sort = field.NewInt32(tableName, "sort")
 	_menu.Meta = field.NewString(tableName, "meta")
+	_menu.ApiList = menuHasManyApiList{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("ApiList", "model.MenuAPI"),
+	}
 
 	_menu.fillFieldMap()
 
@@ -52,8 +56,7 @@ type menu struct {
 	ALL       field.Asterisk
 	ID        field.Int32
 	AppID     field.Int32  // 应用ID
-	RuleID    field.Int32  // 对应权限ID（通过拥有的权限ID查询）
-	Pid       field.Int32  // 上级菜单ID
+	Pid       field.Int32  // 上级ID
 	Name      field.String // 别名
 	Title     field.String // 显示名称
 	Type      field.String // 类型
@@ -62,6 +65,7 @@ type menu struct {
 	Status    field.Int32  // 是否启用
 	Sort      field.Int32  // 排序
 	Meta      field.String // meta路由参数
+	ApiList   menuHasManyApiList
 
 	fieldMap map[string]field.Expr
 }
@@ -80,7 +84,6 @@ func (m *menu) updateTableName(table string) *menu {
 	m.ALL = field.NewAsterisk(table)
 	m.ID = field.NewInt32(table, "id")
 	m.AppID = field.NewInt32(table, "app_id")
-	m.RuleID = field.NewInt32(table, "rule_id")
 	m.Pid = field.NewInt32(table, "pid")
 	m.Name = field.NewString(table, "name")
 	m.Title = field.NewString(table, "title")
@@ -109,7 +112,6 @@ func (m *menu) fillFieldMap() {
 	m.fieldMap = make(map[string]field.Expr, 12)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["app_id"] = m.AppID
-	m.fieldMap["rule_id"] = m.RuleID
 	m.fieldMap["pid"] = m.Pid
 	m.fieldMap["name"] = m.Name
 	m.fieldMap["title"] = m.Title
@@ -119,6 +121,7 @@ func (m *menu) fillFieldMap() {
 	m.fieldMap["status"] = m.Status
 	m.fieldMap["sort"] = m.Sort
 	m.fieldMap["meta"] = m.Meta
+
 }
 
 func (m menu) clone(db *gorm.DB) menu {
@@ -129,6 +132,77 @@ func (m menu) clone(db *gorm.DB) menu {
 func (m menu) replaceDB(db *gorm.DB) menu {
 	m.menuDo.ReplaceDB(db)
 	return m
+}
+
+type menuHasManyApiList struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a menuHasManyApiList) Where(conds ...field.Expr) *menuHasManyApiList {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a menuHasManyApiList) WithContext(ctx context.Context) *menuHasManyApiList {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a menuHasManyApiList) Session(session *gorm.Session) *menuHasManyApiList {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a menuHasManyApiList) Model(m *model.Menu) *menuHasManyApiListTx {
+	return &menuHasManyApiListTx{a.db.Model(m).Association(a.Name())}
+}
+
+type menuHasManyApiListTx struct{ tx *gorm.Association }
+
+func (a menuHasManyApiListTx) Find() (result []*model.MenuAPI, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a menuHasManyApiListTx) Append(values ...*model.MenuAPI) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a menuHasManyApiListTx) Replace(values ...*model.MenuAPI) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a menuHasManyApiListTx) Delete(values ...*model.MenuAPI) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a menuHasManyApiListTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a menuHasManyApiListTx) Count() int64 {
+	return a.tx.Count()
 }
 
 type menuDo struct{ gen.DO }

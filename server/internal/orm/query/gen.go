@@ -21,8 +21,8 @@ var (
 	Log      *log
 	LogLevel *logLevel
 	Menu     *menu
+	MenuAPI  *menuAPI
 	Role     *role
-	Rule     *rule
 	User     *user
 )
 
@@ -32,8 +32,8 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	Log = &Q.Log
 	LogLevel = &Q.LogLevel
 	Menu = &Q.Menu
+	MenuAPI = &Q.MenuAPI
 	Role = &Q.Role
-	Rule = &Q.Rule
 	User = &Q.User
 }
 
@@ -44,8 +44,8 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		Log:      newLog(db, opts...),
 		LogLevel: newLogLevel(db, opts...),
 		Menu:     newMenu(db, opts...),
+		MenuAPI:  newMenuAPI(db, opts...),
 		Role:     newRole(db, opts...),
-		Rule:     newRule(db, opts...),
 		User:     newUser(db, opts...),
 	}
 }
@@ -57,8 +57,8 @@ type Query struct {
 	Log      log
 	LogLevel logLevel
 	Menu     menu
+	MenuAPI  menuAPI
 	Role     role
-	Rule     rule
 	User     user
 }
 
@@ -71,8 +71,8 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		Log:      q.Log.clone(db),
 		LogLevel: q.LogLevel.clone(db),
 		Menu:     q.Menu.clone(db),
+		MenuAPI:  q.MenuAPI.clone(db),
 		Role:     q.Role.clone(db),
-		Rule:     q.Rule.clone(db),
 		User:     q.User.clone(db),
 	}
 }
@@ -92,8 +92,8 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		Log:      q.Log.replaceDB(db),
 		LogLevel: q.LogLevel.replaceDB(db),
 		Menu:     q.Menu.replaceDB(db),
+		MenuAPI:  q.MenuAPI.replaceDB(db),
 		Role:     q.Role.replaceDB(db),
-		Rule:     q.Rule.replaceDB(db),
 		User:     q.User.replaceDB(db),
 	}
 }
@@ -103,8 +103,8 @@ type queryCtx struct {
 	Log      ILogDo
 	LogLevel ILogLevelDo
 	Menu     IMenuDo
+	MenuAPI  IMenuAPIDo
 	Role     IRoleDo
-	Rule     IRuleDo
 	User     IUserDo
 }
 
@@ -114,8 +114,8 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		Log:      q.Log.WithContext(ctx),
 		LogLevel: q.LogLevel.WithContext(ctx),
 		Menu:     q.Menu.WithContext(ctx),
+		MenuAPI:  q.MenuAPI.WithContext(ctx),
 		Role:     q.Role.WithContext(ctx),
-		Rule:     q.Rule.WithContext(ctx),
 		User:     q.User.WithContext(ctx),
 	}
 }

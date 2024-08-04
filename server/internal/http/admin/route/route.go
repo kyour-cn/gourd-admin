@@ -20,11 +20,22 @@ func RegisterRoute(r chi.Router) {
 	// 注册app相关路由
 	r.Mount("/app", chi.NewRouter().
 		Group(func(r chi.Router) {
-			appCtl := ctl.AppCtl{}
+			c := ctl.AppCtl{}
 			r.Use(middleware.AuthJwtMiddleware)
-			r.HandleFunc("/list", appCtl.List)
-			r.HandleFunc("/add", appCtl.Add)
-			r.HandleFunc("/edit", appCtl.Edit)
+			r.HandleFunc("/list", c.List)
+			r.HandleFunc("/add", c.Add)
+			r.HandleFunc("/edit", c.Edit)
+		}))
+
+	// 注册menu相关路由
+	r.Mount("/menu", chi.NewRouter().
+		Group(func(r chi.Router) {
+			c := ctl.MenuCtl{}
+			r.Use(middleware.AuthJwtMiddleware)
+			r.HandleFunc("/list", c.List)
+			r.HandleFunc("/add", c.Add)
+			r.HandleFunc("/edit", c.Edit)
+			r.HandleFunc("/delete", c.Delete)
 		}))
 
 	// 测试相关路由

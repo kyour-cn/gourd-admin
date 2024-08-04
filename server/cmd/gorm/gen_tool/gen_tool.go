@@ -66,11 +66,11 @@ func (db Database) GenTable() {
 
 			// 关联表是否已生成
 			rTab := findTable(db.Tables, relate.TableName)
-			fmt.Printf("生成关联表: %s\n", relate.TableName)
 
 			if rTab == nil {
 				// 如果关联表不存在则生成
 				rTab = &Table{Name: relate.TableName}
+				fmt.Printf("生成关联表: %s\n", relate.TableName)
 			}
 
 			// 生成关联表的外键

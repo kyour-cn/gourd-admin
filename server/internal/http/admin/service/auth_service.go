@@ -68,16 +68,16 @@ func GenerateToken(data map[string]any) (string, error) {
 }
 
 type menuTree struct {
-	ParentId  int32      `json:"parentId"`
-	Id        int32      `json:"id"`
-	Name      string     `json:"name"`
-	Path      string     `json:"path"`
-	RuleId    int32      `json:"ruleId"`
-	Component string     `json:"component"`
-	Sort      int32      `json:"sort"`
-	Meta      *menuMeta  `json:"meta"`
-	AppId     int32      `json:"appId"`
-	Children  []menuTree `json:"children"`
+	ParentId  int32           `json:"parentId"`
+	Id        int32           `json:"id"`
+	Name      string          `json:"name"`
+	Path      string          `json:"path"`
+	Component string          `json:"component"`
+	Sort      int32           `json:"sort"`
+	Meta      *menuMeta       `json:"meta"`
+	AppId     int32           `json:"appId"`
+	Children  []menuTree      `json:"children"`
+	ApiList   []model.MenuAPI `json:"apiList"`
 }
 type menuTreeArr []menuTree
 type menuMeta struct {
@@ -115,10 +115,11 @@ func GetMenu(userInfo *model.User) (any, error) {
 			num, _ := strconv.Atoi(v)
 			ids = append(ids, int32(num))
 		}
-		conditions = append(conditions, qm.RuleID.In(ids...))
+		conditions = append(conditions, qm.ID.In(ids...))
 	}
 
 	menu, err := rm.Query().
+		Preload(query.Menu.ApiList).
 		Where(conditions...).
 		Find()
 	if err != nil {
@@ -128,6 +129,28 @@ func GetMenu(userInfo *model.User) (any, error) {
 	menuTreeArr := recursionMenu(menu, 0)
 	return menuTreeArr, nil
 
+}
+
+// GetMenuFormApp 获取指定应用的菜单
+func GetMenuFormApp(appId int32) (any, error) {
+
+	rm := repositories.Menu{}
+	qm := query.Menu
+	conditions := []gen.Condition{
+		qm.Status.Eq(1),
+		qm.AppID.Eq(appId),
+	}
+
+	menu, err := rm.Query().
+		Preload(query.Menu.ApiList).
+		Where(conditions...).
+		Find()
+	if err != nil {
+		return nil, err
+	}
+	// 构建菜单树
+	menuTreeArr := recursionMenu(menu, 0)
+	return menuTreeArr, nil
 }
 
 func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
@@ -146,12 +169,12 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 				Id:        menu.ID,
 				Name:      menu.Name,
 				Path:      menu.Path,
-				RuleId:    menu.RuleID,
 				Component: menu.Component,
 				Sort:      menu.Sort,
 				Meta:      mate,
 				AppId:     menu.AppID,
 				Children:  children,
+				ApiList:   menu.ApiList,
 			}
 			menuTreeArr = append(menuTreeArr, menuTree)
 		}
@@ -162,7 +185,7 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 // CheckJwtPermission 检查Token权限
 func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 
-	rr := repositories.Rule{
+	rmApi := repositories.MenuApi{
 		Ctx: r.Context(),
 	}
 	ro := repositories.Role{
@@ -171,18 +194,18 @@ func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 
 	// 取出
 	roleId, ok1 := jwtData["role"].(float64)
-	appId, ok2 := jwtData["role"].(float64)
+	appId, ok2 := jwtData["app"].(float64)
 	if !ok1 || !ok2 {
 		return false
 	}
 
 	url := r.URL.Path
-	rules, err := rr.Query().
+	apis, err := rmApi.Query().
 		Where(
-			query.Rule.Path.Eq(url),
-			query.Rule.AppID.Eq(int32(appId)),
+			query.MenuAPI.Path.Eq(url),
+			query.MenuAPI.AppID.Eq(int32(appId)),
 		).
-		Select(query.Rule.ID).
+		Select(query.MenuAPI.ID).
 		Find()
 	if err != nil {
 		// 路由未定义，不限制
@@ -191,7 +214,10 @@ func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 
 	// 获取用户角色
 	role, err := ro.Query().
-		Where(query.Role.ID.Eq(int32(roleId))).
+		Where(
+			query.Role.ID.Eq(int32(roleId)),
+			query.Role.AppID.Eq(int32(appId)),
+		).
 		Select(
 			query.Role.ID,
 			query.Role.IsAdmin,
@@ -207,7 +233,7 @@ func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 	}
 
 	var ruleIds []int32
-	for _, rule := range rules {
+	for _, rule := range apis {
 		ruleIds = append(ruleIds, rule.ID)
 	}
 

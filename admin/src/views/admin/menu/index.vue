@@ -82,12 +82,9 @@ export default {
         this.getApp();
     },
     methods: {
-
         async getApp() {
-            const res = await this.$API.system.system.app.list.get({
-                pageSize: 100
-            });
-            this.appList = res.data.data;
+            const res = await this.$API.admin.app.list.get();
+            this.appList = res.data.rows;
 
             //读取缓存 sys_menu_app_id
             const appId = localStorage.getItem("sys_menu_app_id");
@@ -100,7 +97,7 @@ export default {
         //加载树数据
         async getMenu() {
             this.menuloading = true
-            var res = await this.$API.system.system.menu.list.get({
+            var res = await this.$API.admin.menu.list.get({
                 app_id: this.selectedApp
             });
             this.menuloading = false
@@ -127,22 +124,21 @@ export default {
         async add(node, data) {
             const newMenuName = "未命名" + newMenuIndex++;
             let newMenuData = {
-                parentId: data ? data.id : "",
+                parentId: data ? data.id : 0,
                 name: newMenuName,
                 path: "",
                 component: "",
                 meta: {
                     title: newMenuName,
-                    type: "menu"
+                    type: "menu",
+                    icon: ""
                 },
                 app_id: this.selectedApp
             }
             this.menuloading = true
-            const res = await this.$API.system.system.menu.edit.post(newMenuData);
+            const res = await this.$API.admin.menu.add.post(newMenuData);
             this.menuloading = false
             newMenuData.id = res.data.id
-
-            console.log(newMenuData, 'newMenuData')
 
             this.$refs.menu.append(newMenuData, node)
             this.$refs.menu.setCurrentKey(newMenuData.id)
@@ -171,7 +167,7 @@ export default {
             const reqData = {
                 ids: CheckedNodes.map(item => item.id)
             };
-            const res = await this.$API.system.system.menu.delete.post(reqData);
+            const res = await this.$API.admin.menu.delete.post(reqData);
             this.menuloading = false
 
             if (res.code === 0) {

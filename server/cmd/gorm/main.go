@@ -55,12 +55,13 @@ func main() {
 			{Name: "app"},
 			{Name: "log"},
 			{Name: "log_level"},
+			{Name: "menu_api"},
 			{
 				Name: "menu",
 				Relate: &[]gen_tool.TableRelate{
 					{
 						TableName:  "menu_api",
-						FieldName:  "MenuApis",
+						FieldName:  "ApiList",
 						Type:       field.HasMany,
 						ForeignKey: "menu_id",
 						LocalKey:   "id",
