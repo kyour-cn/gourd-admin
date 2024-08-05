@@ -25,6 +25,12 @@
                     :min="1"
                 />
             </el-form-item>
+            <el-form-item label="是否管理员" prop="status">
+                <el-switch v-model="form.is_admin" :active-value="true" :inactive-value="false"></el-switch>
+                <div class="el-form-item-msg">
+                    管理员将拥有当前应用的全部菜单和权限。
+                </div>
+            </el-form-item>
             <el-form-item label="是否启用" prop="status">
                 <el-switch v-model="form.status" :active-value="true" :inactive-value="false"></el-switch>
             </el-form-item>
@@ -59,6 +65,7 @@ export default {
                 name: "",
                 sort: 1,
                 status: true,
+                is_admin: false,
                 remark: "",
                 app_id: 0
             },
@@ -89,6 +96,7 @@ export default {
                 this.isSaveing = true;
                 const data = JSON.parse(JSON.stringify(this.form));
                 data.status = data.status ? 1 : 0;
+                data.is_admin = data.is_admin ? 1 : 0;
                 let res;
                 if (this.mode === 'add') {
                     res = await this.$API.admin.role.add.post(data);
@@ -111,6 +119,7 @@ export default {
             Object.assign(this.form, data)
             if(data.status !== undefined) {
                 this.form.status = data.status === 1
+                this.form.is_admin = data.is_admin === 1
             }
         }
     }

@@ -33,10 +33,6 @@
                         <el-input v-model="form.sort" clearable placeholder="菜单排序"></el-input>
                         <div class="el-form-item-msg">正序排列，数字越小越靠前</div>
                     </el-form-item>
-                    <el-form-item label="权限ID" prop="rule_id">
-                        <el-input v-model="form.rule_id" clearable placeholder="权限ID"></el-input>
-                        <div class="el-form-item-msg">输入绑定的权限ID,若用户无绑定权限则不显示该菜单</div>
-                    </el-form-item>
                     <el-form-item label="菜单图标" prop="meta.icon">
                         <sc-icon-select v-model="form.meta.icon" clearable></sc-icon-select>
                     </el-form-item>

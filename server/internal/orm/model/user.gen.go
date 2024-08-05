@@ -25,6 +25,7 @@ type User struct {
 	Status       int32                 `gorm:"column:status;not null;default:1;comment:状态" json:"status"`       // 状态
 	DeleteTime   soft_delete.DeletedAt `gorm:"column:delete_time;not null;comment:删除时间" json:"delete_time"`     // 删除时间
 	RoleID       int32                 `gorm:"column:role_id;not null;comment:角色ID" json:"role_id"`             // 角色ID
+	Role         Role                  `gorm:"foreignKey:role_id;references:id" json:"role"`
 }
 
 // MarshalBinary 支持json序列化

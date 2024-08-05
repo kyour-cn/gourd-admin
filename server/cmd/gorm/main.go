@@ -68,7 +68,18 @@ func main() {
 					},
 				},
 			},
-			{Name: "user"},
+			{
+				Name: "user",
+				Relate: &[]gen_tool.TableRelate{
+					{
+						TableName:  "role",
+						FieldName:  "Role",
+						Type:       field.HasOne,
+						ForeignKey: "role_id",
+						LocalKey:   "id",
+					},
+				},
+			},
 			{Name: "role"},
 		},
 	}

@@ -2,6 +2,7 @@ package ctl
 
 import (
 	"gorm.io/gen"
+	"gorm.io/gen/field"
 	"gourd/internal/http/admin/common"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
@@ -60,8 +61,6 @@ func (c *RoleCtl) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *RoleCtl) Add(w http.ResponseWriter, r *http.Request) {
-
-	// 获取参数
 	req := &model.Role{}
 	err := c.JsonReqUnmarshal(r, req)
 	if err != nil {
@@ -83,7 +82,6 @@ func (c *RoleCtl) Add(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
-	// 获取参数
 	req := &model.Role{}
 	err := c.JsonReqUnmarshal(r, req)
 	if err != nil {
@@ -96,17 +94,26 @@ func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 	qm := query.Role
 
-	_, err = rm.Query().
-		Where(query.Role.ID.Eq(req.ID)).
-		Select(
+	var fields []field.Expr
+	if r.URL.Query().Get("type") == "permission" {
+		// 权限编辑
+		fields = append(fields,
+			qm.Rules,
+			qm.RulesCheckd,
+		)
+	} else {
+		fields = append(fields,
 			qm.IsAdmin,
 			qm.Name,
 			qm.Remark,
 			qm.Status,
-			qm.Rules,
-			qm.RulesCheckd,
 			qm.Sort,
-		).
+		)
+	}
+
+	_, err = rm.Query().
+		Where(query.Role.ID.Eq(req.ID)).
+		Select(fields...).
 		Updates(req)
 	if err != nil {
 		return

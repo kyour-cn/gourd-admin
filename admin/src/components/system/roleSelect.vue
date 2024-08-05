@@ -60,8 +60,8 @@ export default {
 			const res = await properties.$API.system.system.app.list.get({
 				pageSize: 50
 			});
-			state.appList = res.data.data;
-			state.selectedApp = res.data.data[0].id;
+			state.appList = res.data.rows;
+			state.selectedApp = res.data.rows[0].id;
 		}
 		getApp();
 

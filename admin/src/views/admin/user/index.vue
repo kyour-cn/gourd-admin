@@ -4,10 +4,10 @@
             <el-header>
                 <div class="left-panel">
                     <el-button type="primary" icon="el-icon-plus" @click="add"></el-button>
-                    <el-button type="danger" plain icon="el-icon-delete" :disabled="selection.length==0"
+                    <el-button type="danger" plain icon="el-icon-delete" :disabled="selection.length===0"
                                @click="batch_del"></el-button>
-                    <el-button type="primary" plain :disabled="selection.length==0">分配角色</el-button>
-                    <el-button type="primary" plain :disabled="selection.length==0">密码重置</el-button>
+                    <el-button type="primary" plain :disabled="selection.length===0">分配角色</el-button>
+                    <el-button type="primary" plain :disabled="selection.length===0">密码重置</el-button>
                 </div>
                 <div class="right-panel">
                     <div class="right-panel-search">
@@ -20,18 +20,17 @@
             <el-main class="nopadding">
                 <sc-table ref="table" :apiObj="apiObj" @selection-change="selectionChange" stripe remoteSort
                           remoteFilter>
-                    <el-table-column type="selection" width="50"></el-table-column>
-                    <el-table-column label="ID" prop="id" width="80" sortable='custom'></el-table-column>
+                    <el-table-column type="selection" width="50"/>
+                    <el-table-column label="ID" prop="id" width="80" sortable='custom'/>
                     <el-table-column label="头像" width="80" column-key="filterAvatar">
                         <template #default="scope">
                             <el-avatar :src="scope.row.avatar" size="small"></el-avatar>
                         </template>
                     </el-table-column>
-                    <el-table-column label="登录账号" prop="username" width="150"
-                                     column-key="filterUserName"></el-table-column>
-                    <el-table-column label="姓名" prop="realname" width="150"></el-table-column>
-                    <el-table-column label="手机号" prop="mobile" width="150"></el-table-column>
-                    <el-table-column label="所属角色" prop="role_name" width="200"></el-table-column>
+                    <el-table-column label="登录账号" prop="username" width="150" column-key="filterUserName"/>
+                    <el-table-column label="姓名" prop="realname" width="150"/>
+                    <el-table-column label="手机号" prop="mobile" width="150"/>
+                    <el-table-column label="所属角色" prop="role.name" width="200"/>
                     <el-table-column label="注册时间" prop="register_time" width="170">
                         <template #default="{row,$index}">
                             {{ $TOOL.dateFormat(row.register_time * 1000) }}
@@ -60,13 +59,15 @@
         </el-container>
     </el-container>
 
-    <save-dialog v-if="dialog.save" ref="saveDialog" @reloadData="reloadData" @success="handleSuccess"
-                 @closed="dialog.save=false"></save-dialog>
+    <save-dialog
+        v-if="dialog.save" ref="saveDialog" @reloadData="reloadData" @success="handleSuccess"
+        @closed="dialog.save=false"
+    />
 
 </template>
 
 <script>
-import saveDialog from './save'
+import saveDialog from './save.vue'
 
 export default {
     name: 'user',
@@ -81,7 +82,7 @@ export default {
             showGrouploading: false,
             groupFilterText: '',
             group: [],
-            apiObj: this.$API.system.system.user.list,
+            apiObj: this.$API.admin.user.list,
             selection: [],
             search: {
                 keyword: null
@@ -122,8 +123,8 @@ export default {
         //删除
         async table_del(row, index) {
             var reqData = {ids: row.id}
-            var res = await this.$API.system.system.user.delete.post(reqData);
-            if (res.code == 0) {
+            var res = await this.$API.admin.user.delete.post(reqData);
+            if (res.code === 0) {
                 //这里选择刷新整个表格 OR 插入/编辑现有表格数据
                 this.$refs.table.tableData.splice(index, 1);
                 this.$message.success("删除成功")
@@ -138,7 +139,7 @@ export default {
             }).then(async () => {
                 const loading = this.$loading();
                 const ids = this.selection.map(ele => ele.id)
-                var res = await this.$API.system.system.user.delete.post({ids});
+                var res = await this.$API.admin.user.delete.post({ids});
                 if (res.code === 0) {
                     this.selection.forEach(item => {
                         this.$refs.table.tableData.forEach((itemI, indexI) => {
@@ -170,10 +171,10 @@ export default {
         },
         //本地更新数据
         handleSuccess(data, mode) {
-            if (mode == 'add') {
+            if (mode === 'add') {
                 data.id = new Date().getTime()
                 this.$refs.table.tableData.unshift(data)
-            } else if (mode == 'edit') {
+            } else if (mode === 'edit') {
                 this.$refs.table.tableData.filter(item => item.id === data.id).forEach(item => {
                     Object.assign(item, data)
                 })

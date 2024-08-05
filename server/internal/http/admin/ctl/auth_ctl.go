@@ -81,10 +81,13 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 
 	rr := repositories.Role{}
 	roleData, err := rr.Query().
-		Where(query.Role.ID.Eq(userData.RoleID)).
+		Where(
+			query.Role.ID.Eq(userData.RoleID),
+			query.Role.Status.Eq(1),
+		).
 		First()
 	if err != nil {
-		_ = c.Fail(w, 104, "账号异常", err)
+		_ = c.Fail(w, 104, "账号角色异常,请联系管理员", err)
 		return
 	}
 

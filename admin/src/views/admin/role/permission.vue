@@ -47,7 +47,7 @@ const state = reactive({
         checked: [],
         props: {
             label: (data) => {
-                return data.name
+                return data.meta.title
             }
         }
     },
@@ -68,11 +68,11 @@ const submit = async () => {
     const checked = rule.value.getCheckedKeys().join(',')
     let checkIds = checkedKeys.join(',');
     const data = {
-        rules: checkIds,
         id: state.row.id,
+        rules: checkIds,
         rules_checked: checked
     }
-    const res = await properties.$API.system.system.role.edit.post(data);
+    const res = await properties.$API.admin.role.editPermission.post(data);
     if (res.code === 0) {
         state.isSaveing = false;
         state.visible = false;
@@ -85,7 +85,7 @@ const submit = async () => {
 }
 
 const getRule = async () => {
-    const res = await properties.$API.system.system.rule.list.get({
+    const res = await properties.$API.admin.menu.list.get({
         app_id: state.row.app_id
     });
     if (res.code === 0) {

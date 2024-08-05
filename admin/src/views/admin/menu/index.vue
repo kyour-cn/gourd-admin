@@ -75,7 +75,7 @@ export default {
         },
         selectedApp() {
             this.getMenu();
-            localStorage.setItem("sys_menu_app_id", this.selectedApp);
+            sessionStorage.setItem("sys_menu_app_id", this.selectedApp);
         }
     },
     mounted() {
@@ -87,11 +87,11 @@ export default {
             this.appList = res.data.rows;
 
             //读取缓存 sys_menu_app_id
-            const appId = localStorage.getItem("sys_menu_app_id");
+            const appId = sessionStorage.getItem("sys_menu_app_id");
             if (appId)
                 this.selectedApp = Number(appId);
             else
-                this.selectedApp = res.data.data[0]?.id;
+                this.selectedApp = res.data.rows[0]?.id;
         },
 
         //加载树数据

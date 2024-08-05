@@ -152,7 +152,7 @@ const getApp = async () => {
 	})
 
 	//读取缓存
-	const appId = localStorage.getItem("sys_role_app_id");
+	const appId = sessionStorage.getItem("sys_role_app_id");
 	if (appId) {
 		state.selectedApp = opts.find(item => item.value === Number(appId))
 	} else {
@@ -173,7 +173,7 @@ const filterChange = (data) => {
 	table.value.upData({
 		app_id: state.selectedApp.value
 	}, 1)
-	localStorage.setItem("sys_role_app_id", state.selectedApp.value);
+    sessionStorage.setItem("sys_role_app_id", state.selectedApp.value);
 }
 
 const selectionChange = (val) => {

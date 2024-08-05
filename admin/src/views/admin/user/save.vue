@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import roleSelect from "@/components/system/roleSelect";
+import roleSelect from "@/components/system/roleSelect.vue";
 
 export default {
 	emits: ['success', 'closed', 'reloadData'],
@@ -156,7 +156,7 @@ export default {
 					let {changePassword} = this
 					let res;
 					if (this.mode == 'add') {
-						res = await this.$API.system.system.user.edit.post({
+						res = await this.$API.admin.user.edit.post({
 							username,
 							realname,
 							status,
@@ -166,7 +166,7 @@ export default {
 						});
 					} else {
 						if (changePassword) {
-							res = await this.$API.system.system.user.edit.post({
+							res = await this.$API.admin.user.edit.post({
 								id,
 								username,
 								realname,
@@ -176,7 +176,7 @@ export default {
 								role_id
 							});
 						} else {
-							res = await this.$API.system.system.user.edit.post({
+							res = await this.$API.admin.user.edit.post({
 								id,
 								username,
 								realname,
