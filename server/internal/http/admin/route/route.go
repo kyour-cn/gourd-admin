@@ -38,6 +38,17 @@ func RegisterRoute(r chi.Router) {
 			r.HandleFunc("/delete", c.Delete)
 		}))
 
+	// 注册role相关路由
+	r.Mount("/role", chi.NewRouter().
+		Group(func(r chi.Router) {
+			c := ctl.RoleCtl{}
+			r.Use(middleware.AuthJwtMiddleware)
+			r.HandleFunc("/list", c.List)
+			r.HandleFunc("/add", c.Add)
+			r.HandleFunc("/edit", c.Edit)
+			r.HandleFunc("/delete", c.Delete)
+		}))
+
 	// 测试相关路由
 	testsCtl := ctl.TestsCtl{}
 	r.HandleFunc("/tests/test", testsCtl.Test)

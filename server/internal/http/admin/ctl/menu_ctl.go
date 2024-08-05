@@ -150,6 +150,7 @@ func (c *MenuCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	for _, api := range req.ApiList {
 		_ = rmApi.Create(&model.MenuAPI{
 			MenuID: req.Id,
+			AppID:  req.AppId,
 			Path:   api.Path,
 			Tag:    api.Tag,
 		})

@@ -3,6 +3,7 @@ package ctl
 import (
 	"gourd/internal/http/admin/common"
 	"gourd/internal/orm/model"
+	"gourd/internal/orm/query"
 	"gourd/internal/repositories"
 	"net/http"
 	"strconv"
@@ -63,5 +64,30 @@ func (c *AppCtl) Add(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *AppCtl) Edit(w http.ResponseWriter, r *http.Request) {
+	_ = c.Success(w, "success", nil)
+}
+
+func (c *AppCtl) Delete(w http.ResponseWriter, r *http.Request) {
+	type Req struct {
+		Ids []int32 `json:"ids"`
+	}
+
+	rm := repositories.App{
+		Ctx: r.Context(),
+	}
+
+	req := Req{}
+	err := c.JsonReqUnmarshal(r, &req)
+	if err != nil {
+		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		return
+	}
+
+	_, err = rm.Query().Where(query.App.ID.In(req.Ids...)).Delete()
+	if err != nil {
+		_ = c.Fail(w, 1, "删除失败", err.Error())
+		return
+	}
+
 	_ = c.Success(w, "success", nil)
 }

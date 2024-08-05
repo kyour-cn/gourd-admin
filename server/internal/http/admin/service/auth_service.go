@@ -184,15 +184,11 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 
 // CheckJwtPermission 检查Token权限
 func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
+	ctx := r.Context()
+	rmApi := repositories.MenuApi{Ctx: ctx}
+	ro := repositories.Role{Ctx: ctx}
 
-	rmApi := repositories.MenuApi{
-		Ctx: r.Context(),
-	}
-	ro := repositories.Role{
-		Ctx: r.Context(),
-	}
-
-	// 取出
+	// 取出角色ID和应用ID
 	roleId, ok1 := jwtData["role"].(float64)
 	appId, ok2 := jwtData["app"].(float64)
 	if !ok1 || !ok2 {
