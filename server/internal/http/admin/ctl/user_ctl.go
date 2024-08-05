@@ -2,12 +2,13 @@ package ctl
 
 import (
 	"crypto/md5"
+	"encoding/hex"
+	"gorm.io/gen"
 	"gorm.io/gen/field"
 	"gourd/internal/http/admin/common"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
 	"gourd/internal/repositories"
-	"io"
 	"net/http"
 	"strconv"
 )
@@ -19,8 +20,9 @@ type UserCtl struct {
 
 func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
-		Page     int `json:"page"`
-		PageSize int `json:"page_size"`
+		Page     int    `json:"page"`
+		PageSize int    `json:"page_size"`
+		Keyword  string `json:"keyword"`
 	}
 	type Res struct {
 		Rows  []*model.User `json:"rows"`
@@ -41,6 +43,23 @@ func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
 		req.PageSize = pageSize
 	}
 
+	var conditions []gen.Condition
+
+	qu := query.User
+
+	req.Keyword = r.URL.Query().Get("keyword")
+	if req.Keyword != "" {
+		conditions = append(conditions, qu.Where(
+			qu.Where(
+				qu.Nickname.Like("%"+req.Keyword+"%"),
+			).Or(
+				qu.Nickname.Like("%"+req.Keyword+"%"),
+			).Or(
+				qu.Mobile.Like("%"+req.Keyword+"%"),
+			),
+		))
+	}
+
 	ru := repositories.User{
 		Ctx: r.Context(),
 	}
@@ -53,6 +72,7 @@ func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
 				query.Role.Name,
 			),
 		).
+		Where(conditions...).
 		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
@@ -102,18 +122,18 @@ func (c *UserCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	qu := query.User
 
 	fields := []field.Expr{
-		qu.Realname,
+		qu.Nickname,
 		qu.Username,
 		qu.Mobile,
 		qu.Avatar,
 		qu.Status,
+		qu.RoleID,
 	}
 
 	// 如果密码不为空，则加密后更新密码
 	if req.Password != "" {
-		hash := md5.New()
-		_, _ = io.WriteString(hash, req.Password)
-		req.Password = string(hash.Sum(nil))
+		hash := md5.Sum([]byte(req.Password))
+		req.Password = hex.EncodeToString(hash[:])
 		fields = append(fields, qu.Password)
 	}
 
@@ -122,6 +142,7 @@ func (c *UserCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		Select(fields...).
 		Updates(req)
 	if err != nil {
+		_ = c.Fail(w, 1, "更新失败", err.Error())
 		return
 	}
 

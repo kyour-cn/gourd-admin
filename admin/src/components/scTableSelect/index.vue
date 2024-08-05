@@ -121,7 +121,6 @@
 							}
 						})
 					}else{
-                        console.log( this.tableData)
 						var setrow = this.tableData.filter(item => item[this.defaultProps.value]===this.defaultValue[this.defaultProps.value] )
 						this.$refs.table.setCurrentRow(setrow[0]);
 					}

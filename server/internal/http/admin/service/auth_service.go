@@ -29,7 +29,7 @@ func LoginUser(username string, password string) (*model.User, error) {
 		).
 		Select(
 			uq.ID,
-			uq.Realname,
+			uq.Nickname,
 			uq.Username,
 			uq.Mobile,
 			uq.Avatar,

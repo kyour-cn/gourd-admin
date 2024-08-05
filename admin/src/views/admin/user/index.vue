@@ -11,7 +11,7 @@
                 </div>
                 <div class="right-panel">
                     <div class="right-panel-search">
-                        <el-input v-model="search.keyword" placeholder="登录账号 / 姓名" @clear="clearSearch"
+                        <el-input v-model="search.keyword" placeholder="登录账号 / 昵称 / 手机号" @clear="clearSearch"
                                   clearable></el-input>
                         <el-button type="primary" icon="el-icon-search" @click="upsearch"></el-button>
                     </div>
@@ -28,7 +28,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column label="登录账号" prop="username" width="150" column-key="filterUserName"/>
-                    <el-table-column label="姓名" prop="realname" width="150"/>
+                    <el-table-column label="昵称" prop="nickname" width="150"/>
                     <el-table-column label="手机号" prop="mobile" width="150"/>
                     <el-table-column label="所属角色" prop="role.name" width="200"/>
                     <el-table-column label="注册时间" prop="register_time" width="170">

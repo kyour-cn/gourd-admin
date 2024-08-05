@@ -2,6 +2,7 @@ package ctl
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"github.com/golang-jwt/jwt/v5"
 	"gourd/internal/http/admin/common"
 	"gourd/internal/http/admin/service"
@@ -9,7 +10,6 @@ import (
 	"gourd/internal/orm/query"
 	"gourd/internal/repositories"
 	"gourd/internal/util/captcha"
-	"io"
 	"net/http"
 )
 
@@ -64,9 +64,8 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !req.Md5 {
-		hash := md5.New()
-		_, _ = io.WriteString(hash, req.Password)
-		req.Password = string(hash.Sum(nil))
+		hash := md5.Sum([]byte(req.Password))
+		req.Password = hex.EncodeToString(hash[:])
 	}
 
 	userData, err := service.LoginUser(req.Username, req.Password)

@@ -45,7 +45,7 @@ export default {
         const properties = instance.appContext.config.globalProperties;
 
 		const state = reactive({
-			apiObj: properties.$API.system.system.role.list,
+			apiObj: properties.$API.admin.role.list,
 			tableWidth: props.tableWidth? props.tableWidth : 600,
 			props: {
 				label: 'name',
@@ -57,7 +57,7 @@ export default {
 		})
 
 		const getApp =  async () => {
-			const res = await properties.$API.system.system.app.list.get({
+			const res = await properties.$API.admin.app.list.get({
 				pageSize: 50
 			});
 			state.appList = res.data.rows;

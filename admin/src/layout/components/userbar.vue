@@ -108,7 +108,7 @@
 					// },
 					// {
 					// 	id: 3,
-					// 	type: 'system',
+					// 	type: 'admin',
 					// 	avatar: "img/logo.png",
 					// 	title: "感谢登录SCUI Admin",
 					// 	describe: "Vue 3.0 + Vue-Router 4.0 + ElementPlus + Axios 后台管理系统。",
@@ -120,7 +120,7 @@
 		},
 		created() {
 			var userInfo = this.$TOOL.data.get("USER_INFO");
-			this.userName = userInfo.realname;
+			this.userName = userInfo.nickname;
 			this.userNameF = this.userName.substring(0,1);
 		},
 		methods: {
