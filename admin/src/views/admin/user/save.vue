@@ -28,7 +28,7 @@
 				</el-form-item>
 			</template>
 			<el-form-item label="用户角色" prop="role_name">
-				<roleSelect @onChange="change" :placeholder="form.role.name"/>
+				<roleSelect @onChange="change" :placeholder="form.role?.name"/>
 			</el-form-item>
 
 		</el-form>
@@ -96,14 +96,6 @@ export default {
 				],
 				password: [
 					{required: true, message: '请输入登录密码'},
-					{
-						validator: (rule, value, callback) => {
-							if (this.form.password2 !== '') {
-								this.$refs.dialogForm.validateField('password2');
-							}
-							callback();
-						}
-					}
 				],
 				status: [
 					{required: true, message: '请选择当前状态'}

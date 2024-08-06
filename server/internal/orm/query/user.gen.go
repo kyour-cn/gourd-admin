@@ -33,7 +33,7 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.Mobile = field.NewString(tableName, "mobile")
 	_user.Avatar = field.NewString(tableName, "avatar")
 	_user.Password = field.NewString(tableName, "password")
-	_user.RegisterTime = field.NewInt32(tableName, "register_time")
+	_user.CreateTime = field.NewUint(tableName, "create_time")
 	_user.LoginTime = field.NewInt32(tableName, "login_time")
 	_user.Status = field.NewInt32(tableName, "status")
 	_user.DeleteTime = field.NewField(tableName, "delete_time")
@@ -53,19 +53,19 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 type user struct {
 	userDo
 
-	ALL          field.Asterisk
-	ID           field.Int32
-	Nickname     field.String // 昵称
-	Username     field.String // 用户名(登录账号)
-	Mobile       field.String // 手机号
-	Avatar       field.String // 头像
-	Password     field.String // 密码 md5
-	RegisterTime field.Int32  // 注册时间
-	LoginTime    field.Int32  // 登录时间
-	Status       field.Int32  // 状态
-	DeleteTime   field.Field  // 删除时间
-	RoleID       field.Int32  // 角色ID
-	Role         userHasOneRole
+	ALL        field.Asterisk
+	ID         field.Int32
+	Nickname   field.String // 昵称
+	Username   field.String // 用户名(登录账号)
+	Mobile     field.String // 手机号
+	Avatar     field.String // 头像
+	Password   field.String // 密码 md5
+	CreateTime field.Uint   // 创建|注册时间
+	LoginTime  field.Int32  // 登录时间
+	Status     field.Int32  // 状态
+	DeleteTime field.Field  // 删除时间
+	RoleID     field.Int32  // 角色ID
+	Role       userHasOneRole
 
 	fieldMap map[string]field.Expr
 }
@@ -88,7 +88,7 @@ func (u *user) updateTableName(table string) *user {
 	u.Mobile = field.NewString(table, "mobile")
 	u.Avatar = field.NewString(table, "avatar")
 	u.Password = field.NewString(table, "password")
-	u.RegisterTime = field.NewInt32(table, "register_time")
+	u.CreateTime = field.NewUint(table, "create_time")
 	u.LoginTime = field.NewInt32(table, "login_time")
 	u.Status = field.NewInt32(table, "status")
 	u.DeleteTime = field.NewField(table, "delete_time")
@@ -116,7 +116,7 @@ func (u *user) fillFieldMap() {
 	u.fieldMap["mobile"] = u.Mobile
 	u.fieldMap["avatar"] = u.Avatar
 	u.fieldMap["password"] = u.Password
-	u.fieldMap["register_time"] = u.RegisterTime
+	u.fieldMap["create_time"] = u.CreateTime
 	u.fieldMap["login_time"] = u.LoginTime
 	u.fieldMap["status"] = u.Status
 	u.fieldMap["delete_time"] = u.DeleteTime

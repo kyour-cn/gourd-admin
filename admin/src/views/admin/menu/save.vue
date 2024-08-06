@@ -190,6 +190,9 @@ export default {
             this.form.apiList = data.apiList || []
             this.form.parentId = pid
             this.checkPid = pid
+        },
+        unsetData(){
+            this.form.id = 0
         }
     }
 }

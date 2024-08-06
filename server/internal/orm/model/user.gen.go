@@ -14,18 +14,18 @@ const TableNameUser = "user"
 
 // User 用户表
 type User struct {
-	ID           int32                 `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Nickname     string                `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`             // 昵称
-	Username     string                `gorm:"column:username;not null;comment:用户名(登录账号)" json:"username"`      // 用户名(登录账号)
-	Mobile       string                `gorm:"column:mobile;not null;comment:手机号" json:"mobile"`                // 手机号
-	Avatar       string                `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                 // 头像
-	Password     string                `gorm:"column:password;not null;comment:密码 md5" json:"password"`         // 密码 md5
-	RegisterTime int32                 `gorm:"column:register_time;not null;comment:注册时间" json:"register_time"` // 注册时间
-	LoginTime    int32                 `gorm:"column:login_time;not null;comment:登录时间" json:"login_time"`       // 登录时间
-	Status       int32                 `gorm:"column:status;not null;default:1;comment:状态" json:"status"`       // 状态
-	DeleteTime   soft_delete.DeletedAt `gorm:"column:delete_time;not null;comment:删除时间" json:"delete_time"`     // 删除时间
-	RoleID       int32                 `gorm:"column:role_id;not null;comment:角色ID" json:"role_id"`             // 角色ID
-	Role         Role                  `gorm:"foreignKey:role_id;references:id" json:"role"`
+	ID         int32                 `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	Nickname   string                `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`                           // 昵称
+	Username   string                `gorm:"column:username;not null;comment:用户名(登录账号)" json:"username"`                    // 用户名(登录账号)
+	Mobile     string                `gorm:"column:mobile;not null;comment:手机号" json:"mobile"`                              // 手机号
+	Avatar     string                `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                               // 头像
+	Password   string                `gorm:"column:password;not null;comment:密码 md5" json:"password"`                       // 密码 md5
+	CreateTime uint                  `gorm:"column:create_time;not null;autoCreateTime;comment:创建|注册时间" json:"create_time"` // 创建|注册时间
+	LoginTime  int32                 `gorm:"column:login_time;not null;comment:登录时间" json:"login_time"`                     // 登录时间
+	Status     int32                 `gorm:"column:status;not null;default:1;comment:状态" json:"status"`                     // 状态
+	DeleteTime soft_delete.DeletedAt `gorm:"column:delete_time;not null;comment:删除时间" json:"delete_time"`                   // 删除时间
+	RoleID     int32                 `gorm:"column:role_id;not null;comment:角色ID" json:"role_id"`                           // 角色ID
+	Role       Role                  `gorm:"foreignKey:role_id;references:id" json:"role"`
 }
 
 // MarshalBinary 支持json序列化

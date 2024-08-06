@@ -140,7 +140,7 @@ export default {
                 this.$TOOL.dateFormat(this.getCurrentMonthFirst()),
                 this.$TOOL.dateFormat(new Date()),
             ],
-            apiObj: this.$API.system.system.log.list,
+            apiObj: this.$API.admin.log.list,
             search: {
                 keyword: ""
             }
@@ -154,7 +154,7 @@ export default {
         async echarts_render() {
             const start_time = this.date[0]
             const end_time = this.date[1]
-            let res = await this.$API.system.system.log.logPageInfo.get({start_time, end_time});
+            let res = await this.$API.admin.log.logPageInfo.get({start_time, end_time});
 
             // 填充图表数据
             let map = res.data.map;

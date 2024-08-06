@@ -95,6 +95,12 @@ func (c *UserCtl) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 如果密码不为空，则加密后更新密码
+	if req.Password != "" {
+		hash := md5.Sum([]byte(req.Password))
+		req.Password = hex.EncodeToString(hash[:])
+	}
+
 	ru := repositories.User{
 		Ctx: r.Context(),
 	}

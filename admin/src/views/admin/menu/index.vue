@@ -100,12 +100,14 @@ export default {
             var res = await this.$API.admin.menu.list.get({
                 app_id: this.selectedApp
             });
+            this.$refs.save.unsetData()
+
             this.menuloading = false
             this.menuList = res.data;
         },
         //树点击
         menuClick(data, node) {
-            var pid = node.level === 1 ? undefined : node.parent.data.id;
+            const pid = node.level === 1 ? undefined : node.parent.data.id;
             this.$refs.save.setData(data, pid, this.selectedApp)
             this.$refs.main.$el.scrollTop = 0
         },

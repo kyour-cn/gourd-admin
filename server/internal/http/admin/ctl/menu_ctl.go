@@ -38,26 +38,14 @@ func (c *MenuCtl) List(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", menus)
 }
 
-type MenuMate struct {
-	Title            string `json:"title"`
-	Icon             string `json:"icon"`
-	Active           string `json:"active"`
-	Color            string `json:"color"`
-	Type             string `json:"type"`
-	Fullpage         bool   `json:"fullpage"`
-	Tag              string `json:"tag"`
-	Hidden           bool   `json:"hidden"`
-	HiddenBreadcrumb bool   `json:"hiddenBreadcrumb"`
-}
-
 func (c *MenuCtl) Add(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
-		ParentId  int32    `json:"parentId"`
-		Name      string   `json:"name"`
-		Path      string   `json:"path"`
-		Component string   `json:"component"`
-		Meta      MenuMate `json:"meta"`
-		AppId     int32    `json:"app_id"`
+		ParentId  int32            `json:"parentId"`
+		Name      string           `json:"name"`
+		Path      string           `json:"path"`
+		Component string           `json:"component"`
+		Meta      service.MenuMate `json:"meta"`
+		AppId     int32            `json:"app_id"`
 	}
 	// 获取参数
 	req := Req{}
@@ -96,13 +84,13 @@ func (c *MenuCtl) Add(w http.ResponseWriter, r *http.Request) {
 
 func (c *MenuCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
-		Id        int32    `json:"id"`
-		Name      string   `json:"name"`
-		Path      string   `json:"path"`
-		Component string   `json:"component"`
-		Sort      int32    `json:"sort"`
-		Meta      MenuMate `json:"meta"`
-		AppId     int32    `json:"appId"`
+		Id        int32            `json:"id"`
+		Name      string           `json:"name"`
+		Path      string           `json:"path"`
+		Component string           `json:"component"`
+		Sort      int32            `json:"sort"`
+		Meta      service.MenuMate `json:"meta"`
+		AppId     int32            `json:"appId"`
 		ApiList   []struct {
 			Path string `json:"path"`
 			Tag  string `json:"tag"`

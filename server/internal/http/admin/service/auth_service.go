@@ -33,7 +33,7 @@ func LoginUser(username string, password string) (*model.User, error) {
 			uq.Username,
 			uq.Mobile,
 			uq.Avatar,
-			uq.RegisterTime,
+			uq.CreateTime,
 			uq.Status,
 			uq.RoleID,
 		).
@@ -67,6 +67,17 @@ func GenerateToken(data map[string]any) (string, error) {
 	return token.SignedString([]byte(conf.Secret))
 }
 
+type MenuMate struct {
+	Title            string `json:"title"`
+	Icon             string `json:"icon"`
+	Active           string `json:"active"`
+	Color            string `json:"color"`
+	Type             string `json:"type"`
+	Fullpage         bool   `json:"fullpage"`
+	Tag              string `json:"tag"`
+	Hidden           bool   `json:"hidden"`
+	HiddenBreadcrumb bool   `json:"hiddenBreadcrumb"`
+}
 type menuTree struct {
 	ParentId  int32           `json:"parentId"`
 	Id        int32           `json:"id"`
@@ -74,17 +85,12 @@ type menuTree struct {
 	Path      string          `json:"path"`
 	Component string          `json:"component"`
 	Sort      int32           `json:"sort"`
-	Meta      *menuMeta       `json:"meta"`
+	Meta      *MenuMate       `json:"meta"`
 	AppId     int32           `json:"appId"`
 	Children  []menuTree      `json:"children"`
 	ApiList   []model.MenuAPI `json:"apiList"`
 }
 type menuTreeArr []menuTree
-type menuMeta struct {
-	Title string `json:"title"`
-	Type  string `json:"type"`
-	Icon  string `json:"icon"`
-}
 
 func GetMenu(userInfo *model.User) (any, error) {
 
@@ -159,7 +165,7 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 		if menu.Pid == parentId {
 			children := recursionMenu(menus, menu.ID)
 
-			mate := &menuMeta{}
+			mate := &MenuMate{}
 			if menu.Meta != "" {
 				_ = json.Unmarshal([]byte(menu.Meta), mate)
 			}

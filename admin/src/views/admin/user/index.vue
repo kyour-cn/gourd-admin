@@ -31,9 +31,9 @@
                     <el-table-column label="昵称" prop="nickname" width="150"/>
                     <el-table-column label="手机号" prop="mobile" width="150"/>
                     <el-table-column label="所属角色" prop="role.name" width="200"/>
-                    <el-table-column label="注册时间" prop="register_time" width="170">
+                    <el-table-column label="注册时间" prop="create_time" width="170">
                         <template #default="{row,$index}">
-                            {{ $TOOL.dateFormat(row.register_time * 1000) }}
+                            {{ $TOOL.dateFormat(row.create_time * 1000) }}
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" fixed="right" align="right" width="160">
