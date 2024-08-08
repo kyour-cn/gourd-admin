@@ -19,7 +19,7 @@
 		description: "当前项目版本信息",
 		data() {
 			return {
-				ver: '1.6.6'
+				ver: '1.6.9'
 			}
 		},
 		mounted() {

@@ -29,8 +29,7 @@
 
 import {getCurrentInstance, nextTick, reactive, ref} from "vue";
 
-const instance = getCurrentInstance();
-const properties = instance.appContext.config.globalProperties;
+const proxy = getCurrentInstance().proxy
 
 const emit = defineEmits(["success", "closed", "getNewData"])
 
@@ -72,20 +71,20 @@ const submit = async () => {
         rules: checkIds,
         rules_checked: checked
     }
-    const res = await properties.$API.admin.role.editPermission.post(data);
+    const res = await proxy.$API.admin.role.editPermission.post(data);
     if (res.code === 0) {
         state.isSaveing = false;
         state.visible = false;
-        properties.$message.success("操作成功")
+        proxy.$message.success("操作成功")
         emit('success')
         emit('getNewData')
     } else {
-        await properties.$alert(res.message, "提示", {type: 'error'})
+        await proxy.$alert(res.message, "提示", {type: 'error'})
     }
 }
 
 const getRule = async () => {
-    const res = await properties.$API.admin.menu.list.get({
+    const res = await proxy.$API.admin.menu.list.get({
         app_id: state.row.app_id
     });
     if (res.code === 0) {
@@ -98,7 +97,7 @@ const getRule = async () => {
             })
         })
     } else {
-        await properties.$alert(res.message, "提示", {type: 'error'})
+        await proxy.$alert(res.message, "提示", {type: 'error'})
     }
 }
 

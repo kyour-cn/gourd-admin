@@ -41,11 +41,10 @@ export default {
 	},
 	setup(props, {emit}) {
 
-        const instance = getCurrentInstance();
-        const properties = instance.appContext.config.globalProperties;
+        const proxy = getCurrentInstance().proxy
 
 		const state = reactive({
-			apiObj: properties.$API.admin.role.list,
+			apiObj: proxy.$API.admin.role.list,
 			tableWidth: props.tableWidth? props.tableWidth : 600,
 			props: {
 				label: 'name',
@@ -57,7 +56,7 @@ export default {
 		})
 
 		const getApp =  async () => {
-			const res = await properties.$API.admin.app.list.get({
+			const res = await proxy.$API.admin.app.list.get({
 				pageSize: 50
 			});
 			state.appList = res.data.rows;

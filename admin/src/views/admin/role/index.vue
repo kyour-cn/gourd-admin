@@ -88,7 +88,7 @@
 
 </template>
 
-<script setup>
+<script setup name="role">
 
 import {getCurrentInstance, nextTick, onMounted, reactive, ref} from "vue";
 
@@ -98,8 +98,7 @@ import scSelectFilter from "@/components/scSelectFilter";
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue";
 import ScTable from "@/components/scTable/index.vue";
 
-const instance = getCurrentInstance();
-const properties = instance.appContext.config.globalProperties;
+const proxy = getCurrentInstance().proxy
 
 const permissionDialogRef = ref(null);
 const saveDialogRef = ref(null);
@@ -128,7 +127,7 @@ const state = reactive({
 	}
 })
 
-const apiObj = properties.$API.admin.role.list;
+const apiObj = proxy.$API.admin.role.list;
 
 const dialog = reactive({
 	save: false,
@@ -140,7 +139,7 @@ onMounted(() => {
 })
 
 const getApp = async () => {
-	const res = await properties.$API.admin.app.list.get();
+	const res = await proxy.$API.admin.app.list.get();
 
 	//初始化筛选器
 	const opts = [];
@@ -197,7 +196,7 @@ const tableEdit = (row) => {
 
 //删除
 const tableDel = async (row) => {
-	const res = await properties.$API.admin.role.delete.post({
+	const res = await proxy.$API.admin.role.delete.post({
 		ids: [row.id]
 	});
 	if (res.code === 0) {
@@ -207,7 +206,7 @@ const tableDel = async (row) => {
 
 //批量删除
 const batchDel = async () => {
-	const confirmRes = await properties.$confirm(`确定删除选中的 ${this.selection.length} 项吗？`, '提示', {
+	const confirmRes = await proxy.$confirm(`确定删除选中的 ${this.selection.length} 项吗？`, '提示', {
 		type: 'warning',
 		confirmButtonText: '删除',
 		confirmButtonClass: 'el-button--danger'
@@ -215,12 +214,12 @@ const batchDel = async () => {
 	if (!confirmRes) return false
 
 	const ids = state.selection.map(v => v.id);
-	const res = await properties.$API.admin.role.del.post({ids});
+	const res = await proxy.$API.admin.role.del.post({ids});
 	if (res.code === 0) {
 		table.value.removeKeys(ids)
 		this.$message.success("操作成功")
 	} else {
-		await properties.$alert(res.message, "提示", {type: 'error'})
+		await proxy.$alert(res.message, "提示", {type: 'error'})
 	}
 }
 
