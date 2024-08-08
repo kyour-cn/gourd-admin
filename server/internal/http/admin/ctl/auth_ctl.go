@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/golang-jwt/jwt/v5"
+	"gourd/internal/config"
 	"gourd/internal/http/admin/common"
 	"gourd/internal/http/admin/service"
 	"gourd/internal/orm/model"
@@ -48,6 +49,7 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 	type Resp struct {
 		Token    string      `json:"token"`
 		UserInfo *model.User `json:"userInfo"`
+		Expire   int64       `json:"expire"`
 	}
 
 	req := Req{}
@@ -90,6 +92,10 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	jwtConf, err := config.GetJwtConfig()
+	if err != nil {
+		_ = c.Fail(w, 104, "token配置异常,请联系管理员", err)
+	}
 	// 生成token
 	tokenData := map[string]any{
 		"id":   userData.ID,
@@ -105,6 +111,7 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 	res := Resp{
 		Token:    token,
 		UserInfo: userData,
+		Expire:   jwtConf.Expire,
 	}
 
 	_ = c.Success(w, "", res)

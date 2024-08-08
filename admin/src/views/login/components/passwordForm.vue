@@ -133,19 +133,18 @@ export default {
                 captcha_key: this.captchaData.captKey
 			};
 			//获取token
-			const user = await this.$API.common.auth.token.post(data);
+			const user = await this.$API.common.auth.login.post(data);
 			if (user.code === 0) {
 				this.$TOOL.cookie.set("TOKEN", user.data.token, {
-					expires: this.form.autologin ? 24 * 60 * 60 : 0
+					expires: this.form.autologin ? user.data.expire : 0
 				})
 				this.$TOOL.data.set("USER_INFO", user.data.userInfo)
 			} else {
-                if(user.code === 103) {
-                    this.onVerify()
+                if(user.code === 102) {
+                    this.refreshCaptcha()
                 }
 				this.islogin = false
 				this.$message.warning(user.message)
-				this.refreshCaptcha()
 				return false
 			}
 			//获取菜单

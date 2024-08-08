@@ -9,7 +9,7 @@ export default {
 			return await http.get(this.url);
 		}
 	},
-	token: {
+	login: {
 		url: `${config.API_URL}/admin/auth/login`,
 		name: "登录获取TOKEN",
 		post: async function (data = {}) {

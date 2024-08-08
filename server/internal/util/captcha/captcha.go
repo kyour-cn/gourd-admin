@@ -99,10 +99,14 @@ func VerifySlide(captchaKey string, x int64, y int64) bool {
 		return false
 	}
 
-	captchaByte, err := redis.Get(context.Background(), captchaKey).Bytes()
+	ctx := context.Background()
+	captchaByte, err := redis.Get(ctx, captchaKey).Bytes()
 	if err != nil {
 		return false
 	}
+
+	// 删除缓存
+	redis.Del(ctx, captchaKey)
 
 	var dct *slide.Block
 	if err := json.Unmarshal(captchaByte, &dct); err != nil {
