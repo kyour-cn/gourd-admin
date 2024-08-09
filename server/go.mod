@@ -33,14 +33,14 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/sevlyar/go-daemon v0.1.6 // indirect
-	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/image v0.18.0 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/image v0.19.0 // indirect
 	golang.org/x/mod v0.20.0 // indirect
-	golang.org/x/net v0.27.0 // indirect
+	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.23.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
-	golang.org/x/tools v0.23.0 // indirect
+	golang.org/x/sys v0.24.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
+	golang.org/x/tools v0.24.0 // indirect
 	gorm.io/datatypes v1.2.1 // indirect
 	gorm.io/hints v1.1.2 // indirect
 )

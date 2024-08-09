@@ -2,13 +2,26 @@
     <el-container>
         <el-header>
             <div class="left-panel">
-                <el-button type="primary" icon="el-icon-plus" @click="add"></el-button>
-                <el-button type="danger" plain icon="el-icon-delete" :disabled="selection.length === 0"
-                           @click="batch_del"></el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="add"/>
+                <el-button type="danger" plain icon="el-icon-delete" :disabled="!state.selection.length"
+                           @click="batchDel"/>
+            </div>
+            <div class="right-panel">
+                <div class="right-panel-search">
+                    <el-input v-model="state.search.keyword" placeholder="应用名称" clearable @clear="clearSearch"/>
+                    <el-button type="primary" icon="el-icon-search" @click="upSearch"/>
+                </div>
             </div>
         </el-header>
         <el-main class="nopadding">
-            <sc-table ref="table" :apiObj="list.apiObj" row-key="id" @selection-change="selectionChange" stripe>
+            <sc-table
+                ref="table"
+                :apiObj="apiObj"
+                :params="state.tableParams"
+                row-key="id"
+                @selection-change="selectionChange"
+                stripe
+            >
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column label="名称" prop="name" width="180"></el-table-column>
                 <el-table-column label="应用key" prop="key" width="180"></el-table-column>
@@ -21,13 +34,15 @@
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" align="right" width="300">
                     <template #default="scope">
-                        <el-button plain size="small" @click="table_show(scope.row)">查看</el-button>
-                        <el-button type="primary" plain size="small" @click="table_edit(scope.row)">编辑</el-button>
-                        <el-popconfirm title="确定删除吗？" @confirm="table_del(scope.row, scope.$index)">
-                            <template #reference>
-                                <el-button plain type="danger" size="small">删除</el-button>
-                            </template>
-                        </el-popconfirm>
+                        <el-button-group>
+                            <el-button text plain type="success" size="small" @click="tableShow(scope.row)">查看</el-button>
+                            <el-button text plain type="primary" size="small" @click="tableEdit(scope.row)">编辑</el-button>
+                            <el-popconfirm title="确定删除吗？" @confirm="tableDel(scope.row)">
+                                <template #reference>
+                                    <el-button text plain type="danger" size="small">删除</el-button>
+                                </template>
+                            </el-popconfirm>
+                        </el-button-group>
                     </template>
                 </el-table-column>
             </sc-table>
@@ -36,109 +51,130 @@
 
     <save-dialog
         v-if="dialog.save"
-        ref="saveDialog"
+        ref="saveDialogRef"
         @success="handleSaveSuccess"
         @closed="dialog.save=false"
     />
 
     <el-drawer v-model="dialog.info" :size="800" title="详细" class="drawerBG" direction="rtl" destroy-on-close>
-        <info ref="infoDialog"></info>
+        <InfoDialog ref="infoDialog"/>
     </el-drawer>
 
 </template>
 
-<script>
-import saveDialog from './save'
-import info from './info'
-import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue";
-import ScTable from "@/components/scTable/index.vue";
+<script setup>
 
-export default {
+import {getCurrentInstance, nextTick, reactive, ref} from "vue"
+
+import SaveDialog from './save'
+import InfoDialog from './info'
+import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
+import ScTable from "@/components/scTable/index.vue"
+import appApi from "@/api/admin/app";
+
+defineOptions({
     name: 'app',
-    components: {
-        ScTable,
-        ScStatusIndicator,
-        saveDialog,
-        info
-    },
-    data() {
-        return {
-            dialog: {
-                save: false,
-                info: false
-            },
-            list: {
-                apiObj: this.$API.admin.app.list
-            },
-            selection: []
-        }
-    },
-    methods: {
-        //窗口新增
-        add() {
-            this.dialog.save = true
-            this.$nextTick(() => {
-                this.$refs.saveDialog.open()
-            })
-        },
-        //窗口编辑
-        table_edit(row) {
-            this.dialog.save = true
-            this.$nextTick(() => {
-                this.$refs.saveDialog.open('edit').setData(row)
-            })
-        },
-        //查看
-        table_show(row) {
-            this.dialog.info = true
-            this.$nextTick(() => {
-                this.$refs.infoDialog.setData(row)
-            })
-        },
-        //删除明细
-        async table_del(row, index) {
-            var reqData = {ids: row.id}
-            var res = await this.$API.admin.app.delete.post(reqData);
-            if (res.code === 0) {
-                this.$refs.table.removeIndex(index)
-                this.$message.success("删除成功")
-            } else {
-                this.$alert(res.message, "提示", {type: 'error'})
-            }
-        },
-        //批量删除
-        async batch_del() {
-            var confirmRes = await this.$confirm(`确定删除选中的 ${this.selection.length} 项吗？`, '提示', {
-                type: 'warning',
-                confirmButtonText: '删除',
-                confirmButtonClass: 'el-button--danger'
-            }).catch(() => {
-            })
+})
 
-            if (!confirmRes) {
-                return false
-            }
+const {proxy} = getCurrentInstance()
 
-            var ids = this.selection.map(v => v.id)
-            var res = await this.$API.admin.app.delete.post({ids});
-            if (res.code === 0) {
-                this.$refs.table.removeKeys(ids)
-                this.$message.success("操作成功")
-            } else {
-                this.$alert(res.message, "提示", {type: 'error'})
-            }
-        },
-        //表格选择后回调事件
-        selectionChange(selection) {
-            this.selection = selection
-        },
-        //本地更新数据
-        handleSaveSuccess(data, mode) {
-            this.$refs.table.refresh()
-        }
+const saveDialogRef = ref(null)
+const infoDialogRef = ref(null)
+const table = ref(null)
+
+const state = reactive({
+    selection: [],
+    search: {
+        keyword: null
+    },
+    tableParams: {
+        keyword: null
+    }
+})
+
+const apiObj = appApi.list
+
+const dialog = reactive({
+    save: false,
+    info: false
+})
+
+const selectionChange = (val) => {
+    state.selection = val
+}
+
+const tableShow = (row) => {
+    dialog.info = true
+    nextTick(() => {
+        infoDialogRef.value.setData(row)
+    })
+}
+
+//添加
+const add = () => {
+    dialog.save = true
+    nextTick(() => {
+        saveDialogRef.value.open()
+    })
+}
+
+const tableEdit = (row) => {
+    dialog.save = true
+    nextTick(() => {
+        saveDialogRef.value.open('edit').setData(row)
+    })
+}
+
+//删除
+const tableDel = async (row) => {
+    const res = await appApi.delete.post({
+        ids: [row.id]
+    })
+    if (res.code === 0) {
+        table.value.upData()
     }
 }
-</script>
 
-<style>
-</style>
+//批量删除
+const batchDel = async () => {
+    const confirmRes = await proxy.$confirm(`确定删除选中的 ${state.selection.length} 项吗？`, '提示', {
+        type: 'warning',
+        confirmButtonText: '删除',
+        confirmButtonClass: 'el-button--danger'
+    })
+    if (!confirmRes) return false
+
+    const ids = state.selection.map(v => v.id)
+    const res = await appApi.delete.post({ids})
+    if (res.code === 0) {
+        table.value.removeKeys(ids)
+        proxy.$message.success("操作成功")
+    } else {
+        await proxy.$alert(res.message, "提示", {type: 'error'})
+    }
+}
+
+//搜索
+const upSearch = () => {
+    table.value.upData({
+        keyword: state.search.keyword
+    }, 1)
+}
+
+// 删除搜索
+const clearSearch = () => {
+    table.value.reload({
+        keyword: ''
+    }, 1)
+}
+
+//本地更新数据
+const handleSaveSuccess = (data, mode) => {
+    if (mode === 'add') {
+        table.value.refresh()
+    } else if (mode === 'edit') {
+        table.value.refresh()
+    }
+}
+
+</script>

@@ -1,4 +1,4 @@
-package init
+package initialize
 
 import (
 	"errors"
@@ -19,8 +19,8 @@ func (w dbLogWriter) Printf(format string, args ...any) {
 	slog.Warn(fmt.Sprintf(format, args...))
 }
 
-// DatabaseInit 初始化数据库连接
-func DatabaseInit() error {
+// InitDatabase 初始化数据库连接
+func InitDatabase() error {
 
 	// 连接数据库
 	dbConf, err := config.GetDBConfig("mysql")

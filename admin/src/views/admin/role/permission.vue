@@ -29,7 +29,7 @@
 
 import {getCurrentInstance, nextTick, reactive, ref} from "vue";
 
-const proxy = getCurrentInstance().proxy
+const {proxy} = getCurrentInstance()
 
 const emit = defineEmits(["success", "closed", "getNewData"])
 

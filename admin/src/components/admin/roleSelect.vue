@@ -41,7 +41,7 @@ export default {
 	},
 	setup(props, {emit}) {
 
-        const proxy = getCurrentInstance().proxy
+        const {proxy} = getCurrentInstance()
 
 		const state = reactive({
 			apiObj: proxy.$API.admin.role.list,

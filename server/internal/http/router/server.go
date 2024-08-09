@@ -1,34 +1,54 @@
 package router
 
 import (
-	"fmt"
+	"github.com/go-chi/chi/v5"
 	"gourd/internal/config"
-	"log/slog"
+	adminRoute "gourd/internal/http/admin/route"
 	"net/http"
+	"os"
 )
 
-// StartServer 启动http服务
-func StartServer() {
+var router *chi.Mux
 
-	// 获取http配置文件
-	conf, _ := config.GetHttpConfig()
-
-	// 是否开启http服务
-	if !conf.Enable {
-		return
+func GetRouter() *chi.Mux {
+	if router != nil {
+		return router
 	}
+	router = chi.NewRouter()
+	return router
+}
 
-	addr := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
+// Register 注册路由
+func Register() {
+	r := GetRouter()
 
-	slog.Info("Started http server. " + addr)
+	// 主页
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("hello gourd!"))
+	})
 
-	go func() {
-		// 启动http服务
-		r := GetRouter()
-		err := http.ListenAndServe(addr, r)
-		if err != nil {
-			panic(err)
+	// 404响应
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+
+		// 若路由未定义，检测是否为静态资源
+		conf, err := config.GetHttpConfig()
+		if err == nil && conf.Static != "" {
+			filepath := conf.Static + r.URL.Path
+			//判断文件是否存在
+			_, err := os.Stat(filepath)
+			if err == nil {
+				http.ServeFile(w, r, filepath)
+				return
+			}
 		}
-	}()
+
+		// 404响应内容
+		w.WriteHeader(404)
+		_, _ = w.Write([]byte("404 not found."))
+	})
+
+	// 注册api相关路由
+	r.Mount("/admin", chi.NewRouter().
+		Group(adminRoute.RegisterRoute))
 
 }

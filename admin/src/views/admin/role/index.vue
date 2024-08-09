@@ -56,12 +56,12 @@
 							<el-button text type="primary" size="small" @click="tableEdit(scope.row)">
 								编辑
 							</el-button>
-							<el-button text type="primary" size="small" @click="openPermission(scope.row)">
-								权限设置
+							<el-button text type="warning" size="small" @click="openPermission(scope.row)">
+								权限
 							</el-button>
 							<el-popconfirm title="确定删除吗？" @confirm="tableDel(scope.row)">
 								<template #reference>
-									<el-button text type="primary" size="small">删除</el-button>
+									<el-button text type="danger" size="small">删除</el-button>
 								</template>
 							</el-popconfirm>
 						</el-button-group>
@@ -90,23 +90,24 @@
 
 <script setup>
 
-import {getCurrentInstance, nextTick, onMounted, reactive, ref} from "vue";
+import {getCurrentInstance, nextTick, onMounted, reactive, ref} from "vue"
 
 import SaveDialog from './save'
 import PermissionDialog from './permission.vue'
-import scSelectFilter from "@/components/scSelectFilter";
-import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue";
-import ScTable from "@/components/scTable/index.vue";
+import scSelectFilter from "@/components/scSelectFilter"
+import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
+import ScTable from "@/components/scTable/index.vue"
+import roleApi from "@/api/admin/role";
 
 defineOptions({
     name: 'role',
 })
 
-const proxy = getCurrentInstance().proxy
+const {proxy} = getCurrentInstance()
 
-const permissionDialogRef = ref(null);
-const saveDialogRef = ref(null);
-const table = ref(null);
+const permissionDialogRef = ref(null)
+const saveDialogRef = ref(null)
+const table = ref(null)
 
 const state = reactive({
 	selection: [],
@@ -131,7 +132,7 @@ const state = reactive({
 	}
 })
 
-const apiObj = proxy.$API.admin.role.list;
+const apiObj = roleApi.list
 
 const dialog = reactive({
 	save: false,
@@ -143,10 +144,10 @@ onMounted(() => {
 })
 
 const getApp = async () => {
-	const res = await proxy.$API.admin.app.list.get();
+	const res = await proxy.$API.admin.app.list.get()
 
 	//初始化筛选器
-	const opts = [];
+	const opts = []
 	res.data.rows.forEach(item => {
 		opts.push({
 			label: item.name,
@@ -155,16 +156,16 @@ const getApp = async () => {
 	})
 
 	//读取缓存
-	const appId = sessionStorage.getItem("sys_role_app_id");
+	const appId = sessionStorage.getItem("sys_role_app_id")
 	if (appId) {
 		state.selectedApp = opts.find(item => item.value === Number(appId))
 	} else {
-		state.selectedApp = opts[0];
+		state.selectedApp = opts[0]
 	}
 
-	state.filterData[0].options = opts;
-	state.tableParams.app_id = state.selectedApp.value;
-	state.appList = res.data.rows;
+	state.filterData[0].options = opts
+	state.tableParams.app_id = state.selectedApp.value
+	state.appList = res.data.rows
 }
 
 const refreshTable = () => {
@@ -172,56 +173,57 @@ const refreshTable = () => {
 }
 
 const filterChange = (data) => {
-	state.selectedApp = data;
+	state.selectedApp = data
 	table.value.upData({
 		app_id: state.selectedApp.value
 	}, 1)
-    sessionStorage.setItem("sys_role_app_id", state.selectedApp.value);
+    sessionStorage.setItem("sys_role_app_id", state.selectedApp.value)
 }
 
 const selectionChange = (val) => {
-	state.selection = val;
+	state.selection = val
 }
 
 //添加
 const add = () => {
 	dialog.save = true
 	nextTick(() => {
-		saveDialogRef.value.open().setData({app_id: state.selectedApp.value});
+		saveDialogRef.value.open().setData({app_id: state.selectedApp.value})
 	})
 }
 
 const tableEdit = (row) => {
-	dialog.save = true;
+	dialog.save = true
 	nextTick(() => {
-		saveDialogRef.value.open('edit').setData(row)
+        saveDialogRef.value.open('edit')
+        saveDialogRef.value.setData(row)
 	})
 }
 
 //删除
 const tableDel = async (row) => {
-	const res = await proxy.$API.admin.role.delete.post({
+	const res = await roleApi.delete.post({
 		ids: [row.id]
-	});
+	})
 	if (res.code === 0) {
-		table.value.upData();
+		table.value.upData()
 	}
 }
 
 //批量删除
 const batchDel = async () => {
-	const confirmRes = await proxy.$confirm(`确定删除选中的 ${this.selection.length} 项吗？`, '提示', {
+	const confirmRes = await proxy.$confirm(`确定删除选中的 ${state.selection.length} 项吗？`, '提示', {
 		type: 'warning',
 		confirmButtonText: '删除',
 		confirmButtonClass: 'el-button--danger'
-	});
+	})
 	if (!confirmRes) return false
 
-	const ids = state.selection.map(v => v.id);
-	const res = await proxy.$API.admin.role.del.post({ids});
+	const ids = state.selection.map(v => v.id)
+	const res = await roleApi.del.post({ids})
 	if (res.code === 0) {
 		table.value.removeKeys(ids)
-		this.$message.success("操作成功")
+		state.$message.success("操作成功")
 	} else {
 		await proxy.$alert(res.message, "提示", {type: 'error'})
 	}
@@ -229,7 +231,7 @@ const batchDel = async () => {
 
 //权限设置
 const openPermission = (row) => {
-	dialog.permission = true;
+	dialog.permission = true
 	nextTick(() => {
 		permissionDialogRef.value.open(row)
 	})

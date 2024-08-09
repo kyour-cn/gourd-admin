@@ -110,9 +110,6 @@ export default {
 			}
 		}
 	},
-	mounted() {
-
-	},
 	methods: {
 		//显示
 		open(mode = 'add') {
