@@ -4,7 +4,6 @@
 		:apiObj="state.apiObj"
 		:table-width="state.tableWidth"
 		clearable
-        multiple
 		collapse-tags
 		:placeholder="placeholder"
 		collapse-tags-tooltip
@@ -51,7 +50,7 @@ export default {
 				label: 'name',
 				value: 'id',
 			},
-			value: [],
+			value: '',
 			appList: [],
 			selectedApp: 0
 		})
