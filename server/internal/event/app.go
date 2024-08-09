@@ -6,7 +6,9 @@ import (
 	"gourd/internal/cmd"
 	"gourd/internal/cron"
 	"gourd/internal/http/router"
+	"gourd/internal/init"
 	"gourd/internal/util"
+	"gourd/internal/util/redisutil"
 	"log/slog"
 )
 
@@ -14,7 +16,7 @@ import (
 func Register(ctx context.Context) {
 
 	// Boot事件(应用) -初始化应用时执行
-	event.Listen("app.boot", func(context.Context) {
+	event.Listen("app.boot", func(ctx context.Context) {
 		slog.Debug("boot event.")
 
 		err := util.InitLog()
@@ -22,7 +24,12 @@ func Register(ctx context.Context) {
 			panic(err)
 		}
 
-		err = util.InitDatabase()
+		err = init.DatabaseInit()
+		if err != nil {
+			panic(err)
+		}
+
+		_, err = redisutil.InitRedis(ctx)
 		if err != nil {
 			panic(err)
 		}

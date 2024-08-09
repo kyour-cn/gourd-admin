@@ -1,16 +1,14 @@
-package util
+package init
 
 import (
 	"errors"
 	"fmt"
-	"github.com/go-redis/redis/v8"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gourd/internal/config"
 	"gourd/internal/orm/query"
 	"log/slog"
-	"strconv"
 	"time"
 )
 
@@ -21,8 +19,8 @@ func (w dbLogWriter) Printf(format string, args ...any) {
 	slog.Warn(fmt.Sprintf(format, args...))
 }
 
-// InitDatabase 初始化数据库连接
-func InitDatabase() error {
+// DatabaseInit 初始化数据库连接
+func DatabaseInit() error {
 
 	// 连接数据库
 	dbConf, err := config.GetDBConfig("mysql")
@@ -53,30 +51,4 @@ func InitDatabase() error {
 	query.SetDefault(mysqlDb)
 
 	return nil
-}
-
-var redisConn *redis.Client
-
-// GetRedis 初始化redis
-func GetRedis() (client *redis.Client, err error) {
-	if redisConn != nil {
-		return redisConn, nil
-	}
-
-	dbConf, err := config.GetDBConfig("redis")
-	if err != nil {
-		return nil, errors.New("redis config is nil")
-	}
-	db, err := strconv.Atoi(dbConf.Database)
-	if err != nil {
-		return nil, errors.New("redis config database error")
-	}
-
-	client = redis.NewClient(&redis.Options{
-		Addr:     dbConf.Host + ":" + strconv.Itoa(dbConf.Port),
-		Password: dbConf.Pass,
-		DB:       db,
-	})
-	redisConn = client
-	return client, nil
 }

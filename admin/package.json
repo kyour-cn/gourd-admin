@@ -26,7 +26,6 @@
 		"vue-router": "^4.1.6",
 		"vuedraggable": "^4.1.0",
 		"vuex": "^4.1.0",
-		"vite-plugin-vue-setup-extend-plus": "^0.1.0",
 		"vue3-clipboard": "^1.0.0",
 		"go-captcha-vue": "^2.0.0"
 	},

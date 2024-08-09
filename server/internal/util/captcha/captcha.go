@@ -8,7 +8,7 @@ import (
 	"github.com/wenlng/go-captcha-assets/resources/images"
 	"github.com/wenlng/go-captcha-assets/resources/tiles"
 	"github.com/wenlng/go-captcha/v2/slide"
-	"gourd/internal/util"
+	"gourd/internal/util/redisutil"
 	"log"
 	"time"
 )
@@ -71,7 +71,7 @@ func GenerateSlide() (any, error) {
 	key := "captcha:" + helper.StringToMD5(string(dotsByte))
 
 	// 缓存
-	redis, err := util.GetRedis()
+	redis, err := redisutil.GetRedis(context.Background())
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func GenerateSlide() (any, error) {
 
 // VerifySlide 验证滑动验证码
 func VerifySlide(captchaKey string, x int64, y int64) bool {
-	redis, err := util.GetRedis()
+	redis, err := redisutil.GetRedis(context.Background())
 	if err != nil {
 		return false
 	}

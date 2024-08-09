@@ -88,7 +88,7 @@
 
 </template>
 
-<script setup name="role">
+<script setup>
 
 import {getCurrentInstance, nextTick, onMounted, reactive, ref} from "vue";
 
@@ -97,6 +97,10 @@ import PermissionDialog from './permission.vue'
 import scSelectFilter from "@/components/scSelectFilter";
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue";
 import ScTable from "@/components/scTable/index.vue";
+
+defineOptions({
+    name: 'role',
+})
 
 const proxy = getCurrentInstance().proxy
 
