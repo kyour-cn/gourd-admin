@@ -26,6 +26,9 @@
 				</div>
 			</div>
 		</template>
+        <template #label="{ label, value }">
+            {{labelView}}
+        </template>
 	</el-select>
 </template>
 
@@ -65,11 +68,9 @@
 					pageSize: config.request.pageSize,
 					keyword: config.request.keyword
 				},
-				formData: {}
+				formData: {},
+                labelView: ''
 			}
-		},
-		computed: {
-
 		},
 		watch: {
 			modelValue:{
@@ -141,18 +142,19 @@
 			autoCurrentLabel(){
 				this.$nextTick(() => {
 					if(this.multiple){
+                        //TODO: 多选还存在异常
 						this.$refs.select.selected.forEach(item => {
 							item.currentLabel = item.value[this.defaultProps.label]
 						})
 					}else{
-						this.$refs.select.selectedLabel = this.defaultValue[this.defaultProps.label]
+                        // this.$refs.select.selectedLabel = this.defaultValue[this.defaultProps.label]
+                        this.labelView = this.defaultValue[this.defaultProps.label]
 					}
 				})
 			},
 			//表格勾选事件
 			select(rows, row){
-				var isSelect = rows.length && rows.indexOf(row) !== -1
-				if(isSelect){
+                if(rows.length && rows.indexOf(row) !== -1){
 					this.defaultValue.push(row)
 				}else{
 					this.defaultValue.splice(this.defaultValue.findIndex(item => item[this.defaultProps.value] == row[this.defaultProps.value]), 1)

@@ -4,6 +4,7 @@
 		:apiObj="state.apiObj"
 		:table-width="state.tableWidth"
 		clearable
+        multiple
 		collapse-tags
 		:placeholder="placeholder"
 		collapse-tags-tooltip
