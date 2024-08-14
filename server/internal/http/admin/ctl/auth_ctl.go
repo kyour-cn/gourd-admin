@@ -20,7 +20,7 @@ type AuthCtl struct {
 }
 
 // Captcha 获取验证码
-func (c *AuthCtl) Captcha(w http.ResponseWriter, r *http.Request) {
+func (c *AuthCtl) Captcha(w http.ResponseWriter, _ *http.Request) {
 
 	data, err := captcha.GenerateSlide()
 	if err != nil {
@@ -70,9 +70,9 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		req.Password = hex.EncodeToString(hash[:])
 	}
 
-	userData, err := service.LoginUser(req.Username, req.Password)
+	userData, err := service.LoginUser(r.Context(), req.Username, req.Password)
 	if err != nil {
-		_ = c.Fail(w, 103, "账号或密码错误", err)
+		_ = c.Fail(w, 103, "登录失败："+err.Error(), "")
 		return
 	}
 	if userData.Status != 1 {

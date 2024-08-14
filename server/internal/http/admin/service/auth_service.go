@@ -1,22 +1,37 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gen"
 	"gourd/internal/config"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
 	"gourd/internal/repositories"
+	"gourd/internal/util/redisutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func LoginUser(username string, password string) (*model.User, error) {
+func LoginUser(ctx context.Context, username string, password string) (*model.User, error) {
 
-	// TODO: 登录频率限制锁
+	rdb, err := redisutil.GetRedis(ctx)
+	if err != nil {
+		return nil, errors.New("redis连接失败")
+	}
+
+	// 登录频率限制锁 10秒
+	key := "login_lock:" + username
+	val, _ := rdb.Get(ctx, key).Result()
+	failures, _ := strconv.Atoi(val)
+	// 10秒登录失败次数超过3次，禁止登录
+	if failures > 3 {
+		return nil, errors.New("登录失败次数过多，请稍后再试")
+	}
 
 	ru := repositories.User{}
 	uq := query.User
@@ -39,8 +54,15 @@ func LoginUser(username string, password string) (*model.User, error) {
 		).
 		First()
 	if err != nil {
-		return nil, err
+
+		// 登录失败次数+1
+		rdb.Incr(ctx, key)
+		rdb.Expire(ctx, key, 10*time.Second)
+
+		return nil, errors.New("用户名或密码错误")
 	}
+
+	rdb.Del(ctx, key)
 
 	return userModel, nil
 }
