@@ -1,13 +1,11 @@
 import {defineConfig} from 'vite'
-import vueSetupExtend from 'vite-plugin-vue-setup-extend-plus'
 import path from 'path'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
-        vue(),
-        vueSetupExtend()
+        vue()
     ],
     hmr: true,
     resolve: {
@@ -25,7 +23,7 @@ export default defineConfig({
     server: {
         port: 2800,
         host: true,
-        open: true,
+        // open: true,
         // proxy: {
         //     // https://cn.vitejs.dev/config/#server-proxy
         //     '/api': {
