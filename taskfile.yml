@@ -1,0 +1,37 @@
+version: '3'
+
+tasks:
+  build-windows:
+    desc: Build for Windows
+    dir: server
+    cmds:
+      - cmd /c "if exist ..\dist (rd /s /q ..\dist)"
+      - go build -o ../dist/app.exe ./cmd/app/main.go
+      - xcopy "configs" "..\dist\configs" /E /Y /I
+      - xcopy "web" "..\dist\web" /E /Y /I
+
+  build-linux:
+    desc: Build for Linux
+    dir: server
+    cmds:
+      - rm -rf ../dist
+      - go build -o ../dist/app ./cmd/app/main.go
+      - cp -r configs ../dist/configs
+      - cp -r web ../dist/web
+
+  build:
+    desc: Build for the current OS
+    cmds:
+      - echo 'Building app...'
+      - |
+        {{if eq OS "linux"}}
+          echo "run task: build-linux"
+          task build-linux
+        {{else if eq OS "windows"}}
+          echo "run task: build-windows"
+          task build-windows
+        {{else}}
+          echo "Unsupported OS: {{OS}}"
+        {{end}}
+      - echo 'Done!'
+    silent: true
