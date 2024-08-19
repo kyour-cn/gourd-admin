@@ -10,7 +10,7 @@ import (
 
 const TableNameMenuAPI = "menu_api"
 
-// MenuAPI mapped from table <menu_api>
+// MenuAPI 菜单权限接口
 type MenuAPI struct {
 	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	AppID  int32  `gorm:"column:app_id;not null;comment:应用ID" json:"app_id"`   // 应用ID

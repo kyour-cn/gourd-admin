@@ -38,6 +38,7 @@ func newMenuAPI(db *gorm.DB, opts ...gen.DOOption) menuAPI {
 	return _menuAPI
 }
 
+// menuAPI 菜单权限接口
 type menuAPI struct {
 	menuAPIDo
 
