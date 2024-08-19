@@ -9,7 +9,6 @@ import (
 	"gourd/internal/config"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
-	"gourd/internal/repositories"
 	"gourd/internal/util/redisutil"
 	"net/http"
 	"strconv"
@@ -33,11 +32,10 @@ func LoginUser(ctx context.Context, username string, password string) (*model.Us
 		return nil, errors.New("登录失败次数过多，请稍后再试")
 	}
 
-	ru := repositories.User{}
 	uq := query.User
 
 	// 查询用户
-	userModel, err := ru.Query().
+	userModel, err := uq.
 		Where(
 			uq.Username.Eq(username),
 			uq.Password.Eq(password),
@@ -116,11 +114,8 @@ type menuTreeArr []menuTree
 
 func GetMenu(userInfo *model.User) (any, error) {
 
-	rr := repositories.Role{}
-	rm := repositories.Menu{}
-
 	// 查询角色
-	roleInfo, err := rr.Query().
+	roleInfo, err := query.Role.
 		Where(
 			query.Role.ID.Eq(userInfo.RoleID),
 		).
@@ -146,7 +141,7 @@ func GetMenu(userInfo *model.User) (any, error) {
 		conditions = append(conditions, qm.ID.In(ids...))
 	}
 
-	menu, err := rm.Query().
+	menu, err := query.Menu.
 		Preload(query.Menu.ApiList).
 		Where(conditions...).
 		Find()
@@ -162,14 +157,13 @@ func GetMenu(userInfo *model.User) (any, error) {
 // GetMenuFormApp 获取指定应用的菜单
 func GetMenuFormApp(appId int32) (any, error) {
 
-	rm := repositories.Menu{}
 	qm := query.Menu
 	conditions := []gen.Condition{
 		qm.Status.Eq(1),
 		qm.AppID.Eq(appId),
 	}
 
-	menu, err := rm.Query().
+	menu, err := query.Menu.
 		Preload(query.Menu.ApiList).
 		Where(conditions...).
 		Find()
@@ -212,9 +206,6 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 
 // CheckJwtPermission 检查Token权限
 func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
-	ctx := r.Context()
-	rmApi := repositories.MenuApi{Ctx: ctx}
-	ro := repositories.Role{Ctx: ctx}
 
 	// 取出角色ID和应用ID
 	roleId, ok1 := jwtData["role"].(float64)
@@ -224,7 +215,7 @@ func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 	}
 
 	url := r.URL.Path
-	apis, err := rmApi.Query().
+	apis, err := query.MenuAPI.
 		Where(
 			query.MenuAPI.Path.Eq(url),
 			query.MenuAPI.AppID.Eq(int32(appId)),
@@ -237,7 +228,7 @@ func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 	}
 
 	// 获取用户角色
-	role, err := ro.Query().
+	role, err := query.Role.
 		Where(
 			query.Role.ID.Eq(int32(roleId)),
 			query.Role.AppID.Eq(int32(appId)),

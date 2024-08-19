@@ -6,7 +6,6 @@ import (
 	"gourd/internal/http/admin/common"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
-	"gourd/internal/repositories"
 	"net/http"
 	"strconv"
 )
@@ -18,37 +17,28 @@ type RoleCtl struct {
 
 func (c *RoleCtl) List(w http.ResponseWriter, r *http.Request) {
 
-	type Req struct {
-		Page     int `json:"page"`
-		PageSize int `json:"page_size"`
-		AppId    int `json:"app_id"`
-	}
 	type Res struct {
 		Rows  []*model.Role `json:"rows"`
 		Total int64         `json:"total"`
 	}
 
-	// 获取参数
-	req := Req{}
-	req.Page, _ = strconv.Atoi(r.URL.Query().Get("page"))
-	req.PageSize, _ = strconv.Atoi(r.URL.Query().Get("page_size"))
-	req.AppId, _ = strconv.Atoi(r.URL.Query().Get("app_id"))
+	// 分页参数
+	page, pageSize := c.PageParam(r, 1, 10)
 
-	ra := repositories.Role{
-		Ctx: r.Context(),
-	}
+	// 获取参数
+	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
 
 	var conditions []gen.Condition
-	if req.AppId > 0 {
-		conditions = append(conditions, query.Role.AppID.Eq(int32(req.AppId)))
+	if appId > 0 {
+		conditions = append(conditions, query.Role.AppID.Eq(int32(appId)))
 	}
 
 	// 查询列表
-	list, count, err := ra.Query().
+	list, count, err := query.Role.WithContext(r.Context()).
 		Preload(query.Role.App).
 		Where(conditions...).
 		Order(query.Role.AppID.Asc(), query.Role.Sort.Asc()).
-		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
+		FindByPage((page-1)*pageSize, pageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
 		return
@@ -70,11 +60,7 @@ func (c *RoleCtl) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rm := repositories.Role{
-		Ctx: r.Context(),
-	}
-
-	err = rm.Create(req)
+	err = query.Role.WithContext(r.Context()).Create(req)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
@@ -91,9 +77,6 @@ func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rm := repositories.Role{
-		Ctx: r.Context(),
-	}
 	qm := query.Role
 
 	var fields []field.Expr
@@ -113,7 +96,7 @@ func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 
-	_, err = rm.Query().
+	_, err = query.Role.WithContext(r.Context()).
 		Where(query.Role.ID.Eq(req.ID)).
 		Select(fields...).
 		Updates(req)
@@ -129,10 +112,6 @@ func (c *RoleCtl) Delete(w http.ResponseWriter, r *http.Request) {
 		Ids []int32 `json:"ids"`
 	}
 
-	rm := repositories.Role{
-		Ctx: r.Context(),
-	}
-
 	req := Req{}
 	err := c.JsonReqUnmarshal(r, &req)
 	if err != nil {
@@ -140,7 +119,9 @@ func (c *RoleCtl) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = rm.Query().Where(query.Role.ID.In(req.Ids...)).Delete()
+	_, err = query.Role.WithContext(r.Context()).
+		Where(query.Role.ID.In(req.Ids...)).
+		Delete()
 	if err != nil {
 		_ = c.Fail(w, 1, "删除失败", err.Error())
 		return

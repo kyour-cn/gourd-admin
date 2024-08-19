@@ -9,7 +9,6 @@ import (
 	"gourd/internal/http/admin/service"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
-	"gourd/internal/repositories"
 	"gourd/internal/util/captcha"
 	"net/http"
 )
@@ -80,8 +79,7 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rr := repositories.Role{}
-	roleData, err := rr.Query().
+	roleData, err := query.Role.WithContext(r.Context()).
 		Where(
 			query.Role.ID.Eq(userData.RoleID),
 			query.Role.Status.Eq(1),
@@ -123,13 +121,9 @@ func (c *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
 
 	userId := int32(token["id"].(float64))
 
-	ru := repositories.User{
-		Ctx: r.Context(),
-	}
-
 	uq := query.User
 
-	userInfo, err := ru.Query().
+	userInfo, err := uq.WithContext(r.Context()).
 		Where(uq.ID.Eq(userId)).
 		First()
 	if err != nil {

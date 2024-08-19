@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
 	"net/http"
+	"strconv"
 )
 
 // BaseCtl 基础控制器
@@ -53,4 +54,17 @@ func (*BaseCtl) JsonReqUnmarshal(r *http.Request, req any) error {
 
 	// 校验参数
 	return validator.New().Struct(req)
+}
+
+// PageParam 获取分页参数
+func (*BaseCtl) PageParam(r *http.Request, defaultPage int, defaultSize int) (int, int) {
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	if page == 0 {
+		page = defaultPage
+	}
+	pageSize, _ := strconv.Atoi(r.URL.Query().Get("page_size"))
+	if pageSize == 0 {
+		pageSize = defaultSize
+	}
+	return page, pageSize
 }

@@ -8,9 +8,7 @@ import (
 	"gourd/internal/http/admin/common"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
-	"gourd/internal/repositories"
 	"net/http"
-	"strconv"
 )
 
 // UserCtl 用户控制器
@@ -20,52 +18,35 @@ type UserCtl struct {
 
 func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
-		Page     int    `json:"page"`
-		PageSize int    `json:"page_size"`
-		Keyword  string `json:"keyword"`
+		Keyword string `json:"keyword"`
 	}
 	type Res struct {
 		Rows  []*model.User `json:"rows"`
 		Total int64         `json:"total"`
 	}
 
-	// 获取参数
-	req := Req{
-		Page:     1,
-		PageSize: 10,
-	}
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	if page != 0 {
-		req.Page = page
-	}
-	pageSize, _ := strconv.Atoi(r.URL.Query().Get("page_size"))
-	if pageSize != 0 {
-		req.PageSize = pageSize
-	}
+	// 分页参数
+	page, pageSize := c.PageParam(r, 1, 10)
 
 	var conditions []gen.Condition
 
 	qu := query.User
 
-	req.Keyword = r.URL.Query().Get("keyword")
-	if req.Keyword != "" {
+	keyword := r.URL.Query().Get("keyword")
+	if keyword != "" {
 		conditions = append(conditions, qu.Where(
 			qu.Where(
-				qu.Nickname.Like("%"+req.Keyword+"%"),
+				qu.Nickname.Like("%"+keyword+"%"),
 			).Or(
-				qu.Nickname.Like("%"+req.Keyword+"%"),
+				qu.Nickname.Like("%"+keyword+"%"),
 			).Or(
-				qu.Mobile.Like("%"+req.Keyword+"%"),
+				qu.Mobile.Like("%"+keyword+"%"),
 			),
 		))
 	}
 
-	ru := repositories.User{
-		Ctx: r.Context(),
-	}
-
 	// 查询列表
-	list, count, err := ru.Query().
+	list, count, err := query.User.WithContext(r.Context()).
 		Preload(
 			query.User.Role.Select(
 				query.Role.ID,
@@ -73,7 +54,7 @@ func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
 			),
 		).
 		Where(conditions...).
-		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
+		FindByPage((page-1)*pageSize, pageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
 		return
@@ -101,11 +82,7 @@ func (c *UserCtl) Add(w http.ResponseWriter, r *http.Request) {
 		req.Password = hex.EncodeToString(hash[:])
 	}
 
-	ru := repositories.User{
-		Ctx: r.Context(),
-	}
-
-	err = ru.Create(req)
+	err = query.User.WithContext(r.Context()).Create(req)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
@@ -122,9 +99,6 @@ func (c *UserCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ru := repositories.User{
-		Ctx: r.Context(),
-	}
 	qu := query.User
 
 	fields := []field.Expr{
@@ -143,7 +117,7 @@ func (c *UserCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		fields = append(fields, qu.Password)
 	}
 
-	_, err = ru.Query().
+	_, err = query.User.WithContext(r.Context()).
 		Where(query.User.ID.Eq(req.ID)).
 		Select(fields...).
 		Updates(req)
@@ -160,10 +134,6 @@ func (c *UserCtl) Delete(w http.ResponseWriter, r *http.Request) {
 		Ids []int32 `json:"ids"`
 	}
 
-	rm := repositories.User{
-		Ctx: r.Context(),
-	}
-
 	req := Req{}
 	err := c.JsonReqUnmarshal(r, &req)
 	if err != nil {
@@ -171,7 +141,9 @@ func (c *UserCtl) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = rm.Query().Where(query.User.ID.In(req.Ids...)).Delete()
+	_, err = query.User.WithContext(r.Context()).
+		Where(query.User.ID.In(req.Ids...)).
+		Delete()
 	if err != nil {
 		_ = c.Fail(w, 1, "删除失败", err.Error())
 		return

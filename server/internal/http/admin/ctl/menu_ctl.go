@@ -6,7 +6,6 @@ import (
 	"gourd/internal/http/admin/service"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
-	"gourd/internal/repositories"
 	"net/http"
 	"strconv"
 )
@@ -55,10 +54,6 @@ func (c *MenuCtl) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rm := repositories.Menu{
-		Ctx: r.Context(),
-	}
-
 	mate, _ := json.Marshal(req.Meta)
 	data := &model.Menu{
 		AppID:     req.AppId,
@@ -73,7 +68,7 @@ func (c *MenuCtl) Add(w http.ResponseWriter, r *http.Request) {
 		Meta:      string(mate),
 	}
 
-	err = rm.Create(data)
+	err = query.Menu.WithContext(r.Context()).Create(data)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
@@ -105,12 +100,8 @@ func (c *MenuCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rm := repositories.Menu{
-		Ctx: r.Context(),
-	}
-
 	mate, _ := json.Marshal(req.Meta)
-	_, err = rm.Query().
+	_, err = query.Menu.WithContext(r.Context()).
 		Where(query.Menu.ID.Eq(req.Id)).
 		Updates(map[string]any{
 			"name":      req.Name,
@@ -126,17 +117,15 @@ func (c *MenuCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//更新菜单API权限
-	rmApi := repositories.MenuApi{
-		Ctx: r.Context(),
-	}
+	qma := query.MenuAPI
 
-	_, _ = rmApi.Query().
-		Where(query.MenuAPI.MenuID.Eq(req.Id)).
+	//更新菜单API权限
+	_, _ = qma.WithContext(r.Context()).
+		Where(qma.MenuID.Eq(req.Id)).
 		Delete()
 
 	for _, api := range req.ApiList {
-		_ = rmApi.Create(&model.MenuAPI{
+		_ = qma.Create(&model.MenuAPI{
 			MenuID: req.Id,
 			AppID:  req.AppId,
 			Path:   api.Path,
@@ -152,10 +141,6 @@ func (c *MenuCtl) Delete(w http.ResponseWriter, r *http.Request) {
 		Ids []int32 `json:"ids"`
 	}
 
-	rm := repositories.Menu{
-		Ctx: r.Context(),
-	}
-
 	req := Req{}
 	err := c.JsonReqUnmarshal(r, &req)
 	if err != nil {
@@ -163,7 +148,10 @@ func (c *MenuCtl) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = rm.Query().Where(query.Menu.ID.In(req.Ids...)).Delete()
+	_, err = query.Menu.WithContext(r.Context()).
+		Where(query.Menu.ID.In(req.Ids...)).
+		Or(query.Menu.Pid.In(req.Ids...)). //删除子菜单
+		Delete()
 	if err != nil {
 		_ = c.Fail(w, 1, "删除失败", err.Error())
 		return

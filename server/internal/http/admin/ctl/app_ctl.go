@@ -4,9 +4,7 @@ import (
 	"gourd/internal/http/admin/common"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
-	"gourd/internal/repositories"
 	"net/http"
-	"strconv"
 )
 
 // AppCtl 用户控制器
@@ -15,37 +13,17 @@ type AppCtl struct {
 }
 
 func (c *AppCtl) List(w http.ResponseWriter, r *http.Request) {
-
-	type Req struct {
-		Page     int `json:"page"`
-		PageSize int `json:"page_size"`
-	}
 	type Res struct {
 		Rows  []*model.App `json:"rows"`
 		Total int64        `json:"total"`
 	}
 
-	// 获取参数
-	req := Req{
-		Page:     1,
-		PageSize: 10,
-	}
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	if page != 0 {
-		req.Page = page
-	}
-	pageSize, _ := strconv.Atoi(r.URL.Query().Get("page_size"))
-	if pageSize != 0 {
-		req.PageSize = pageSize
-	}
-
-	ra := repositories.App{
-		Ctx: r.Context(),
-	}
+	// 分页参数
+	page, pageSize := c.PageParam(r, 1, 10)
 
 	// 查询列表
-	list, count, err := ra.Query().
-		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
+	list, count, err := query.App.WithContext(r.Context()).
+		FindByPage((page-1)*pageSize, pageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
 		return
@@ -67,11 +45,7 @@ func (c *AppCtl) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ra := repositories.App{
-		Ctx: r.Context(),
-	}
-
-	err = ra.Create(req)
+	err = query.App.WithContext(r.Context()).Create(req)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
@@ -88,12 +62,9 @@ func (c *AppCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ra := repositories.App{
-		Ctx: r.Context(),
-	}
 	qm := query.App
 
-	_, err = ra.Query().
+	_, err = qm.WithContext(r.Context()).
 		Where(query.App.ID.Eq(req.ID)).
 		Select(
 			qm.Name,
@@ -115,10 +86,6 @@ func (c *AppCtl) Delete(w http.ResponseWriter, r *http.Request) {
 		Ids []int32 `json:"ids"`
 	}
 
-	rm := repositories.App{
-		Ctx: r.Context(),
-	}
-
 	req := Req{}
 	err := c.JsonReqUnmarshal(r, &req)
 	if err != nil {
@@ -126,7 +93,9 @@ func (c *AppCtl) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = rm.Query().Where(query.App.ID.In(req.Ids...)).Delete()
+	_, err = query.App.WithContext(r.Context()).
+		Where(query.App.ID.In(req.Ids...)).
+		Delete()
 	if err != nil {
 		_ = c.Fail(w, 1, "删除失败", err.Error())
 		return
