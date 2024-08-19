@@ -13,7 +13,7 @@
 		<template #header="{form, submit}">
 			<el-form :inline="true" :model="form">
 				<el-form-item>
-					<el-select v-model="form.app_id" placeholder="选择应用" clearable :teleported="false">
+					<el-select v-model="form.app_id" placeholder="选择应用" clearable :teleported="false" style="width: 150px;">
 						<el-option v-for="item in state.appList" :label="item.name" :value="item.id"></el-option>
 					</el-select>
 				</el-form-item>
@@ -26,7 +26,8 @@
 			</el-form>
 		</template>
 		<el-table-column prop="id" label="ID" width="180"></el-table-column>
-		<el-table-column prop="name" label="名称"></el-table-column>
+        <el-table-column prop="name" label="名称"></el-table-column>
+        <el-table-column prop="app.name" label="所属应用"></el-table-column>
 	</sc-table-select>
 </template>
 

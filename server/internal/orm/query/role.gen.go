@@ -38,6 +38,11 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 	_role.Status = field.NewInt32(tableName, "status")
 	_role.Sort = field.NewInt32(tableName, "sort")
 	_role.IsAdmin = field.NewInt32(tableName, "is_admin")
+	_role.App = roleHasOneApp{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("App", "model.App"),
+	}
 
 	_role.fillFieldMap()
 
@@ -60,6 +65,7 @@ type role struct {
 	Status      field.Int32  // 状态
 	Sort        field.Int32  // 排序
 	IsAdmin     field.Int32  // 是否为管理员（所有权限）
+	App         roleHasOneApp
 
 	fieldMap map[string]field.Expr
 }
@@ -103,7 +109,7 @@ func (r *role) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *role) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 11)
+	r.fieldMap = make(map[string]field.Expr, 12)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["app_id"] = r.AppID
 	r.fieldMap["name"] = r.Name
@@ -115,6 +121,7 @@ func (r *role) fillFieldMap() {
 	r.fieldMap["status"] = r.Status
 	r.fieldMap["sort"] = r.Sort
 	r.fieldMap["is_admin"] = r.IsAdmin
+
 }
 
 func (r role) clone(db *gorm.DB) role {
@@ -125,6 +132,77 @@ func (r role) clone(db *gorm.DB) role {
 func (r role) replaceDB(db *gorm.DB) role {
 	r.roleDo.ReplaceDB(db)
 	return r
+}
+
+type roleHasOneApp struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a roleHasOneApp) Where(conds ...field.Expr) *roleHasOneApp {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a roleHasOneApp) WithContext(ctx context.Context) *roleHasOneApp {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a roleHasOneApp) Session(session *gorm.Session) *roleHasOneApp {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a roleHasOneApp) Model(m *model.Role) *roleHasOneAppTx {
+	return &roleHasOneAppTx{a.db.Model(m).Association(a.Name())}
+}
+
+type roleHasOneAppTx struct{ tx *gorm.Association }
+
+func (a roleHasOneAppTx) Find() (result *model.App, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a roleHasOneAppTx) Append(values ...*model.App) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a roleHasOneAppTx) Replace(values ...*model.App) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a roleHasOneAppTx) Delete(values ...*model.App) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a roleHasOneAppTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a roleHasOneAppTx) Count() int64 {
+	return a.tx.Count()
 }
 
 type roleDo struct{ gen.DO }

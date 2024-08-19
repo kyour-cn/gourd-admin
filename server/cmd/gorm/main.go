@@ -52,6 +52,8 @@ func main() {
 		Generator: g,
 		ComOpts:   &comOpts,
 		Tables: []gen_tool.Table{
+
+			// 系统基础数据表
 			{Name: "app"},
 			{Name: "log"},
 			{Name: "log_level"},
@@ -64,6 +66,13 @@ func main() {
 						FieldName:  "ApiList",
 						Type:       field.HasMany,
 						ForeignKey: "menu_id",
+						LocalKey:   "id",
+					},
+					{
+						TableName:  "app",
+						FieldName:  "App",
+						Type:       field.HasOne,
+						ForeignKey: "app_id",
 						LocalKey:   "id",
 					},
 				},
@@ -80,7 +89,21 @@ func main() {
 					},
 				},
 			},
-			{Name: "role"},
+			{
+				Name: "role",
+				Relate: &[]gen_tool.TableRelate{
+					{
+						TableName:  "app",
+						FieldName:  "App",
+						Type:       field.HasOne,
+						ForeignKey: "app_id",
+						LocalKey:   "id",
+					},
+				},
+			},
+
+			// 业务数据表
+
 		},
 	}
 

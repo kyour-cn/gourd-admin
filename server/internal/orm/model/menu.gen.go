@@ -24,6 +24,7 @@ type Menu struct {
 	Sort      int32     `gorm:"column:sort;not null;comment:排序" json:"sort"`                 // 排序
 	Meta      string    `gorm:"column:meta;not null;comment:meta路由参数" json:"meta"`           // meta路由参数
 	ApiList   []MenuAPI `gorm:"foreignKey:menu_id;references:id" json:"api_list"`
+	App       App       `gorm:"foreignKey:app_id;references:id" json:"app"`
 }
 
 // MarshalBinary 支持json序列化

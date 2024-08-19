@@ -23,6 +23,7 @@ type Role struct {
 	Status      int32  `gorm:"column:status;not null;default:1;comment:状态" json:"status"`                  // 状态
 	Sort        int32  `gorm:"column:sort;not null;comment:排序" json:"sort"`                                // 排序
 	IsAdmin     int32  `gorm:"column:is_admin;not null;comment:是否为管理员（所有权限）" json:"is_admin"`              // 是否为管理员（所有权限）
+	App         App    `gorm:"foreignKey:app_id;references:id" json:"app"`
 }
 
 // MarshalBinary 支持json序列化

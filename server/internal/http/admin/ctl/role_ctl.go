@@ -45,7 +45,9 @@ func (c *RoleCtl) List(w http.ResponseWriter, r *http.Request) {
 
 	// 查询列表
 	list, count, err := ra.Query().
+		Preload(query.Role.App).
 		Where(conditions...).
+		Order(query.Role.AppID.Asc(), query.Role.Sort.Asc()).
 		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())

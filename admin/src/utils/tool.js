@@ -14,7 +14,7 @@ const tool = {}
 tool.data = {
 	set(key, data, datetime = 0) {
 		//加密
-		if(sysConfig.LS_ENCRYPTION == "AES"){
+		if(sysConfig.LS_ENCRYPTION === "AES"){
 			data = tool.crypto.AES.encrypt(JSON.stringify(data), sysConfig.LS_ENCRYPTION_key)
 		}
         let cacheValue = {
@@ -33,7 +33,7 @@ tool.data = {
                     return null;
                 }
 				//解密
-				if(sysConfig.LS_ENCRYPTION == "AES"){
+				if(sysConfig.LS_ENCRYPTION === "AES"){
 					value.content = JSON.parse(tool.crypto.AES.decrypt(value.content, sysConfig.LS_ENCRYPTION_key))
 				}
                 return value.content

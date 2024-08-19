@@ -44,6 +44,12 @@ func newMenu(db *gorm.DB, opts ...gen.DOOption) menu {
 		RelationField: field.NewRelation("ApiList", "model.MenuAPI"),
 	}
 
+	_menu.App = menuHasOneApp{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("App", "model.App"),
+	}
+
 	_menu.fillFieldMap()
 
 	return _menu
@@ -66,6 +72,8 @@ type menu struct {
 	Sort      field.Int32  // 排序
 	Meta      field.String // meta路由参数
 	ApiList   menuHasManyApiList
+
+	App menuHasOneApp
 
 	fieldMap map[string]field.Expr
 }
@@ -109,7 +117,7 @@ func (m *menu) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (m *menu) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 12)
+	m.fieldMap = make(map[string]field.Expr, 13)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["app_id"] = m.AppID
 	m.fieldMap["pid"] = m.Pid
@@ -202,6 +210,77 @@ func (a menuHasManyApiListTx) Clear() error {
 }
 
 func (a menuHasManyApiListTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type menuHasOneApp struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a menuHasOneApp) Where(conds ...field.Expr) *menuHasOneApp {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a menuHasOneApp) WithContext(ctx context.Context) *menuHasOneApp {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a menuHasOneApp) Session(session *gorm.Session) *menuHasOneApp {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a menuHasOneApp) Model(m *model.Menu) *menuHasOneAppTx {
+	return &menuHasOneAppTx{a.db.Model(m).Association(a.Name())}
+}
+
+type menuHasOneAppTx struct{ tx *gorm.Association }
+
+func (a menuHasOneAppTx) Find() (result *model.App, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a menuHasOneAppTx) Append(values ...*model.App) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a menuHasOneAppTx) Replace(values ...*model.App) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a menuHasOneAppTx) Delete(values ...*model.App) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a menuHasOneAppTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a menuHasOneAppTx) Count() int64 {
 	return a.tx.Count()
 }
 

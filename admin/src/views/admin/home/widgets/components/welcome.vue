@@ -3,7 +3,7 @@
 		<div class="welcome">
 			<div class="logo">
 				<img src="/admin/img/logo.png">
-				<h2>欢迎体验 SCUI</h2>
+				<h2>欢迎体验 Gourd Admin</h2>
 			</div>
 			<div class="tips">
 				<div class="tips-item">

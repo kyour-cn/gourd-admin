@@ -4,34 +4,20 @@
 		<el-row :gutter="15">
 			<el-col :lg="24">
 				<el-card shadow="never" header="我的常用">
-					<myapp></myapp>
+					<myapp/>
 				</el-card>
 			</el-col>
 		</el-row>
 	</el-main>
 </template>
 
-<script>
+<script setup>
 	import myapp from './components/myapp.vue';
+    import {onMounted} from "vue";
 
-	export default {
-		components: {
-			myapp
-		},
-		data() {
-			return {
+    const emits = defineEmits(['on-mounted'])
 
-			}
-		},
-		mounted(){
-			this.$emit('on-mounted')
-		},
-		methods: {
-
-		}
-	}
+    onMounted(() => {
+        emits('on-mounted')
+    })
 </script>
-
-<style scoped>
-
-</style>
