@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// AuthJwtMiddleware 验证 JWT token 并获取用户信息
 func AuthJwtMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
@@ -16,7 +17,7 @@ func AuthJwtMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		header := authHeader[len("Bearer "):]
+		headerToken := authHeader[len("Bearer "):]
 
 		conf, err := config.GetJwtConfig()
 		if err != nil {
@@ -25,7 +26,7 @@ func AuthJwtMiddleware(next http.Handler) http.Handler {
 		}
 
 		jwtData := jwt.MapClaims{}
-		token, err := jwt.ParseWithClaims(header, jwtData, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(headerToken, jwtData, func(token *jwt.Token) (interface{}, error) {
 			return []byte(conf.Secret), nil
 		})
 		if err != nil {

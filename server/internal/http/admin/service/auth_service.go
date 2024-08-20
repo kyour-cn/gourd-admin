@@ -16,6 +16,7 @@ import (
 	"time"
 )
 
+// LoginUser 登录用户
 func LoginUser(ctx context.Context, username string, password string) (*model.User, error) {
 
 	rdb, err := redisutil.GetRedis(ctx)
@@ -112,13 +113,12 @@ type menuTree struct {
 }
 type menuTreeArr []menuTree
 
+// GetMenu 获取用户菜单
 func GetMenu(userInfo *model.User) (any, error) {
 
 	// 查询角色
 	roleInfo, err := query.Role.
-		Where(
-			query.Role.ID.Eq(userInfo.RoleID),
-		).
+		Where(query.Role.ID.Eq(userInfo.RoleID)).
 		First()
 	if err != nil {
 		return nil, err
@@ -204,13 +204,14 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 	return menuTreeArr
 }
 
-// CheckJwtPermission 检查Token权限
+// CheckJwtPermission 检查Token接口权限
 func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 
 	// 取出角色ID和应用ID
 	roleId, ok1 := jwtData["role"].(float64)
 	appId, ok2 := jwtData["app"].(float64)
-	if !ok1 || !ok2 {
+	_, ok3 := jwtData["app2"].(float64)
+	if !ok1 || !ok2 || !ok3 {
 		return false
 	}
 
