@@ -6,19 +6,19 @@
                 class="menu"
                 node-key="label"
                 :data="category"
-                :default-expanded-keys="['应用日志', '系统日志']"
+                :default-expanded-keys="['app', 'system']"
                 :highlight-current="true"
                 :expand-on-click-node="false"
                 @current-change="handleCurrentChange"
             >
                 <template #default="{node, data}">
 					<span class="custom-tree-node">
-            <sc-status-indicator
-                type="success"
-                :style="{background: data.color, marginRight: '5px'}"
-            />
+                        <sc-status-indicator
+                            type="success"
+                            :style="{background: data.color, marginRight: '5px'}"
+                        />
 						<span class="label">
-							{{ node.label }}
+							{{ data.name }}
 						</span>
 					</span>
                 </template>
@@ -80,6 +80,7 @@
 import info from './info'
 import scEcharts from '@/components/scEcharts'
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue";
+import logApi from '@/api/admin/log'
 
 export default {
     name: 'log',
@@ -147,14 +148,19 @@ export default {
         }
     },
     mounted() {
-        // const {} = this.date
-        this.echarts_render();
+
+        logApi.levelList.get({page_size: 1000}).then((res) => {
+            this.category = this.renderTreeMenu(res.data.rows)
+            console.log(this.category)
+        })
+
+        // this.echartsRender();
     },
     methods: {
-        async echarts_render() {
+        async echartsRender() {
             const start_time = this.date[0]
             const end_time = this.date[1]
-            let res = await this.$API.admin.log.logPageInfo.get({start_time, end_time});
+            let res = await this.$API.admin.log.logStat.get({start_time, end_time});
 
             // 填充图表数据
             let map = res.data.map;
@@ -180,36 +186,34 @@ export default {
                 this.logsChartOption.xAxis.data = [0, 0, 0, 0, 0, 0, 0, 0, 0];
                 this.$message("暂无更多数据");
             }
-            // 左侧树形菜单
-            const data = res.data.levels;
-            this.category = this.renderTreeMenu(data);
         },
         // 左侧树形菜单
         renderTreeMenu(data) {
-            let newMenu = [];
-            for (const key in data) {
-                if (key === 'app') {
-                    newMenu.push({
-                        id: key,
-                        label: "应用日志",
-                        children: data[key]
-                    })
-                } else if (key === 'system') {
-                    newMenu.push({
-                        id: key,
-                        label: "系统日志",
-                        children: data[key]
-                    })
+            const sysList = []
+            const appList = []
+            for (const i in data) {
+                const item = data[i]
+                if (item.app_id > 0) {
+                    appList.push(item)
+                } else {
+                    sysList.push(item)
                 }
             }
-            newMenu.forEach(ele => {
-                ele.children.forEach(item => {
-                    let temp = item['name']
-                    item['name'] = item['label']
-                    item['label'] = temp
-                })
-            })
-            return newMenu
+
+            return [
+                {
+                    id: 1,
+                    name: "系统日志",
+                    label: "system",
+                    children: sysList
+                },
+                {
+                    id: 2,
+                    name: "应用日志",
+                    label: "app",
+                    children: appList
+                },
+            ]
         },
         timeChange() {
             // 点击时间清除判断是否为null
@@ -218,7 +222,7 @@ export default {
                     start_time: this.date[0],
                     end_time: this.date[1]
                 })
-                this.echarts_render();
+                this.echartsRender();
             } else {
                 this.$refs.table.upData({
                     start_time: this.date?.[0] || '',

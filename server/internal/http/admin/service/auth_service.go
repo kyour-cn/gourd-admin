@@ -210,8 +210,7 @@ func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 	// 取出角色ID和应用ID
 	roleId, ok1 := jwtData["role"].(float64)
 	appId, ok2 := jwtData["app"].(float64)
-	_, ok3 := jwtData["app2"].(float64)
-	if !ok1 || !ok2 || !ok3 {
+	if !ok1 || !ok2 {
 		return false
 	}
 

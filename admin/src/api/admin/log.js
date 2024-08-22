@@ -16,7 +16,7 @@ export default {
             return await http.get(this.url, params);
         }
     },
-    logPageInfo: {
+    logStat: {
         url: `${config.API_URL}/admin/log/logStat`,
         name: "日志页详情",
         get: async function (params) {

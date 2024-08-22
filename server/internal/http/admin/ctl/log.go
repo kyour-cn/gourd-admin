@@ -66,5 +66,6 @@ func (c *LogCtl) List(w http.ResponseWriter, r *http.Request) {
 
 func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
 
+	//TODO: 日志统计
 	_ = c.Success(w, "", nil)
 }
