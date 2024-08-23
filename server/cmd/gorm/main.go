@@ -57,6 +57,7 @@ func main() {
 			{Name: "app"},
 			{Name: "log"},
 			{Name: "log_level"},
+			{Name: "log_stat_view"},
 			{Name: "menu_api"},
 			{
 				Name: "menu",

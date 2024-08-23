@@ -17,9 +17,6 @@ type UserCtl struct {
 }
 
 func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
-	type Req struct {
-		Keyword string `json:"keyword"`
-	}
 	type Res struct {
 		Rows  []*model.User `json:"rows"`
 		Total int64         `json:"total"`

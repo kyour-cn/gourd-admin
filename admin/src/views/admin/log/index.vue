@@ -92,6 +92,7 @@ export default {
     data() {
         return {
             map: [],
+            dateMaps: [],
             infoDrawer: false,
             echartsData: [],
             // 动态图表数据
@@ -128,7 +129,7 @@ export default {
                 xAxis: {
                     type: 'category',
                     boundaryGap: false,
-                    data: ['2021-07-01', '2021-07-02', '2021-07-03', '2021-07-04']
+                    data: ['']
                 },
                 yAxis: {
                     show: false,
@@ -137,6 +138,7 @@ export default {
                 series: []
             },
             category: [],
+            levels: [],
             date: [
                 this.$TOOL.dateFormat(this.getCurrentMonthFirst()),
                 this.$TOOL.dateFormat(new Date()),
@@ -148,45 +150,85 @@ export default {
         }
     },
     mounted() {
-
         logApi.levelList.get({page_size: 1000}).then((res) => {
+            this.levels = res.data.rows
             this.category = this.renderTreeMenu(res.data.rows)
-            console.log(this.category)
+            this.echartsRender();
         })
-
-        // this.echartsRender();
     },
     methods: {
         async echartsRender() {
             const start_time = this.date[0]
             const end_time = this.date[1]
+
             let res = await this.$API.admin.log.logStat.get({start_time, end_time});
 
+            const dateMaps = {}
+            for (const i in res.data.days) {
+                dateMaps[res.data.days[i]] = i
+            }
+            // 填充x轴的数据
+            this.logsChartOption.xAxis.data = res.data.days;
+
             // 填充图表数据
-            let map = res.data.map;
-            this.map = res.data.map
-            if (this.map.length !== 0) {
-                for (const key in map) {
+            if (res.data.rows.length !== 0) {
+
+                let seriesData = {}
+                const levelMap = {}
+                for (const i in this.levels) {
+                    levelMap[String(this.levels[i].id)] = this.levels[i]
+                }
+
+                for (const i in res.data.rows) {
+                    const item = res.data.rows[i]
+                    if (seriesData[item.level_id]) {
+                        continue
+                    }
+                    seriesData[item.level_id] = {
+                        id: item.level_id,
+                        name: item.level_name,
+                        color: levelMap[String(item.level_id)].color,
+                        data: this.arrayPad([],res.data.days.length, 0)
+                    }
+                }
+
+                // 填充堆叠图表数据
+                for (const key in res.data.rows) {
+                    const item = res.data.rows[key]
+                    seriesData[item.level_id].data[dateMaps[item.date]] = item.count
+                }
+
+                this.map = []
+                for (const key in seriesData) {
+                    this.map.push(seriesData[key])
+                }
+
+                for (const key in this.map) {
                     this.seriesData.push({
-                        data: map[key].data,
+                        data: this.map[key].data,
                         type: 'bar',
                         stack: 'log',
                         barWidth: '15px',
-                        color: map[key].color
+                        color: this.map[key].color
                     })
                 }
-                // 填充x轴的数据
-                this.logsChartOption.xAxis.data = res.data.dates;
                 setTimeout(() => {
                     this.logsChartOption.series = this.seriesData
                 }, 500)
             } else {
                 this.seriesData = [];
                 this.logsChartOption.series = [];
-                this.logsChartOption.xAxis.data = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+                this.logsChartOption.xAxis.data = [0];
                 this.$message("暂无更多数据");
             }
         },
+        arrayPad(arr, len, val) {
+            if (arr.length >= len) {
+                return arr
+            }
+            return arr.concat(Array(len - arr.length).fill(val))
+        },
+
         // 左侧树形菜单
         renderTreeMenu(data) {
             const sysList = []
