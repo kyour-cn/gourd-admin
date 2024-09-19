@@ -39,13 +39,12 @@ func (c *AppCtl) List(w http.ResponseWriter, r *http.Request) {
 
 func (c *AppCtl) Add(w http.ResponseWriter, r *http.Request) {
 	req := &model.App{}
-	err := c.JsonReqUnmarshal(r, req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	err = query.App.WithContext(r.Context()).Create(req)
+	err := query.App.WithContext(r.Context()).Create(req)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
@@ -56,15 +55,14 @@ func (c *AppCtl) Add(w http.ResponseWriter, r *http.Request) {
 
 func (c *AppCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	req := &model.App{}
-	err := c.JsonReqUnmarshal(r, req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
 	qm := query.App
 
-	_, err = qm.WithContext(r.Context()).
+	_, err := qm.WithContext(r.Context()).
 		Where(query.App.ID.Eq(req.ID)).
 		Select(
 			qm.Name,
@@ -87,13 +85,12 @@ func (c *AppCtl) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req := Req{}
-	err := c.JsonReqUnmarshal(r, &req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	_, err = query.App.WithContext(r.Context()).
+	_, err := query.App.WithContext(r.Context()).
 		Where(query.App.ID.In(req.Ids...)).
 		Delete()
 	if err != nil {

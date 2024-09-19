@@ -54,13 +54,12 @@ func (c *RoleCtl) List(w http.ResponseWriter, r *http.Request) {
 
 func (c *RoleCtl) Add(w http.ResponseWriter, r *http.Request) {
 	req := &model.Role{}
-	err := c.JsonReqUnmarshal(r, req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	err = query.Role.WithContext(r.Context()).Create(req)
+	err := query.Role.WithContext(r.Context()).Create(req)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
@@ -71,8 +70,7 @@ func (c *RoleCtl) Add(w http.ResponseWriter, r *http.Request) {
 
 func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	req := &model.Role{}
-	err := c.JsonReqUnmarshal(r, req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
@@ -96,7 +94,7 @@ func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 
-	_, err = query.Role.WithContext(r.Context()).
+	_, err := query.Role.WithContext(r.Context()).
 		Where(query.Role.ID.Eq(req.ID)).
 		Select(fields...).
 		Updates(req)
@@ -113,13 +111,12 @@ func (c *RoleCtl) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req := Req{}
-	err := c.JsonReqUnmarshal(r, &req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	_, err = query.Role.WithContext(r.Context()).
+	_, err := query.Role.WithContext(r.Context()).
 		Where(query.Role.ID.In(req.Ids...)).
 		Delete()
 	if err != nil {

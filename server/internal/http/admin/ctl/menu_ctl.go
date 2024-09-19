@@ -48,8 +48,7 @@ func (c *MenuCtl) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	// 获取参数
 	req := Req{}
-	err := c.JsonReqUnmarshal(r, &req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
@@ -68,7 +67,7 @@ func (c *MenuCtl) Add(w http.ResponseWriter, r *http.Request) {
 		Meta:      string(mate),
 	}
 
-	err = query.Menu.WithContext(r.Context()).Create(data)
+	err := query.Menu.WithContext(r.Context()).Create(data)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
@@ -94,14 +93,13 @@ func (c *MenuCtl) Edit(w http.ResponseWriter, r *http.Request) {
 
 	// 获取参数
 	req := Req{}
-	err := c.JsonReqUnmarshal(r, &req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
 	mate, _ := json.Marshal(req.Meta)
-	_, err = query.Menu.WithContext(r.Context()).
+	_, err := query.Menu.WithContext(r.Context()).
 		Where(query.Menu.ID.Eq(req.Id)).
 		Updates(map[string]any{
 			"name":      req.Name,
@@ -142,13 +140,12 @@ func (c *MenuCtl) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req := Req{}
-	err := c.JsonReqUnmarshal(r, &req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	_, err = query.Menu.WithContext(r.Context()).
+	_, err := query.Menu.WithContext(r.Context()).
 		Where(query.Menu.ID.In(req.Ids...)).
 		Or(query.Menu.Pid.In(req.Ids...)). //删除子菜单
 		Delete()

@@ -67,8 +67,7 @@ func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
 
 func (c *UserCtl) Add(w http.ResponseWriter, r *http.Request) {
 	req := &model.User{}
-	err := c.JsonReqUnmarshal(r, req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
@@ -79,7 +78,7 @@ func (c *UserCtl) Add(w http.ResponseWriter, r *http.Request) {
 		req.Password = hex.EncodeToString(hash[:])
 	}
 
-	err = query.User.WithContext(r.Context()).Create(req)
+	err := query.User.WithContext(r.Context()).Create(req)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
@@ -90,8 +89,7 @@ func (c *UserCtl) Add(w http.ResponseWriter, r *http.Request) {
 
 func (c *UserCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	req := &model.User{}
-	err := c.JsonReqUnmarshal(r, req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
@@ -114,7 +112,7 @@ func (c *UserCtl) Edit(w http.ResponseWriter, r *http.Request) {
 		fields = append(fields, qu.Password)
 	}
 
-	_, err = query.User.WithContext(r.Context()).
+	_, err := query.User.WithContext(r.Context()).
 		Where(query.User.ID.Eq(req.ID)).
 		Select(fields...).
 		Updates(req)
@@ -132,13 +130,12 @@ func (c *UserCtl) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req := Req{}
-	err := c.JsonReqUnmarshal(r, &req)
-	if err != nil {
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	_, err = query.User.WithContext(r.Context()).
+	_, err := query.User.WithContext(r.Context()).
 		Where(query.User.ID.In(req.Ids...)).
 		Delete()
 	if err != nil {

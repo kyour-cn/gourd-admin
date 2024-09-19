@@ -9,7 +9,7 @@ import (
 )
 
 // Register 事件注册
-func Register(context.Context) {
+func Register(_ context.Context) {
 
 	// Boot事件(应用) -初始化应用时执行
 	event.Listen("app.boot", func(ctx context.Context) {
