@@ -67,21 +67,18 @@ func LoginUser(ctx context.Context, username string, password string) (*model.Us
 }
 
 // GenerateToken 生成token
-func GenerateToken(data map[string]any) (string, error) {
-
+func GenerateToken(claims UserClaims) (string, error) {
+	// 读取配置
 	conf, err := config.GetJwtConfig()
 	if err != nil {
 		return "", err
 	}
 
-	claims := jwt.MapClaims{
-		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(time.Second * time.Duration(conf.Expire)).Unix(),
-	}
-	for k, v := range data {
-		claims[k] = v
-	}
+	// 设置签署时间和过期时间
+	claims.IssuedAt = jwt.NewNumericDate(time.Now())
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Second * time.Duration(conf.Expire)))
 
+	// 使用HS256算法签名
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Sign and get the complete encoded token as a string using the secret
@@ -205,12 +202,10 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 }
 
 // CheckJwtPermission 检查Token接口权限
-func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
+func CheckJwtPermission(jd UserClaims, r *http.Request) bool {
 
 	// 取出角色ID和应用ID
-	roleId, ok1 := jwtData["role"].(float64)
-	appId, ok2 := jwtData["app"].(float64)
-	if !ok1 || !ok2 {
+	if jd.RoleId == 0 || jd.AppId == 0 {
 		return false
 	}
 
@@ -218,7 +213,7 @@ func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 	apis, err := query.MenuAPI.
 		Where(
 			query.MenuAPI.Path.Eq(url),
-			query.MenuAPI.AppID.Eq(int32(appId)),
+			query.MenuAPI.AppID.Eq(jd.AppId),
 		).
 		Select(query.MenuAPI.ID).
 		Find()
@@ -230,8 +225,8 @@ func CheckJwtPermission(jwtData jwt.MapClaims, r *http.Request) bool {
 	// 获取用户角色
 	role, err := query.Role.
 		Where(
-			query.Role.ID.Eq(int32(roleId)),
-			query.Role.AppID.Eq(int32(appId)),
+			query.Role.ID.Eq(jd.RoleId),
+			query.Role.AppID.Eq(jd.AppId),
 		).
 		Select(
 			query.Role.ID,

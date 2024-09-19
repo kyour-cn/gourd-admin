@@ -25,8 +25,8 @@ func AuthJwtMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		jwtData := jwt.MapClaims{}
-		token, err := jwt.ParseWithClaims(headerToken, jwtData, func(token *jwt.Token) (interface{}, error) {
+		jwtData := service.UserClaims{}
+		token, err := jwt.ParseWithClaims(headerToken, &jwtData, func(token *jwt.Token) (interface{}, error) {
 			return []byte(conf.Secret), nil
 		})
 		if err != nil {
@@ -46,6 +46,7 @@ func AuthJwtMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		// 将 JWT token 信息存入 context 中
 		ctx := context.WithValue(r.Context(), "jwt", jwtData)
 
 		// 继续处理实际请求

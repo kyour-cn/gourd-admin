@@ -47,7 +47,7 @@ func Register() {
 		_, _ = w.Write([]byte("404 not found."))
 	})
 
-	// 注册api相关路由
+	// 注册admin相关路由
 	r.Mount("/admin", chi.NewRouter().
 		Group(adminRoute.RegisterRoute))
 

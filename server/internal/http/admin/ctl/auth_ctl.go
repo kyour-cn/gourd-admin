@@ -3,7 +3,6 @@ package ctl
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/golang-jwt/jwt/v5"
 	"gourd/internal/config"
 	"gourd/internal/http/admin/common"
 	"gourd/internal/http/admin/service"
@@ -20,7 +19,6 @@ type AuthCtl struct {
 
 // Captcha 获取验证码
 func (c *AuthCtl) Captcha(w http.ResponseWriter, _ *http.Request) {
-
 	data, err := captcha.GenerateSlide()
 	if err != nil {
 		_ = c.Fail(w, 1, "生成验证码失败："+err.Error(), nil)
@@ -28,12 +26,10 @@ func (c *AuthCtl) Captcha(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	_ = c.Success(w, "", data)
-
 }
 
 // Login 登录
 func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
-
 	type Req struct {
 		Username   string `json:"username" validate:"required,min=5,max=20"`
 		Password   string `json:"password" validate:"required,min=6,max=32"`
@@ -95,12 +91,12 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 104, "token配置异常,请联系管理员", err)
 	}
 	// 生成token
-	tokenData := map[string]any{
-		"id":   userData.ID,
-		"role": userData.RoleID,
-		"app":  roleData.AppID,
+	claims := service.UserClaims{
+		Uid:    userData.ID,
+		RoleId: userData.RoleID,
+		AppId:  roleData.AppID,
 	}
-	token, err := service.GenerateToken(tokenData)
+	token, err := service.GenerateToken(claims)
 	if err != nil {
 		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return
@@ -116,15 +112,18 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
-	// 获取jwt
-	token := r.Context().Value("jwt").(jwt.MapClaims)
-
-	userId := int32(token["id"].(float64))
+	// 获取jwt并解析
+	jwtValue := r.Context().Value("jwt")
+	if _, ok := jwtValue.(service.UserClaims); !ok {
+		_ = c.Fail(w, 101, "获取登录信息失败", "jwt信息不正确")
+		return
+	}
+	claims := jwtValue.(service.UserClaims)
 
 	uq := query.User
 
 	userInfo, err := uq.WithContext(r.Context()).
-		Where(uq.ID.Eq(userId)).
+		Where(uq.ID.Eq(claims.Uid)).
 		First()
 	if err != nil {
 		_ = c.Fail(w, 101, "获取用户信息失败", err.Error())

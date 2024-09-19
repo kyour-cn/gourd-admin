@@ -13,8 +13,8 @@ type LogCtl struct {
 	common.BaseCtl //继承基础控制器
 }
 
+// LevelList 日志等级列表
 func (c *LogCtl) LevelList(w http.ResponseWriter, r *http.Request) {
-
 	type Res struct {
 		Rows  []*model.LogLevel `json:"rows"`
 		Total int64             `json:"total"`
@@ -39,6 +39,7 @@ func (c *LogCtl) LevelList(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", res)
 }
 
+// List 日志列表
 func (c *LogCtl) List(w http.ResponseWriter, r *http.Request) {
 
 	type Res struct {
@@ -65,6 +66,7 @@ func (c *LogCtl) List(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", res)
 }
 
+// LogStat 日志统计
 func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
 	type Res struct {
 		Days []string             `json:"days"`
@@ -87,7 +89,7 @@ func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 生成时间列表
-	days := GenerateDays(startTime, entTime, "2006-01-02")
+	days := generateDays(startTime, entTime, "2006-01-02")
 
 	// 查询日志数量
 	list, _ := query.LogStatView.Where(query.LogStatView.Date.Between(
@@ -101,7 +103,7 @@ func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func GenerateDays(startDate, endDate time.Time, format string) []string {
+func generateDays(startDate, endDate time.Time, format string) []string {
 	var days []string
 	for current := startDate; !current.After(endDate); current = current.AddDate(0, 0, 1) {
 		days = append(days, current.Format(format))
