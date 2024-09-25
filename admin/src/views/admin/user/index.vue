@@ -166,12 +166,8 @@ const clearSearch = () => {
 }
 
 //本地更新数据
-const handleSaveSuccess = (data, mode) => {
-    if (mode === 'add') {
-        table.value.refresh()
-    } else if (mode === 'edit') {
-        table.value.refresh()
-    }
+const handleSaveSuccess = () => {
+    table.value.refresh()
 }
 
 </script>

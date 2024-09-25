@@ -90,10 +90,10 @@ export default {
 				nickname: [
 					{required: true, message: '请输入昵称'}
 				],
-				mobile: [
-					// {required: true, message: '请输入手机号'},
-					{validator: checkMobile, trigger: 'blur'}
-				],
+				// mobile: [
+				// 	// {required: true, message: '请输入手机号'},
+				// 	{validator: checkMobile, trigger: 'blur'}
+				// ],
 				password: [
 					{required: true, message: '请输入登录密码'},
 				],
@@ -153,7 +153,7 @@ export default {
 					}
 					this.isSaveing = false;
 					if (res.code === 0) {
-						this.$emit('reloadData')
+                        this.$emit('success')
 						this.visible = false;
 						this.$message.success("操作成功")
 					} else {
