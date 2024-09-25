@@ -128,6 +128,7 @@ const tableDel = async (row) => {
         ids: [row.id]
     })
     if (res.code === 0) {
+        proxy.$message.success("操作成功")
         table.value.upData()
     }
 }
