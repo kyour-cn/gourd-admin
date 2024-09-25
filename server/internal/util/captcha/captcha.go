@@ -22,7 +22,7 @@ func init() {
 	)
 
 	// background images
-	imgs, err := images.GetImages()
+	bgImages, err := images.GetImages()
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -45,7 +45,7 @@ func init() {
 	// set resources
 	builder.SetResources(
 		slide.WithGraphImages(newGraphs),
-		slide.WithBackgrounds(imgs),
+		slide.WithBackgrounds(bgImages),
 	)
 
 	slideCapt = builder.Make()

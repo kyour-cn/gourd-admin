@@ -41,17 +41,37 @@ func (c *LogCtl) LevelList(w http.ResponseWriter, r *http.Request) {
 
 // List 日志列表
 func (c *LogCtl) List(w http.ResponseWriter, r *http.Request) {
-
 	type Res struct {
 		Rows  []*model.Log `json:"rows"`
 		Total int64        `json:"total"`
 	}
 
+	params := r.URL.Query()
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
+	// 时间筛选
+	startTimeStr, endTimeStr := params.Get("start_time"), params.Get("end_time")
+	if startTimeStr == "" || endTimeStr == "" {
+		_ = c.Fail(w, 1, "时间不能为空", nil)
+		return
+	}
+
+	startTime, err1 := time.Parse(time.DateTime, startTimeStr)
+	entTime, err2 := time.Parse(time.DateTime, endTimeStr)
+	if err1 != nil || err2 != nil {
+		_ = c.Fail(w, 101, "时间格式异常", nil)
+		return
+	}
+
 	// 查询列表
 	list, count, err := query.Log.WithContext(r.Context()).
+		Where(
+			query.Log.CreateTime.Between(
+				uint(startTime.Unix()),
+				uint(entTime.Unix()),
+			),
+		).
 		FindByPage((page-1)*pageSize, pageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())

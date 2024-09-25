@@ -56,7 +56,6 @@ var dbConfig *DbConfigMap
 
 // GetDBConfigAll 获取所有数据库配置
 func GetDBConfigAll() (*DbConfigMap, error) {
-
 	if dbConfig == nil {
 		dbConfig = &DbConfigMap{}
 	}
@@ -70,7 +69,6 @@ func GetDBConfigAll() (*DbConfigMap, error) {
 
 // GetDBConfig 获取指定数据库配置
 func GetDBConfig(name string) (*DbConfig, error) {
-
 	all, err := GetDBConfigAll()
 	if err != nil {
 		return nil, err
