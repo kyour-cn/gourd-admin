@@ -188,7 +188,8 @@ const selectionChange = (val) => {
 const add = () => {
 	dialog.save = true
 	nextTick(() => {
-		saveDialogRef.value.open().setData({app_id: state.selectedApp.value})
+		saveDialogRef.value.open()
+        saveDialogRef.value.setData({app_id: state.selectedApp.value})
 	})
 }
 

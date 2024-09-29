@@ -92,6 +92,10 @@ const submit = () => {
             const data = state.form
             data.status = data.status ? 1 : 0;
 
+            if(state.mode === 'add') {
+                delete data.id
+            }
+
             const res = await roleApi[state.mode].post(data);
             state.isSaving = false;
             if (res.code === 0) {
@@ -111,6 +115,7 @@ const open = (mode = 'add') => {
 }
 
 const setData = (data) => {
+    console.log(data)
     Object.assign(state.form, data)
     state.form.status = data.status === 1
 }
