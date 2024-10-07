@@ -9,6 +9,7 @@ import (
 // RegisterRoute 注册路由组
 func RegisterRoute(r chi.Router) {
 
+	// 注册跨域中间件
 	r.Use(middleware.CorsMiddleware)
 
 	// 注册登录相关路由
@@ -18,57 +19,52 @@ func RegisterRoute(r chi.Router) {
 	r.With(middleware.AuthJwtMiddleware).HandleFunc("/auth/menu", authCtl.GetMenu)
 
 	// 注册app相关路由
-	r.Mount("/app", chi.NewRouter().
-		Group(func(r chi.Router) {
-			c := ctl.AppCtl{}
-			r.Use(middleware.AuthJwtMiddleware)
-			r.HandleFunc("/list", c.List)
-			r.HandleFunc("/add", c.Add)
-			r.HandleFunc("/edit", c.Edit)
-			r.HandleFunc("/delete", c.Delete)
-		}))
+	r.Mount("/app", r.Group(func(r chi.Router) {
+		c := ctl.AppCtl{}
+		r.Use(middleware.AuthJwtMiddleware)
+		r.HandleFunc("/list", c.List)
+		r.HandleFunc("/add", c.Add)
+		r.HandleFunc("/edit", c.Edit)
+		r.HandleFunc("/delete", c.Delete)
+	}))
 
 	// 注册menu相关路由
-	r.Mount("/menu", chi.NewRouter().
-		Group(func(r chi.Router) {
-			c := ctl.MenuCtl{}
-			r.Use(middleware.AuthJwtMiddleware)
-			r.HandleFunc("/list", c.List)
-			r.HandleFunc("/add", c.Add)
-			r.HandleFunc("/edit", c.Edit)
-			r.HandleFunc("/delete", c.Delete)
-		}))
+	r.Mount("/menu", r.Group(func(r chi.Router) {
+		c := ctl.MenuCtl{}
+		r.Use(middleware.AuthJwtMiddleware)
+		r.HandleFunc("/list", c.List)
+		r.HandleFunc("/add", c.Add)
+		r.HandleFunc("/edit", c.Edit)
+		r.HandleFunc("/delete", c.Delete)
+	}))
 
 	// 注册role相关路由
-	r.Mount("/role", chi.NewRouter().
-		Group(func(r chi.Router) {
-			c := ctl.RoleCtl{}
-			r.Use(middleware.AuthJwtMiddleware)
-			r.HandleFunc("/list", c.List)
-			r.HandleFunc("/add", c.Add)
-			r.HandleFunc("/edit", c.Edit)
-			r.HandleFunc("/delete", c.Delete)
-		}))
+	r.Mount("/role", r.Group(func(r chi.Router) {
+		c := ctl.RoleCtl{}
+		r.Use(middleware.AuthJwtMiddleware)
+		r.HandleFunc("/list", c.List)
+		r.HandleFunc("/add", c.Add)
+		r.HandleFunc("/edit", c.Edit)
+		r.HandleFunc("/delete", c.Delete)
+	}))
 
 	// 注册role相关路由
-	r.Mount("/user", chi.NewRouter().
-		Group(func(r chi.Router) {
-			c := ctl.UserCtl{}
-			r.Use(middleware.AuthJwtMiddleware)
-			r.HandleFunc("/list", c.List)
-			r.HandleFunc("/add", c.Add)
-			r.HandleFunc("/edit", c.Edit)
-			r.HandleFunc("/delete", c.Delete)
-		}))
+	r.Mount("/user", r.Group(func(r chi.Router) {
+		c := ctl.UserCtl{}
+		r.Use(middleware.AuthJwtMiddleware)
+		r.HandleFunc("/list", c.List)
+		r.HandleFunc("/add", c.Add)
+		r.HandleFunc("/edit", c.Edit)
+		r.HandleFunc("/delete", c.Delete)
+	}))
 
 	// 注册log相关路由
-	r.Mount("/log", chi.NewRouter().
-		Group(func(r chi.Router) {
-			c := ctl.LogCtl{}
-			r.Use(middleware.AuthJwtMiddleware)
-			r.HandleFunc("/levelList", c.LevelList)
-			r.HandleFunc("/list", c.List)
-			r.HandleFunc("/logStat", c.LogStat)
-		}))
+	r.Mount("/log", r.Group(func(r chi.Router) {
+		c := ctl.LogCtl{}
+		r.Use(middleware.AuthJwtMiddleware)
+		r.HandleFunc("/levelList", c.LevelList)
+		r.HandleFunc("/list", c.List)
+		r.HandleFunc("/logStat", c.LogStat)
+	}))
 
 }

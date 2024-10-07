@@ -10,6 +10,8 @@ import (
 
 var router *chi.Mux
 
+// GetRouter 获取路由
+// 若路由已注册，则直接返回，否则创建路由并返回
 func GetRouter() *chi.Mux {
 	if router != nil {
 		return router
@@ -22,11 +24,6 @@ func GetRouter() *chi.Mux {
 func Register() {
 	r := GetRouter()
 
-	// 主页
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("hello gourd!"))
-	})
-
 	// 404响应
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		// 若路由未定义，检测是否为静态资源
@@ -35,8 +32,7 @@ func Register() {
 		if err == nil && conf.Static != "" {
 			filepath := conf.Static + r.URL.Path
 			//判断文件是否存在
-			_, err := os.Stat(filepath)
-			if err == nil {
+			if info, err := os.Stat(filepath); err == nil && !info.IsDir() {
 				http.ServeFile(w, r, filepath)
 				return
 			}
@@ -47,8 +43,12 @@ func Register() {
 		_, _ = w.Write([]byte("404 not found."))
 	})
 
+	// 主页
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("hello gourd!"))
+	})
+
 	// 注册admin相关路由
-	r.Mount("/admin", chi.NewRouter().
-		Group(adminRoute.RegisterRoute))
+	r.Mount("/admin", r.Group(adminRoute.RegisterRoute))
 
 }
