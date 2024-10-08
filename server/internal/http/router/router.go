@@ -20,8 +20,8 @@ func GetRouter() *chi.Mux {
 	return router
 }
 
-// Register 注册路由
-func Register() {
+// InitRouter 注册路由
+func InitRouter() {
 	r := GetRouter()
 
 	// 404响应
