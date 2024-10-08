@@ -69,7 +69,7 @@ func (c *RoleCtl) Add(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
-	req := &model.Role{}
+	req := model.Role{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
