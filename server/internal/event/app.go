@@ -30,25 +30,24 @@ func RegisterAppEvent(_ context.Context) {
 			panic(err)
 		}
 
-		// 初始化并执行命令行
+		// 初始化命令行
 		initialize.InitCmd()
 	})
 
 	// Init事件(应用) -初始化完成执行
 	event.Listen("app.init", func(context.Context) {
 		slog.Debug("init event.")
-
-		// 初始化定时任务
-		initialize.InitCron()
-
-		// 初始化Http服务
-		initialize.InitHttpServer()
 	})
 
 	// Start事件(应用) -启动后执行
 	event.Listen("app.start", func(context.Context) {
 		slog.Debug("start event.")
 
+		// 初始化定时任务
+		initialize.InitCron()
+
+		// 初始化Http服务
+		initialize.InitHttpServer()
 	})
 
 	// Stop事件(应用) -终止时执行
