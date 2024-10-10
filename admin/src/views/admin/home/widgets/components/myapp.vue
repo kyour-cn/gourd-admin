@@ -1,5 +1,5 @@
 <template>
-	<div>
+    <el-card shadow="never" header="我的常用">
 		<ul class="myMods">
 			<li v-for="mod in myMods" :key="mod.path" :style="{background:mod.meta.color||'#909399'}">
 				<a v-if="mod.meta.type=='link'" :href="mod.path" target="_blank">
@@ -46,13 +46,16 @@
 				<el-button type="primary" @click="saveMods">保存</el-button>
 			</template>
 		</el-drawer>
-	</div>
+    </el-card>
 </template>
 
 <script>
 	import draggable from 'vuedraggable'
 
 	export default {
+        title: "我的常用",
+        icon: "el-icon-odometer",
+        description: "自定义快捷入口",
 		components: {
 			draggable
 		},

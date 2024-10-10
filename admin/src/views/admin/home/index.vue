@@ -9,26 +9,24 @@
             </el-card>
         </el-main>
     </div>
-    <work v-if="dashboard==='1'" @on-mounted="onMounted"></work>
-    <widgets v-else @on-mounted="onMounted"></widgets>
+    <widgets v-show="!pageLoading" @on-mounted="onMounted"></widgets>
 </template>
 
 <script setup>
 import {defineAsyncComponent, ref} from 'vue';
-import tool from '@/utils/tool';
 
 defineOptions({
     name: 'dashboard',
 })
 
-const work = defineAsyncComponent(() => import('./work/index.vue'));
 const widgets = defineAsyncComponent(() => import('./widgets/index.vue'));
 
 const pageLoading = ref(true);
-const dashboard = ref(tool.data.get("USER_INFO").dashboard || '0');
 
 const onMounted = () => {
-    pageLoading.value = false
+    setTimeout(() => {
+        pageLoading.value = false;
+    }, 500);
 }
 
 </script>
