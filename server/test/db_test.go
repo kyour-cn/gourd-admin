@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/json"
 	"gourd/internal/config"
+	"gourd/internal/global"
 	"gourd/internal/initialize"
 	"gourd/internal/orm/query"
 	"testing"
@@ -31,5 +32,7 @@ func TestDB(t *testing.T) {
 	}
 
 	t.Logf("User %s", jsonStr)
+
+	t.Log(global.GetDb("mysql"))
 
 }

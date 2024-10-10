@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gourd/internal/config"
+	"gourd/internal/global"
 	"gourd/internal/orm/query"
 	"log/slog"
 	"time"
@@ -29,9 +30,7 @@ func InitDatabase() error {
 	}
 
 	// 连接数据库
-	dsn := dbConf.GenerateDsn()
 	gormConfig := &gorm.Config{
-		// 替换默认日志
 		Logger: logger.New(
 			dbLogWriter{},
 			logger.Config{
@@ -42,10 +41,13 @@ func InitDatabase() error {
 			},
 		),
 	}
-	mysqlDb, err := gorm.Open(mysql.Open(dsn), gormConfig)
+	mysqlDb, err := gorm.Open(mysql.Open(dbConf.GenerateDsn()), gormConfig)
 	if err != nil {
 		return err
 	}
+
+	// 设置全局数据库连接
+	global.SetDb("mysql", mysqlDb)
 
 	// 设置默认查询器
 	query.SetDefault(mysqlDb)
