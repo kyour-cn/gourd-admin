@@ -9,7 +9,7 @@
             </el-card>
         </el-main>
     </div>
-    <widgets v-show="!pageLoading" @on-mounted="onMounted"></widgets>
+    <widgets @on-mounted="onMounted"></widgets>
 </template>
 
 <script setup>
@@ -22,11 +22,8 @@ defineOptions({
 const widgets = defineAsyncComponent(() => import('./widgets/index.vue'));
 
 const pageLoading = ref(true);
-
 const onMounted = () => {
-    setTimeout(() => {
-        pageLoading.value = false;
-    }, 500);
+    pageLoading.value = false;
 }
 
 </script>
