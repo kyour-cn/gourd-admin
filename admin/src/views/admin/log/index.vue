@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <el-aside width="220px">
+        <el-aside width="220px" style="border-radius: 10px 0 0 0;">
             <el-tree
                 ref="category"
                 class="menu"
@@ -14,6 +14,7 @@
                 <template #default="{node, data}">
 					<span class="custom-tree-node">
                         <sc-status-indicator
+                            v-if="data.color"
                             type="success"
                             :style="{background: data.color, marginRight: '5px'}"
                         />
@@ -53,7 +54,7 @@
                             stripe
                             highlightCurrentRow @row-click="rowClick">
                             <el-table-column label="ID" prop="id" width="100"/>
-                            <el-table-column label="名称" prop="level_name" width="100"/>
+                            <el-table-column label="名称" prop="type_name" width="100"/>
                             <el-table-column label="标题" show-overflow-tooltip prop="title"/>
                             <el-table-column label="请求来源" show-overflow-tooltip prop="request_source"
                                              width="250"/>
@@ -138,7 +139,7 @@ export default {
                 series: []
             },
             category: [],
-            levels: [],
+            types: [],
             date: [
                 this.$TOOL.dateFormat(this.getCurrentMonthFirst()),
                 this.$TOOL.dateFormat(new Date()),
@@ -150,8 +151,8 @@ export default {
         }
     },
     mounted() {
-        logApi.levelList.get({page_size: 1000}).then((res) => {
-            this.levels = res.data.rows
+        logApi.typeList.get({page_size: 1000}).then((res) => {
+            this.types = res.data.rows
             this.category = this.renderTreeMenu(res.data.rows)
             this.echartsRender();
         })
@@ -174,20 +175,20 @@ export default {
             if (res.data.rows.length !== 0) {
 
                 let seriesData = {}
-                const levelMap = {}
-                for (const i in this.levels) {
-                    levelMap[String(this.levels[i].id)] = this.levels[i]
+                const typeMap = {}
+                for (const i in this.types) {
+                    typeMap[String(this.types[i].id)] = this.types[i]
                 }
 
                 for (const i in res.data.rows) {
                     const item = res.data.rows[i]
-                    if (seriesData[item.level_id]) {
+                    if (seriesData[item.type_id]) {
                         continue
                     }
-                    seriesData[item.level_id] = {
-                        id: item.level_id,
-                        name: item.level_name,
-                        color: levelMap[String(item.level_id)].color,
+                    seriesData[item.type_id] = {
+                        id: item.type_id,
+                        name: item.type_name,
+                        color: typeMap[String(item.type_id)].color,
                         data: this.arrayPad([],res.data.days.length, 0)
                     }
                 }
@@ -195,7 +196,7 @@ export default {
                 // 填充堆叠图表数据
                 for (const key in res.data.rows) {
                     const item = res.data.rows[key]
-                    seriesData[item.level_id].data[dateMaps[item.date]] = item.count
+                    seriesData[item.type_id].data[dateMaps[item.date]] = item.count
                 }
 
                 this.map = []
@@ -287,7 +288,7 @@ export default {
         },
         handleCurrentChange(data) {
             this.$refs.table.upData({
-                level_id: data.id
+                type_id: data.id
             })
         },
     }

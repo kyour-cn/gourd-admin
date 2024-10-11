@@ -2,9 +2,9 @@ import config from "@/config";
 import http from "@/utils/request";
 
 export default {
-    levelList: {
-        url: `${config.API_URL}/admin/log/levelList`,
-        name: "日志级别列表",
+    typeList: {
+        url: `${config.API_URL}/admin/log/typeList`,
+        name: "日志类型列表",
         get: async function (params) {
             return await http.get(this.url, params);
         }
