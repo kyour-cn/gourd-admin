@@ -29,8 +29,8 @@ func newLog(db *gorm.DB, opts ...gen.DOOption) log {
 	_log.ALL = field.NewAsterisk(tableName)
 	_log.ID = field.NewInt32(tableName, "id")
 	_log.AppID = field.NewInt32(tableName, "app_id")
-	_log.LevelID = field.NewInt32(tableName, "level_id")
-	_log.LevelName = field.NewString(tableName, "level_name")
+	_log.TypeID = field.NewInt32(tableName, "type_id")
+	_log.TypeName = field.NewString(tableName, "type_name")
 	_log.Title = field.NewString(tableName, "title")
 	_log.Value = field.NewString(tableName, "value")
 	_log.ValueType = field.NewString(tableName, "value_type")
@@ -54,8 +54,8 @@ type log struct {
 	ALL           field.Asterisk
 	ID            field.Int32
 	AppID         field.Int32  // 应用ID 0为未知
-	LevelID       field.Int32  // 日志级别 <10为系统日志
-	LevelName     field.String // 日志级别名称
+	TypeID        field.Int32  // 日志级别 <10为系统日志
+	TypeName      field.String // 日志级别名称
 	Title         field.String // 标题
 	Value         field.String // 日志内容
 	ValueType     field.String // 日志类型  text,json,html
@@ -84,8 +84,8 @@ func (l *log) updateTableName(table string) *log {
 	l.ALL = field.NewAsterisk(table)
 	l.ID = field.NewInt32(table, "id")
 	l.AppID = field.NewInt32(table, "app_id")
-	l.LevelID = field.NewInt32(table, "level_id")
-	l.LevelName = field.NewString(table, "level_name")
+	l.TypeID = field.NewInt32(table, "type_id")
+	l.TypeName = field.NewString(table, "type_name")
 	l.Title = field.NewString(table, "title")
 	l.Value = field.NewString(table, "value")
 	l.ValueType = field.NewString(table, "value_type")
@@ -115,8 +115,8 @@ func (l *log) fillFieldMap() {
 	l.fieldMap = make(map[string]field.Expr, 14)
 	l.fieldMap["id"] = l.ID
 	l.fieldMap["app_id"] = l.AppID
-	l.fieldMap["level_id"] = l.LevelID
-	l.fieldMap["level_name"] = l.LevelName
+	l.fieldMap["type_id"] = l.TypeID
+	l.fieldMap["type_name"] = l.TypeName
 	l.fieldMap["title"] = l.Title
 	l.fieldMap["value"] = l.Value
 	l.fieldMap["value_type"] = l.ValueType

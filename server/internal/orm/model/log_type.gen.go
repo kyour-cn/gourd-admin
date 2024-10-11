@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 )
 
-const TableNameLogLevel = "log_level"
+const TableNameLogType = "log_type"
 
-// LogLevel 日志级别
-type LogLevel struct {
+// LogType 日志级别
+type LogType struct {
 	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true;comment:<10为系统日志" json:"id"` // <10为系统日志
 	AppID  int32  `gorm:"column:app_id;not null;comment:应用ID 0为通用" json:"app_id"`             // 应用ID 0为通用
 	Name   string `gorm:"column:name;not null;comment:中文名称" json:"name"`                      // 中文名称
@@ -22,16 +22,16 @@ type LogLevel struct {
 }
 
 // MarshalBinary 支持json序列化
-func (m *LogLevel) MarshalBinary() (data []byte, err error) {
+func (m *LogType) MarshalBinary() (data []byte, err error) {
 	return json.Marshal(m)
 }
 
 // UnmarshalBinary 支持json反序列化
-func (m *LogLevel) UnmarshalBinary(data []byte) error {
+func (m *LogType) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, m)
 }
 
-// TableName LogLevel's table name
-func (*LogLevel) TableName() string {
-	return TableNameLogLevel
+// TableName LogType's table name
+func (*LogType) TableName() string {
+	return TableNameLogType
 }

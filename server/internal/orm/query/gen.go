@@ -19,8 +19,8 @@ var (
 	Q           = new(Query)
 	App         *app
 	Log         *log
-	LogLevel    *logLevel
 	LogStatView *logStatView
+	LogType     *logType
 	Menu        *menu
 	MenuAPI     *menuAPI
 	Role        *role
@@ -31,8 +31,8 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
 	App = &Q.App
 	Log = &Q.Log
-	LogLevel = &Q.LogLevel
 	LogStatView = &Q.LogStatView
+	LogType = &Q.LogType
 	Menu = &Q.Menu
 	MenuAPI = &Q.MenuAPI
 	Role = &Q.Role
@@ -44,8 +44,8 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		db:          db,
 		App:         newApp(db, opts...),
 		Log:         newLog(db, opts...),
-		LogLevel:    newLogLevel(db, opts...),
 		LogStatView: newLogStatView(db, opts...),
+		LogType:     newLogType(db, opts...),
 		Menu:        newMenu(db, opts...),
 		MenuAPI:     newMenuAPI(db, opts...),
 		Role:        newRole(db, opts...),
@@ -58,8 +58,8 @@ type Query struct {
 
 	App         app
 	Log         log
-	LogLevel    logLevel
 	LogStatView logStatView
+	LogType     logType
 	Menu        menu
 	MenuAPI     menuAPI
 	Role        role
@@ -73,8 +73,8 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		db:          db,
 		App:         q.App.clone(db),
 		Log:         q.Log.clone(db),
-		LogLevel:    q.LogLevel.clone(db),
 		LogStatView: q.LogStatView.clone(db),
+		LogType:     q.LogType.clone(db),
 		Menu:        q.Menu.clone(db),
 		MenuAPI:     q.MenuAPI.clone(db),
 		Role:        q.Role.clone(db),
@@ -95,8 +95,8 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		db:          db,
 		App:         q.App.replaceDB(db),
 		Log:         q.Log.replaceDB(db),
-		LogLevel:    q.LogLevel.replaceDB(db),
 		LogStatView: q.LogStatView.replaceDB(db),
+		LogType:     q.LogType.replaceDB(db),
 		Menu:        q.Menu.replaceDB(db),
 		MenuAPI:     q.MenuAPI.replaceDB(db),
 		Role:        q.Role.replaceDB(db),
@@ -107,8 +107,8 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 type queryCtx struct {
 	App         IAppDo
 	Log         ILogDo
-	LogLevel    ILogLevelDo
 	LogStatView ILogStatViewDo
+	LogType     ILogTypeDo
 	Menu        IMenuDo
 	MenuAPI     IMenuAPIDo
 	Role        IRoleDo
@@ -119,8 +119,8 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		App:         q.App.WithContext(ctx),
 		Log:         q.Log.WithContext(ctx),
-		LogLevel:    q.LogLevel.WithContext(ctx),
 		LogStatView: q.LogStatView.WithContext(ctx),
+		LogType:     q.LogType.WithContext(ctx),
 		Menu:        q.Menu.WithContext(ctx),
 		MenuAPI:     q.MenuAPI.WithContext(ctx),
 		Role:        q.Role.WithContext(ctx),

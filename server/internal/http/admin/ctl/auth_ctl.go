@@ -92,6 +92,7 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 	// 生成token
 	claims := service.UserClaims{
 		Uid:    userData.ID,
+		Uname:  userData.Nickname,
 		RoleId: userData.RoleID,
 		AppId:  roleData.AppID,
 	}
@@ -100,6 +101,12 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return
 	}
+
+	// 记录登录日志
+	_ = service.NewLog().
+		WithRequest(r).
+		WithTypeLabel("login").
+		Write("登录后台成功", "")
 
 	res := Resp{
 		Token:    token,

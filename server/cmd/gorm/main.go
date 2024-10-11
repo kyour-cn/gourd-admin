@@ -56,7 +56,7 @@ func main() {
 			// 系统基础数据表
 			{Name: "app"},
 			{Name: "log"},
-			{Name: "log_level"},
+			{Name: "log_type"},
 			{Name: "log_stat_view"},
 			{Name: "menu_api"},
 			{

@@ -65,7 +65,7 @@ func RegisterRoute(r chi.Router) {
 	r.Route("/log", func(r chi.Router) {
 		c := ctl.LogCtl{}
 		r.Use(middleware.AuthJwtMiddleware)
-		r.HandleFunc("/levelList", c.LevelList)
+		r.HandleFunc("/typeList", c.TypeList)
 		r.HandleFunc("/list", c.List)
 		r.HandleFunc("/logStat", c.LogStat)
 	})

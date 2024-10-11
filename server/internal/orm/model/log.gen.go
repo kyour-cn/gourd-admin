@@ -14,8 +14,8 @@ const TableNameLog = "log"
 type Log struct {
 	ID            int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	AppID         int32  `gorm:"column:app_id;not null;comment:应用ID 0为未知" json:"app_id"`                                 // 应用ID 0为未知
-	LevelID       int32  `gorm:"column:level_id;not null;comment:日志级别 <10为系统日志" json:"level_id"`                         // 日志级别 <10为系统日志
-	LevelName     string `gorm:"column:level_name;not null;comment:日志级别名称" json:"level_name"`                            // 日志级别名称
+	TypeID        int32  `gorm:"column:type_id;not null;comment:日志级别 <10为系统日志" json:"type_id"`                           // 日志级别 <10为系统日志
+	TypeName      string `gorm:"column:type_name;not null;comment:日志级别名称" json:"type_name"`                              // 日志级别名称
 	Title         string `gorm:"column:title;not null;comment:标题" json:"title"`                                          // 标题
 	Value         string `gorm:"column:value;comment:日志内容" json:"value"`                                                 // 日志内容
 	ValueType     string `gorm:"column:value_type;not null;default:text;comment:日志类型  text,json,html" json:"value_type"` // 日志类型  text,json,html

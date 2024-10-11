@@ -29,8 +29,8 @@ func newLogStatView(db *gorm.DB, opts ...gen.DOOption) logStatView {
 	_logStatView.ALL = field.NewAsterisk(tableName)
 	_logStatView.Date = field.NewString(tableName, "date")
 	_logStatView.Count_ = field.NewInt64(tableName, "count")
-	_logStatView.LevelName = field.NewString(tableName, "level_name")
-	_logStatView.LevelID = field.NewInt32(tableName, "level_id")
+	_logStatView.TypeName = field.NewString(tableName, "type_name")
+	_logStatView.TypeID = field.NewInt32(tableName, "type_id")
 
 	_logStatView.fillFieldMap()
 
@@ -41,11 +41,11 @@ func newLogStatView(db *gorm.DB, opts ...gen.DOOption) logStatView {
 type logStatView struct {
 	logStatViewDo
 
-	ALL       field.Asterisk
-	Date      field.String
-	Count_    field.Int64
-	LevelName field.String // 日志级别名称
-	LevelID   field.Int32  // 日志级别 <10为系统日志
+	ALL      field.Asterisk
+	Date     field.String
+	Count_   field.Int64
+	TypeName field.String // 日志级别名称
+	TypeID   field.Int32  // 日志级别 <10为系统日志
 
 	fieldMap map[string]field.Expr
 }
@@ -64,8 +64,8 @@ func (l *logStatView) updateTableName(table string) *logStatView {
 	l.ALL = field.NewAsterisk(table)
 	l.Date = field.NewString(table, "date")
 	l.Count_ = field.NewInt64(table, "count")
-	l.LevelName = field.NewString(table, "level_name")
-	l.LevelID = field.NewInt32(table, "level_id")
+	l.TypeName = field.NewString(table, "type_name")
+	l.TypeID = field.NewInt32(table, "type_id")
 
 	l.fillFieldMap()
 
@@ -85,8 +85,8 @@ func (l *logStatView) fillFieldMap() {
 	l.fieldMap = make(map[string]field.Expr, 4)
 	l.fieldMap["date"] = l.Date
 	l.fieldMap["count"] = l.Count_
-	l.fieldMap["level_name"] = l.LevelName
-	l.fieldMap["level_id"] = l.LevelID
+	l.fieldMap["type_name"] = l.TypeName
+	l.fieldMap["type_id"] = l.TypeID
 }
 
 func (l logStatView) clone(db *gorm.DB) logStatView {

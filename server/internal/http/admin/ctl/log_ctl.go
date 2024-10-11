@@ -13,18 +13,18 @@ type LogCtl struct {
 	common.BaseCtl //继承基础控制器
 }
 
-// LevelList 日志等级列表
-func (c *LogCtl) LevelList(w http.ResponseWriter, r *http.Request) {
+// TypeList 日志类型列表
+func (c *LogCtl) TypeList(w http.ResponseWriter, r *http.Request) {
 	type Res struct {
-		Rows  []*model.LogLevel `json:"rows"`
-		Total int64             `json:"total"`
+		Rows  []*model.LogType `json:"rows"`
+		Total int64            `json:"total"`
 	}
 
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
 	// 查询列表
-	list, count, err := query.LogLevel.WithContext(r.Context()).
+	list, count, err := query.LogType.WithContext(r.Context()).
 		FindByPage((page-1)*pageSize, pageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
@@ -123,6 +123,7 @@ func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// generateDays 时间列表生成
 func generateDays(startDate, endDate time.Time, format string) []string {
 	var days []string
 	for current := startDate; !current.After(endDate); current = current.AddDate(0, 0, 1) {

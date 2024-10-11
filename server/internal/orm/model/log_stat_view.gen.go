@@ -12,10 +12,10 @@ const TableNameLogStatView = "log_stat_view"
 
 // LogStatView VIEW
 type LogStatView struct {
-	Date      string `gorm:"column:date" json:"date"`
-	Count_    int64  `gorm:"column:count;not null" json:"count"`
-	LevelName string `gorm:"column:level_name;not null;comment:日志级别名称" json:"level_name"`    // 日志级别名称
-	LevelID   int32  `gorm:"column:level_id;not null;comment:日志级别 <10为系统日志" json:"level_id"` // 日志级别 <10为系统日志
+	Date     string `gorm:"column:date" json:"date"`
+	Count_   int64  `gorm:"column:count;not null" json:"count"`
+	TypeName string `gorm:"column:type_name;not null;comment:日志级别名称" json:"type_name"`    // 日志级别名称
+	TypeID   int32  `gorm:"column:type_id;not null;comment:日志级别 <10为系统日志" json:"type_id"` // 日志级别 <10为系统日志
 }
 
 // MarshalBinary 支持json序列化
