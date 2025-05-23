@@ -64,8 +64,8 @@ func GenerateSlide() (any, error) {
 	}
 
 	var masterImageBase64, tileImageBase64 string
-	masterImageBase64 = captData.GetMasterImage().ToBase64()
-	tileImageBase64 = captData.GetTileImage().ToBase64()
+	masterImageBase64, _ = captData.GetMasterImage().ToBase64()
+	tileImageBase64, _ = captData.GetTileImage().ToBase64()
 
 	dotsByte, _ := json.Marshal(blockData)
 	key := "captcha:" + helper.StringToMD5(string(dotsByte))

@@ -14,16 +14,18 @@ var logConf *LogConfig
 // GetLogConfig 获取Log服务器配置
 func GetLogConfig() (*LogConfig, error) {
 
-	// 初始化配置
 	if logConf == nil {
+		// 初始化默认配置
 		_conf := &LogConfig{
 			Level:   "info",
-			LogFile: "app.log",
+			LogFile: "log/app.log",
 			MaxSize: 10,
+			Console: false,
 		}
 		err := Unmarshal("log", _conf)
 		if err != nil {
-			return nil, err
+			// 写入默认配置
+			_, _ = Marshal("log", _conf)
 		}
 		logConf = _conf
 	}
@@ -31,7 +33,8 @@ func GetLogConfig() (*LogConfig, error) {
 	return logConf, nil
 }
 
-// SetLogConfig 设置Log服务器配置
+// SetLogConfig 设置Log服务配置
 func SetLogConfig(conf *LogConfig) {
 	logConf = conf
+	_, _ = Marshal("log", logConf)
 }

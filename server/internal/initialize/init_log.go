@@ -25,8 +25,7 @@ func (h DefaultHandler) Enabled(_ context.Context, l slog.Level) bool {
 }
 
 func (h DefaultHandler) Handle(_ context.Context, r slog.Record) error {
-	dt := time.Now().Format("2006-01-02 15:04:05")
-	msg := dt + " " + r.Level.String() + " " + r.Message
+	msg := time.Now().Format("2006-01-02 15:04:05") + " " + r.Level.String() + " " + r.Message
 
 	// 输出日志属性
 	r.Attrs(func(a slog.Attr) bool {

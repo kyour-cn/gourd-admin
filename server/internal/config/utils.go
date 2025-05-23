@@ -31,3 +31,17 @@ func Unmarshal(name string, v any) error {
 	}
 	return nil
 }
+
+// Marshal 写入自定义配置文件
+func Marshal(name string, v any) ([]byte, error) {
+	var file = configDir + "/" + name + ".toml"
+	tomlData, err := toml.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	err = os.WriteFile(file, tomlData, 0644)
+	if err != nil {
+		return nil, err
+	}
+	return tomlData, nil
+}
