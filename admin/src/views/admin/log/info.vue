@@ -3,7 +3,7 @@
 	<el-main style="padding:0 20px;">
 		<el-descriptions :column="1" border size="small">
 			<el-descriptions-item label="标题">{{ data.title }}</el-descriptions-item>
-			<el-descriptions-item label="日志类型">{{ data.level_name }}</el-descriptions-item>
+			<el-descriptions-item label="日志类型">{{ data.type_name }}</el-descriptions-item>
 			<el-descriptions-item label="请求来源">{{ data.request_source }}</el-descriptions-item>
 			<el-descriptions-item label="操作人">{{ data.request_user }} （{{ data.request_user_id }}）</el-descriptions-item>
 			<el-descriptions-item label="请求ip">{{ data.request_ip }}</el-descriptions-item>
