@@ -22,6 +22,12 @@ func NewLog() *Log {
 	return log
 }
 
+// WithModel set model to log
+func (l *Log) WithModel(model *model.Log) *Log {
+	l.Model = model
+	return l
+}
+
 // WithRequest add request information to log
 func (l *Log) WithRequest(r *http.Request) *Log {
 	if r == nil {

@@ -1,10 +1,12 @@
 package ctl
 
 import (
+	"gorm.io/gen"
 	"gourd/internal/http/admin/common"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -50,28 +52,33 @@ func (c *LogCtl) List(w http.ResponseWriter, r *http.Request) {
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
+	var condition []gen.Condition
+
 	// 时间筛选
 	startTimeStr, endTimeStr := params.Get("start_time"), params.Get("end_time")
 	if startTimeStr == "" || endTimeStr == "" {
 		_ = c.Fail(w, 1, "时间不能为空", nil)
 		return
 	}
-
 	startTime, err1 := time.Parse(time.DateTime, startTimeStr)
 	entTime, err2 := time.Parse(time.DateTime, endTimeStr)
 	if err1 != nil || err2 != nil {
 		_ = c.Fail(w, 101, "时间格式异常", nil)
 		return
 	}
+	condition = append(condition, query.Log.CreateTime.Between(uint(startTime.Unix()), uint(entTime.Unix())))
+
+	// 类型筛选
+	logType := params.Get("type_id")
+	if logType != "" {
+		logType, _ := strconv.Atoi(logType)
+		condition = append(condition, query.Log.TypeID.Eq(int32(logType)))
+	}
 
 	// 查询列表
 	list, count, err := query.Log.WithContext(r.Context()).
-		Where(
-			query.Log.CreateTime.Between(
-				uint(startTime.Unix()),
-				uint(entTime.Unix()),
-			),
-		).
+		Where(condition...).
+		Order(query.Log.ID.Desc()).
 		FindByPage((page-1)*pageSize, pageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
@@ -109,7 +116,7 @@ func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 生成时间列表
-	days := generateDays(startTime, entTime, "2006-01-02")
+	days := c.generateDays(startTime, entTime, "2006-01-02")
 
 	// 查询日志数量
 	list, _ := query.LogStatView.Where(query.LogStatView.Date.Between(
@@ -124,7 +131,7 @@ func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
 }
 
 // generateDays 时间列表生成
-func generateDays(startDate, endDate time.Time, format string) []string {
+func (c *LogCtl) generateDays(startDate, endDate time.Time, format string) []string {
 	var days []string
 	for current := startDate; !current.After(endDate); current = current.AddDate(0, 0, 1) {
 		days = append(days, current.Format(format))

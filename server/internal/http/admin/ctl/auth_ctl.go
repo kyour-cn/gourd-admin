@@ -64,6 +64,7 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		req.Password = hex.EncodeToString(hash[:])
 	}
 
+	// 登录
 	userData, err := service.LoginUser(r.Context(), req.Username, req.Password)
 	if err != nil {
 		_ = c.Fail(w, 103, "登录失败："+err.Error(), "")
@@ -74,6 +75,7 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 获取角色信息
 	roleData, err := query.Role.WithContext(r.Context()).
 		Where(
 			query.Role.ID.Eq(userData.RoleID),
@@ -104,9 +106,13 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 
 	// 记录登录日志
 	_ = service.NewLog().
+		WithModel(&model.Log{
+			RequestUserID: userData.ID,
+			RequestUser:   userData.Nickname,
+		}).
 		WithRequest(r).
 		WithTypeLabel("login").
-		Write("登录后台成功", "")
+		Write("登录后台", "")
 
 	res := Resp{
 		Token:    token,
