@@ -10,32 +10,6 @@ import (
 	"time"
 )
 
-// DefaultHandler 自定义日志处理器
-type DefaultHandler struct {
-	Level  slog.Level
-	Writer io.Writer
-}
-
-func (DefaultHandler) WithAttrs([]slog.Attr) slog.Handler { return nil }
-
-func (DefaultHandler) WithGroup(string) slog.Handler { return nil }
-
-func (h DefaultHandler) Enabled(_ context.Context, l slog.Level) bool {
-	return l >= h.Level
-}
-
-func (h DefaultHandler) Handle(_ context.Context, r slog.Record) error {
-	msg := time.Now().Format("2006-01-02 15:04:05") + " " + r.Level.String() + " " + r.Message
-
-	// 输出日志属性
-	r.Attrs(func(a slog.Attr) bool {
-		msg += " " + a.Key + "=" + a.Value.String()
-		return true
-	})
-	_, err := h.Writer.Write([]byte(msg + "\n"))
-	return err
-}
-
 // InitLog 初始化日志
 func InitLog() error {
 	conf, err := config.GetLogConfig()
@@ -83,4 +57,31 @@ func InitLog() error {
 	slog.SetDefault(logger)
 
 	return nil
+}
+
+// DefaultHandler 自定义日志处理器
+type DefaultHandler struct {
+	Level  slog.Level
+	Writer io.Writer
+}
+
+func (DefaultHandler) WithAttrs([]slog.Attr) slog.Handler { return nil }
+
+func (DefaultHandler) WithGroup(string) slog.Handler { return nil }
+
+func (h DefaultHandler) Enabled(_ context.Context, l slog.Level) bool {
+	return l >= h.Level
+}
+
+func (h DefaultHandler) Handle(_ context.Context, r slog.Record) error {
+	dt := time.Now().Format("2006-01-02 15:04:05")
+	msg := dt + " " + r.Level.String() + " " + r.Message
+
+	// 输出日志属性
+	r.Attrs(func(a slog.Attr) bool {
+		msg += " " + a.Key + "=" + a.Value.String()
+		return true
+	})
+	_, err := h.Writer.Write([]byte(msg + "\n"))
+	return err
 }
