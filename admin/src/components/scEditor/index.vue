@@ -18,7 +18,7 @@
 	import 'tinymce/plugins/media'  //插入视频
 	import 'tinymce/plugins/link'  //超链接
 	import 'tinymce/plugins/preview'//预览
-	import 'tinymce/plugins/template'//模板
+	// import 'tinymce/plugins/template'//模板
 	import 'tinymce/plugins/table'  //表格
 	import 'tinymce/plugins/pagebreak'  //分页
 	import 'tinymce/plugins/lists'  //列

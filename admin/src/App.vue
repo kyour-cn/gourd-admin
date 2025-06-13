@@ -42,5 +42,5 @@
 </script>
 
 <style lang="scss">
-	@import '@/style/style.scss';
+    @use '@/style/style.scss' as style;
 </style>
