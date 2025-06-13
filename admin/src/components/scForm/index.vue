@@ -233,23 +233,50 @@
 				return obj1
 				//return JSON.parse(JSON.stringify(obj1))
 			},
+            // 工具函数：安全地解析表达式
+            evaluateExpression(expression, scope = {}) {
+                try {
+                    // 创建一个只接受特定变量的函数
+                    const fn = new Function('form', 'return (' + expression.replace(/\$/g, 'form') + ')');
+                    return fn(scope);
+                } catch (e) {
+                    console.warn(`Expression error: ${expression}`, e);
+                    return false;
+                }
+            },
 			//处理动态隐藏
-			hideHandle(item){
-				if(item.hideHandle){
-					const exp = eval(item.hideHandle.replace(/\$/g,"this.form"))
-					return exp
-				}
-				return false
-			},
+			// hideHandle(item){
+			// 	if(item.hideHandle){
+			// 		const exp = eval(item.hideHandle.replace(/\$/g,"this.form"))
+			// 		return exp
+			// 	}
+			// 	return false
+			// },
+            hideHandle(item) {
+                if (item.hideHandle) {
+                    return this.evaluateExpression(item.hideHandle, this.form);
+                }
+                return false;
+            },
 			//处理动态必填
-			rulesHandle(item){
-				if(item.requiredHandle){
-					const exp = eval(item.requiredHandle.replace(/\$/g,"this.form"))
-					var requiredRule = item.rules.find(t => 'required' in t)
-					requiredRule.required = exp
-				}
-				return item.rules
-			},
+			// rulesHandle(item){
+			// 	if(item.requiredHandle){
+			// 		const exp = eval(item.requiredHandle.replace(/\$/g,"this.form"))
+			// 		var requiredRule = item.rules.find(t => 'required' in t)
+			// 		requiredRule.required = exp
+			// 	}
+			// 	return item.rules
+			// },
+            rulesHandle(item) {
+                if (item.requiredHandle) {
+                    const exp = this.evaluateExpression(item.requiredHandle, this.form);
+                    const requiredRule = item.rules.find(t => 'required' in t);
+                    if (requiredRule) {
+                        requiredRule.required = exp;
+                    }
+                }
+                return item.rules;
+            },
 			//数据验证
 			validate(valid, obj){
 				return this.$refs.form.validate(valid, obj)

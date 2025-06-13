@@ -26,9 +26,10 @@
 
 		},
 		methods: {
-			getApiObj(){
-				return eval(`this.`+this.item.options.apiObj)
-			}
+            getApiObj() {
+                const key = this.item.options.apiObj;
+                return this[key];
+            }
 		}
 	}
 </script>
