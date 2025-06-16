@@ -91,7 +91,7 @@ type MenuMate struct {
 	Active           string `json:"active"`
 	Color            string `json:"color"`
 	Type             string `json:"type"`
-	Fullpage         bool   `json:"fullpage"`
+	FullPage         bool   `json:"fullPage"`
 	Tag              string `json:"tag"`
 	Hidden           bool   `json:"hidden"`
 	HiddenBreadcrumb bool   `json:"hiddenBreadcrumb"`
@@ -139,7 +139,7 @@ func GetMenu(userInfo *model.User) (any, error) {
 	}
 
 	menu, err := query.Menu.
-		Preload(query.Menu.ApiList).
+		Preload(query.Menu.MenuApi).
 		Where(conditions...).
 		Find()
 	if err != nil {
@@ -161,7 +161,7 @@ func GetMenuFormApp(appId int32) (any, error) {
 	}
 
 	menu, err := query.Menu.
-		Preload(query.Menu.ApiList).
+		Preload(query.Menu.MenuApi).
 		Where(conditions...).
 		Find()
 	if err != nil {
@@ -193,7 +193,7 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 				Meta:      mate,
 				AppId:     menu.AppID,
 				Children:  children,
-				ApiList:   menu.ApiList,
+				ApiList:   menu.MenuApi,
 			}
 			menuTreeArr = append(menuTreeArr, menuTree)
 		}

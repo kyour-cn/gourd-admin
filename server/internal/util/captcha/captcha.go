@@ -85,15 +85,15 @@ func GenerateSlide() (any, error) {
 		"tile_base64":  tileImageBase64,
 		"tile_width":   blockData.Width,
 		"tile_height":  blockData.Height,
-		"tile_x":       blockData.TileX,
-		"tile_y":       blockData.TileY,
+		"tile_x":       blockData.DX,
+		"tile_y":       blockData.DY,
 	}
 
 	return bt, nil
 }
 
 // VerifySlide 验证滑动验证码
-func VerifySlide(captchaKey string, x int64, y int64) bool {
+func VerifySlide(captchaKey string, x int, y int) bool {
 	redis, err := redisutil.GetRedis(context.Background())
 	if err != nil {
 		return false
@@ -113,5 +113,5 @@ func VerifySlide(captchaKey string, x int64, y int64) bool {
 		return false
 	}
 
-	return slide.CheckPoint(x, y, int64(dct.X), int64(dct.Y), 4)
+	return slide.Validate(x, y, dct.X, dct.Y, 4)
 }

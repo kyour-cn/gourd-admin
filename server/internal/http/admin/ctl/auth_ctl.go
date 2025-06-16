@@ -36,8 +36,8 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		CaptchaKey string `json:"captcha_key" validate:"required"`
 		Md5        bool   `json:"md5"`
 		Point      struct {
-			X int64 `json:"x"`
-			Y int64 `json:"y"`
+			X int `json:"x"`
+			Y int `json:"y"`
 		}
 	}
 
