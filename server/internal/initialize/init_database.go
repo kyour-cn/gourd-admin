@@ -26,7 +26,7 @@ func InitDatabase() error {
 	// 连接数据库
 	dbConf, err := config.GetDBConfig("mysql")
 	if err != nil {
-		return errors.New("mysql config is nil")
+		return errors.New("database.mysql config is nil")
 	}
 
 	// 连接数据库

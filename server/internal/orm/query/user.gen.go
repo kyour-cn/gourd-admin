@@ -6,6 +6,7 @@ package query
 
 import (
 	"context"
+	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -42,6 +43,11 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Role", "model.Role"),
+		App: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Role.App", "model.App"),
+		},
 	}
 
 	_user.fillFieldMap()
@@ -126,11 +132,14 @@ func (u *user) fillFieldMap() {
 
 func (u user) clone(db *gorm.DB) user {
 	u.userDo.ReplaceConnPool(db.Statement.ConnPool)
+	u.Role.db = db.Session(&gorm.Session{Initialized: true})
+	u.Role.db.Statement.ConnPool = db.Statement.ConnPool
 	return u
 }
 
 func (u user) replaceDB(db *gorm.DB) user {
 	u.userDo.ReplaceDB(db)
+	u.Role.db = db.Session(&gorm.Session{})
 	return u
 }
 
@@ -138,6 +147,10 @@ type userHasOneRole struct {
 	db *gorm.DB
 
 	field.RelationField
+
+	App struct {
+		field.RelationField
+	}
 }
 
 func (a userHasOneRole) Where(conds ...field.Expr) *userHasOneRole {
@@ -165,6 +178,11 @@ func (a userHasOneRole) Session(session *gorm.Session) *userHasOneRole {
 
 func (a userHasOneRole) Model(m *model.User) *userHasOneRoleTx {
 	return &userHasOneRoleTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasOneRole) Unscoped() *userHasOneRole {
+	a.db = a.db.Unscoped()
+	return &a
 }
 
 type userHasOneRoleTx struct{ tx *gorm.Association }
@@ -203,6 +221,11 @@ func (a userHasOneRoleTx) Clear() error {
 
 func (a userHasOneRoleTx) Count() int64 {
 	return a.tx.Count()
+}
+
+func (a userHasOneRoleTx) Unscoped() *userHasOneRoleTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type userDo struct{ gen.DO }
@@ -262,6 +285,8 @@ type IUserDo interface {
 	FirstOrCreate() (*model.User, error)
 	FindByPage(offset int, limit int) (result []*model.User, count int64, err error)
 	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
+	Rows() (*sql.Rows, error)
+	Row() *sql.Row
 	Scan(result interface{}) (err error)
 	Returning(value interface{}, columns ...string) IUserDo
 	UnderlyingDB() *gorm.DB

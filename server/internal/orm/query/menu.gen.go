@@ -6,6 +6,7 @@ package query
 
 import (
 	"context"
+	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -38,10 +39,10 @@ func newMenu(db *gorm.DB, opts ...gen.DOOption) menu {
 	_menu.Status = field.NewInt32(tableName, "status")
 	_menu.Sort = field.NewInt32(tableName, "sort")
 	_menu.Meta = field.NewString(tableName, "meta")
-	_menu.ApiList = menuHasManyApiList{
+	_menu.MenuApi = menuHasManyMenuApi{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("ApiList", "model.MenuAPI"),
+		RelationField: field.NewRelation("MenuApi", "model.MenuAPI"),
 	}
 
 	_menu.App = menuHasOneApp{
@@ -71,7 +72,7 @@ type menu struct {
 	Status    field.Int32  // 是否启用
 	Sort      field.Int32  // 排序
 	Meta      field.String // meta路由参数
-	ApiList   menuHasManyApiList
+	MenuApi   menuHasManyMenuApi
 
 	App menuHasOneApp
 
@@ -134,21 +135,27 @@ func (m *menu) fillFieldMap() {
 
 func (m menu) clone(db *gorm.DB) menu {
 	m.menuDo.ReplaceConnPool(db.Statement.ConnPool)
+	m.MenuApi.db = db.Session(&gorm.Session{Initialized: true})
+	m.MenuApi.db.Statement.ConnPool = db.Statement.ConnPool
+	m.App.db = db.Session(&gorm.Session{Initialized: true})
+	m.App.db.Statement.ConnPool = db.Statement.ConnPool
 	return m
 }
 
 func (m menu) replaceDB(db *gorm.DB) menu {
 	m.menuDo.ReplaceDB(db)
+	m.MenuApi.db = db.Session(&gorm.Session{})
+	m.App.db = db.Session(&gorm.Session{})
 	return m
 }
 
-type menuHasManyApiList struct {
+type menuHasManyMenuApi struct {
 	db *gorm.DB
 
 	field.RelationField
 }
 
-func (a menuHasManyApiList) Where(conds ...field.Expr) *menuHasManyApiList {
+func (a menuHasManyMenuApi) Where(conds ...field.Expr) *menuHasManyMenuApi {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -161,27 +168,32 @@ func (a menuHasManyApiList) Where(conds ...field.Expr) *menuHasManyApiList {
 	return &a
 }
 
-func (a menuHasManyApiList) WithContext(ctx context.Context) *menuHasManyApiList {
+func (a menuHasManyMenuApi) WithContext(ctx context.Context) *menuHasManyMenuApi {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a menuHasManyApiList) Session(session *gorm.Session) *menuHasManyApiList {
+func (a menuHasManyMenuApi) Session(session *gorm.Session) *menuHasManyMenuApi {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a menuHasManyApiList) Model(m *model.Menu) *menuHasManyApiListTx {
-	return &menuHasManyApiListTx{a.db.Model(m).Association(a.Name())}
+func (a menuHasManyMenuApi) Model(m *model.Menu) *menuHasManyMenuApiTx {
+	return &menuHasManyMenuApiTx{a.db.Model(m).Association(a.Name())}
 }
 
-type menuHasManyApiListTx struct{ tx *gorm.Association }
+func (a menuHasManyMenuApi) Unscoped() *menuHasManyMenuApi {
+	a.db = a.db.Unscoped()
+	return &a
+}
 
-func (a menuHasManyApiListTx) Find() (result []*model.MenuAPI, err error) {
+type menuHasManyMenuApiTx struct{ tx *gorm.Association }
+
+func (a menuHasManyMenuApiTx) Find() (result []*model.MenuAPI, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a menuHasManyApiListTx) Append(values ...*model.MenuAPI) (err error) {
+func (a menuHasManyMenuApiTx) Append(values ...*model.MenuAPI) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -189,7 +201,7 @@ func (a menuHasManyApiListTx) Append(values ...*model.MenuAPI) (err error) {
 	return a.tx.Append(targetValues...)
 }
 
-func (a menuHasManyApiListTx) Replace(values ...*model.MenuAPI) (err error) {
+func (a menuHasManyMenuApiTx) Replace(values ...*model.MenuAPI) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -197,7 +209,7 @@ func (a menuHasManyApiListTx) Replace(values ...*model.MenuAPI) (err error) {
 	return a.tx.Replace(targetValues...)
 }
 
-func (a menuHasManyApiListTx) Delete(values ...*model.MenuAPI) (err error) {
+func (a menuHasManyMenuApiTx) Delete(values ...*model.MenuAPI) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -205,12 +217,17 @@ func (a menuHasManyApiListTx) Delete(values ...*model.MenuAPI) (err error) {
 	return a.tx.Delete(targetValues...)
 }
 
-func (a menuHasManyApiListTx) Clear() error {
+func (a menuHasManyMenuApiTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a menuHasManyApiListTx) Count() int64 {
+func (a menuHasManyMenuApiTx) Count() int64 {
 	return a.tx.Count()
+}
+
+func (a menuHasManyMenuApiTx) Unscoped() *menuHasManyMenuApiTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type menuHasOneApp struct {
@@ -244,6 +261,11 @@ func (a menuHasOneApp) Session(session *gorm.Session) *menuHasOneApp {
 
 func (a menuHasOneApp) Model(m *model.Menu) *menuHasOneAppTx {
 	return &menuHasOneAppTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a menuHasOneApp) Unscoped() *menuHasOneApp {
+	a.db = a.db.Unscoped()
+	return &a
 }
 
 type menuHasOneAppTx struct{ tx *gorm.Association }
@@ -282,6 +304,11 @@ func (a menuHasOneAppTx) Clear() error {
 
 func (a menuHasOneAppTx) Count() int64 {
 	return a.tx.Count()
+}
+
+func (a menuHasOneAppTx) Unscoped() *menuHasOneAppTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type menuDo struct{ gen.DO }
@@ -341,6 +368,8 @@ type IMenuDo interface {
 	FirstOrCreate() (*model.Menu, error)
 	FindByPage(offset int, limit int) (result []*model.Menu, count int64, err error)
 	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
+	Rows() (*sql.Rows, error)
+	Row() *sql.Row
 	Scan(result interface{}) (err error)
 	Returning(value interface{}, columns ...string) IMenuDo
 	UnderlyingDB() *gorm.DB
