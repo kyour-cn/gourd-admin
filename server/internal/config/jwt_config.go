@@ -10,13 +10,21 @@ var jwtConf *JwtConfig
 
 // GetJwtConfig 获取Log服务器配置
 func GetJwtConfig() (*JwtConfig, error) {
+	key := "jwt"
 
 	// 初始化配置
 	if jwtConf == nil {
-		_conf := &JwtConfig{
-			Secret: "gourd-admin",
+		_conf := &JwtConfig{}
+
+		// 如果配置不存在，则创建默认配置
+		if !Exists(key) {
+			err := SetJwtConfig(_conf)
+			if err != nil {
+				return nil, err
+			}
 		}
-		err := Unmarshal("jwt", _conf)
+
+		err := Unmarshal(key, _conf)
 		if err != nil {
 			return nil, err
 		}
@@ -27,6 +35,8 @@ func GetJwtConfig() (*JwtConfig, error) {
 }
 
 // SetJwtConfig 设置Log服务器配置
-func SetJwtConfig(conf *JwtConfig) {
+func SetJwtConfig(conf *JwtConfig) error {
+	key := "jwt"
 	jwtConf = conf
+	return Marshal(key, conf)
 }

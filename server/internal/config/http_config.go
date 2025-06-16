@@ -12,6 +12,7 @@ var httpConf *HttpConfig
 
 // GetHttpConfig 获取Http服务器配置
 func GetHttpConfig() (*HttpConfig, error) {
+	key := "http"
 
 	// 初始化配置
 	if httpConf == nil {
@@ -21,7 +22,16 @@ func GetHttpConfig() (*HttpConfig, error) {
 			Port:   8080,
 			Static: "",
 		}
-		err := Unmarshal("http", _conf)
+
+		// 如果配置不存在，则创建默认配置
+		if !Exists(key) {
+			err := SetHttpConfig(_conf)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		err := Unmarshal(key, _conf)
 		if err != nil {
 			return nil, err
 		}
@@ -32,6 +42,8 @@ func GetHttpConfig() (*HttpConfig, error) {
 }
 
 // SetHttpConfig 设置Http服务器配置
-func SetHttpConfig(conf *HttpConfig) {
+func SetHttpConfig(conf *HttpConfig) error {
+	key := "http"
 	httpConf = conf
+	return Marshal(key, conf)
 }
