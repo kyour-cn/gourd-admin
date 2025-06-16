@@ -1,14 +1,14 @@
 package initialize
 
 import (
+	"app/internal/config"
+	"app/internal/global"
+	"app/internal/orm/query"
 	"errors"
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"gourd/internal/config"
-	"gourd/internal/global"
-	"gourd/internal/orm/query"
 	"log/slog"
 	"time"
 )

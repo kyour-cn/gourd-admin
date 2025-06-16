@@ -17,7 +17,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"gourd/internal/orm/model"
+	"app/internal/orm/model"
 )
 
 func newLogType(db *gorm.DB, opts ...gen.DOOption) logType {

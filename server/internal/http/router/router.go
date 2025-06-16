@@ -1,9 +1,9 @@
 package router
 
 import (
+	"app/internal/config"
+	adminRoute "app/internal/http/admin/route"
 	"github.com/go-chi/chi/v5"
-	"gourd/internal/config"
-	adminRoute "gourd/internal/http/admin/route"
 	"net/http"
 	"os"
 )

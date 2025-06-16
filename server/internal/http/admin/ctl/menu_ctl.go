@@ -1,11 +1,11 @@
 package ctl
 
 import (
+	"app/internal/http/admin/common"
+	"app/internal/http/admin/service"
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 	"encoding/json"
-	"gourd/internal/http/admin/common"
-	"gourd/internal/http/admin/service"
-	"gourd/internal/orm/model"
-	"gourd/internal/orm/query"
 	"net/http"
 	"strconv"
 )

@@ -1,10 +1,10 @@
 package redisutil
 
 import (
+	"app/internal/config"
 	"context"
 	"errors"
 	"github.com/go-redis/redis/v8"
-	"gourd/internal/config"
 	"strconv"
 )
 

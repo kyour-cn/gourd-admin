@@ -1,14 +1,14 @@
 package ctl
 
 import (
+	"app/internal/config"
+	"app/internal/http/admin/common"
+	"app/internal/http/admin/service"
+	"app/internal/orm/model"
+	"app/internal/orm/query"
+	"app/internal/util/captcha"
 	"crypto/md5"
 	"encoding/hex"
-	"gourd/internal/config"
-	"gourd/internal/http/admin/common"
-	"gourd/internal/http/admin/service"
-	"gourd/internal/orm/model"
-	"gourd/internal/orm/query"
-	"gourd/internal/util/captcha"
 	"net/http"
 )
 

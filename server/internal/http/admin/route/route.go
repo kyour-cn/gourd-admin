@@ -1,9 +1,9 @@
 package route
 
 import (
+	"app/internal/http/admin/ctl"
+	"app/internal/http/middleware"
 	"github.com/go-chi/chi/v5"
-	"gourd/internal/http/admin/ctl"
-	"gourd/internal/http/middleware"
 )
 
 // RegisterRoute 注册路由组

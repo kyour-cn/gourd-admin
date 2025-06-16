@@ -1,11 +1,11 @@
 package ctl
 
 import (
+	"app/internal/http/admin/common"
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
-	"gourd/internal/http/admin/common"
-	"gourd/internal/orm/model"
-	"gourd/internal/orm/query"
 	"net/http"
 	"strconv"
 )

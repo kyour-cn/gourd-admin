@@ -17,7 +17,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"gourd/internal/orm/model"
+	"app/internal/orm/model"
 )
 
 func newMenuAPI(db *gorm.DB, opts ...gen.DOOption) menuAPI {

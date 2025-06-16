@@ -1,6 +1,7 @@
 package captcha
 
 import (
+	"app/internal/util/redisutil"
 	"context"
 	"encoding/json"
 	"errors"
@@ -8,7 +9,6 @@ import (
 	"github.com/wenlng/go-captcha-assets/resources/images"
 	"github.com/wenlng/go-captcha-assets/resources/tiles"
 	"github.com/wenlng/go-captcha/v2/slide"
-	"gourd/internal/util/redisutil"
 	"log"
 	"time"
 )

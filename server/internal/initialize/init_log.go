@@ -1,9 +1,9 @@
 package initialize
 
 import (
+	"app/internal/config"
 	"context"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"gourd/internal/config"
 	"io"
 	"log/slog"
 	"os"

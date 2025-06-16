@@ -1,9 +1,9 @@
 package service
 
 import (
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 	"context"
-	"gourd/internal/orm/model"
-	"gourd/internal/orm/query"
 	"net/http"
 )
 

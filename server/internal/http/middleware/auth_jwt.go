@@ -1,10 +1,10 @@
 package middleware
 
 import (
+	"app/internal/config"
+	"app/internal/http/admin/service"
 	"context"
 	"github.com/golang-jwt/jwt/v5"
-	"gourd/internal/config"
-	"gourd/internal/http/admin/service"
 	"net/http"
 )
 

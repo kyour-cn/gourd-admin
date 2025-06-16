@@ -1,10 +1,10 @@
 package event
 
 import (
+	"app/internal/initialize"
+	"app/internal/util/redisutil"
 	"context"
 	"github.com/go-gourd/gourd/event"
-	"gourd/internal/initialize"
-	"gourd/internal/util/redisutil"
 	"log/slog"
 )
 

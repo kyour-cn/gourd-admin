@@ -1,9 +1,9 @@
 package ctl
 
 import (
-	"gourd/internal/http/admin/common"
-	"gourd/internal/orm/model"
-	"gourd/internal/orm/query"
+	"app/internal/http/admin/common"
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 	"net/http"
 )
 

@@ -1,11 +1,11 @@
 package test
 
 import (
+	"app/internal/config"
+	"app/internal/global"
+	"app/internal/initialize"
+	"app/internal/orm/query"
 	"encoding/json"
-	"gourd/internal/config"
-	"gourd/internal/global"
-	"gourd/internal/initialize"
-	"gourd/internal/orm/query"
 	"testing"
 )
 
