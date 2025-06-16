@@ -26,7 +26,7 @@
 		</el-form-item>
 		<el-form-item>
             <el-popover :visible="captchaShow" placement="top-start" width="350">
-                <gocaptcha-slide
+                <CaptchaSlide
                     v-if="captchaShow"
                     :data="captchaData"
                     :events="{
@@ -51,8 +51,12 @@
 
 <script>
 import config from "@/config"
+import {Slide as CaptchaSlide} from 'go-captcha-vue'
 
 export default {
+    components: {
+        CaptchaSlide
+    },
 	data() {
 		return {
 			// userType: 'admin',

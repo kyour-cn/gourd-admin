@@ -11,7 +11,6 @@ import App from './App.vue'
 // import '@/mock/index.js'
 
 import "go-captcha-vue/dist/style.css"
-import GoCaptcha from "go-captcha-vue"
 
 const app = createApp(App);
 
@@ -20,7 +19,6 @@ app.use(router);
 app.use(ElementPlus);
 app.use(i18n);
 app.use(scui);
-app.use(GoCaptcha)
 
 //挂载app
 app.mount('#app');
