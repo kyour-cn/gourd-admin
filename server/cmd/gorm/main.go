@@ -59,7 +59,18 @@ func main() {
 			{Name: "log_type"},
 			{Name: "log_stat_view"},
 			{Name: "menu_api"},
-			{Name: "role"},
+			{
+				Name: "role",
+				Relate: &[]gen_tool.TableRelate{
+					{
+						TableName:  "app",
+						FieldName:  "App",
+						Type:       field.HasOne,
+						ForeignKey: "app_id",
+						LocalKey:   "id",
+					},
+				},
+			},
 			{
 				Name: "menu",
 				Relate: &[]gen_tool.TableRelate{

@@ -1,4 +1,4 @@
-package test
+package db
 
 import (
 	"app/internal/config"
@@ -11,9 +11,13 @@ import (
 
 func TestDB(t *testing.T) {
 
-	config.SetConfigPath("../configs")
+	err := config.SetConfigPath("../configs")
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
-	err := initialize.InitDatabase()
+	err = initialize.InitDatabase()
 	if err != nil {
 		t.Error(err)
 		return
