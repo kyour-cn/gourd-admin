@@ -1,8 +1,7 @@
-package ctl
+package controller
 
 import (
-	"app/internal/http/admin/common"
-	"app/internal/http/admin/service"
+	"app/internal/modles/auth"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"encoding/json"
@@ -10,12 +9,12 @@ import (
 	"strconv"
 )
 
-// MenuCtl 用户控制器
-type MenuCtl struct {
-	common.BaseCtl //继承基础控制器
+// Menu 用户控制器
+type Menu struct {
+	Base //继承基础控制器
 }
 
-func (c *MenuCtl) List(w http.ResponseWriter, r *http.Request) {
+func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
 
 	type Req struct {
 		AppId int32 `json:"app_id"`
@@ -29,7 +28,7 @@ func (c *MenuCtl) List(w http.ResponseWriter, r *http.Request) {
 		req.AppId = int32(appId)
 	}
 
-	menus, err := service.GetMenuFormApp(req.AppId)
+	menus, err := auth.GetMenuFormApp(req.AppId)
 	if err != nil {
 		return
 	}
@@ -37,14 +36,14 @@ func (c *MenuCtl) List(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", menus)
 }
 
-func (c *MenuCtl) Add(w http.ResponseWriter, r *http.Request) {
+func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
-		ParentId  int32            `json:"parentId"`
-		Name      string           `json:"name"`
-		Path      string           `json:"path"`
-		Component string           `json:"component"`
-		Meta      service.MenuMate `json:"meta"`
-		AppId     int32            `json:"app_id"`
+		ParentId  int32         `json:"parentId"`
+		Name      string        `json:"name"`
+		Path      string        `json:"path"`
+		Component string        `json:"component"`
+		Meta      auth.MenuMate `json:"meta"`
+		AppId     int32         `json:"app_id"`
 	}
 	// 获取参数
 	req := Req{}
@@ -76,15 +75,15 @@ func (c *MenuCtl) Add(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", data)
 }
 
-func (c *MenuCtl) Edit(w http.ResponseWriter, r *http.Request) {
+func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
-		Id        int32            `json:"id"`
-		Name      string           `json:"name"`
-		Path      string           `json:"path"`
-		Component string           `json:"component"`
-		Sort      int32            `json:"sort"`
-		Meta      service.MenuMate `json:"meta"`
-		AppId     int32            `json:"appId"`
+		Id        int32         `json:"id"`
+		Name      string        `json:"name"`
+		Path      string        `json:"path"`
+		Component string        `json:"component"`
+		Sort      int32         `json:"sort"`
+		Meta      auth.MenuMate `json:"meta"`
+		AppId     int32         `json:"appId"`
 		ApiList   []struct {
 			Path string `json:"path"`
 			Tag  string `json:"tag"`
@@ -134,7 +133,7 @@ func (c *MenuCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", nil)
 }
 
-func (c *MenuCtl) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *Menu) Delete(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
 		Ids []int32 `json:"ids"`
 	}

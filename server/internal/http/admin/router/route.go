@@ -1,20 +1,20 @@
-package route
+package router
 
 import (
-	"app/internal/http/admin/ctl"
+	"app/internal/http/admin/controller"
 	"app/internal/http/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
-// RegisterRoute 注册路由组
-func RegisterRoute(r chi.Router) {
+// Router 注册路由组
+func Router(r chi.Router) {
 
 	// 跨域中间件
 	r.Use(middleware.CorsMiddleware)
 
 	// 登录相关路由
 	r.Route("/auth", func(r chi.Router) {
-		c := ctl.AuthCtl{}
+		c := controller.Auth{}
 		r.HandleFunc("/captcha", c.Captcha)
 		r.HandleFunc("/login", c.Login)
 		r.With(middleware.AuthJwtMiddleware).
@@ -23,7 +23,7 @@ func RegisterRoute(r chi.Router) {
 
 	// app相关路由
 	r.Route("/app", func(r chi.Router) {
-		c := ctl.AppCtl{}
+		c := controller.App{}
 		r.Use(middleware.AuthJwtMiddleware)
 		r.Get("/list", c.List)
 		r.Post("/add", c.Add)
@@ -33,7 +33,7 @@ func RegisterRoute(r chi.Router) {
 
 	// menu相关路由
 	r.Route("/menu", func(r chi.Router) {
-		c := ctl.MenuCtl{}
+		c := controller.Menu{}
 		r.Use(middleware.AuthJwtMiddleware)
 		r.Get("/list", c.List)
 		r.Post("/add", c.Add)
@@ -43,7 +43,7 @@ func RegisterRoute(r chi.Router) {
 
 	// role相关路由
 	r.Route("/role", func(r chi.Router) {
-		c := ctl.RoleCtl{}
+		c := controller.Role{}
 		r.Use(middleware.AuthJwtMiddleware)
 		r.Get("/list", c.List)
 		r.Post("/add", c.Add)
@@ -53,7 +53,7 @@ func RegisterRoute(r chi.Router) {
 
 	// user相关路由
 	r.Route("/user", func(r chi.Router) {
-		c := ctl.UserCtl{}
+		c := controller.User{}
 		r.Use(middleware.AuthJwtMiddleware)
 		r.HandleFunc("/list", c.List)
 		r.HandleFunc("/add", c.Add)
@@ -63,7 +63,7 @@ func RegisterRoute(r chi.Router) {
 
 	// log相关路由
 	r.Route("/log", func(r chi.Router) {
-		c := ctl.LogCtl{}
+		c := controller.Log{}
 		r.Use(middleware.AuthJwtMiddleware)
 		r.HandleFunc("/typeList", c.TypeList)
 		r.HandleFunc("/list", c.List)

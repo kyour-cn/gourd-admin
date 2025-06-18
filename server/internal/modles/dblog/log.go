@@ -1,6 +1,7 @@
-package service
+package dblog
 
 import (
+	"app/internal/modles/auth"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"context"
@@ -13,8 +14,8 @@ type Log struct {
 	Model *model.Log
 }
 
-// NewLog create a new log instance
-func NewLog() *Log {
+// New create a new log instance
+func New() *Log {
 	log := &Log{
 		Model: &model.Log{},
 		Ctx:   context.Background(),
@@ -22,7 +23,7 @@ func NewLog() *Log {
 	return log
 }
 
-// WithModel set model to log
+// WithModel add model to log
 func (l *Log) WithModel(model *model.Log) *Log {
 	l.Model = model
 	return l
@@ -43,7 +44,7 @@ func (l *Log) WithRequest(r *http.Request) *Log {
 
 	// 取出用户信息
 	jwtValue := ctx.Value("jwt")
-	if claims, ok := jwtValue.(UserClaims); ok {
+	if claims, ok := jwtValue.(auth.UserClaims); ok {
 		// 取出uid
 		l.Model.RequestUserID = claims.Uid
 		// 取出用户名称
@@ -61,8 +62,6 @@ func (l *Log) WithType(t model.LogType) *Log {
 
 // WithTypeLabel add log type by label to log
 func (l *Log) WithTypeLabel(label string) *Log {
-
-	//TODO: 优化查询, 避免每次都查询数据库
 
 	lt := query.LogType
 	// 根据label查找类型

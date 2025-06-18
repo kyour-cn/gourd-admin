@@ -1,4 +1,4 @@
-package common
+package controller
 
 import (
 	"encoding/json"
@@ -7,13 +7,13 @@ import (
 	"strconv"
 )
 
-// BaseCtl 基础控制器
+// Base 基础控制器
 // 所有控制器都应继承此控制器，可以在此控制器中定义公共方法
-type BaseCtl struct {
+type Base struct {
 }
 
 // Success 成功时响应
-func (*BaseCtl) Success(w http.ResponseWriter, message string, data any) (err error) {
+func (*Base) Success(w http.ResponseWriter, message string, data any) (err error) {
 	if message == "" {
 		message = "success"
 	}
@@ -29,7 +29,7 @@ func (*BaseCtl) Success(w http.ResponseWriter, message string, data any) (err er
 }
 
 // Fail 失败响应
-func (*BaseCtl) Fail(w http.ResponseWriter, code int, message string, data any) (err error) {
+func (*Base) Fail(w http.ResponseWriter, code int, message string, data any) (err error) {
 	if message == "" {
 		message = "fail"
 	}
@@ -45,7 +45,7 @@ func (*BaseCtl) Fail(w http.ResponseWriter, code int, message string, data any) 
 }
 
 // JsonReqUnmarshal 解析json请求参数
-func (*BaseCtl) JsonReqUnmarshal(r *http.Request, req any) error {
+func (*Base) JsonReqUnmarshal(r *http.Request, req any) error {
 	// 解析json参数
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
@@ -57,7 +57,7 @@ func (*BaseCtl) JsonReqUnmarshal(r *http.Request, req any) error {
 }
 
 // PageParam 获取分页参数
-func (*BaseCtl) PageParam(r *http.Request, defaultPage int, defaultSize int) (int, int) {
+func (*Base) PageParam(r *http.Request, defaultPage int, defaultSize int) (int, int) {
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	if page == 0 {
 		page = defaultPage

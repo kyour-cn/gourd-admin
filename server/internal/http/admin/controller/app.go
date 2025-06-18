@@ -1,18 +1,17 @@
-package ctl
+package controller
 
 import (
-	"app/internal/http/admin/common"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"net/http"
 )
 
-// AppCtl 用户控制器
-type AppCtl struct {
-	common.BaseCtl //继承基础控制器
+// App 用户控制器
+type App struct {
+	Base //继承基础控制器
 }
 
-func (c *AppCtl) List(w http.ResponseWriter, r *http.Request) {
+func (c *App) List(w http.ResponseWriter, r *http.Request) {
 	type Res struct {
 		Rows  []*model.App `json:"rows"`
 		Total int64        `json:"total"`
@@ -37,7 +36,7 @@ func (c *AppCtl) List(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", res)
 }
 
-func (c *AppCtl) Add(w http.ResponseWriter, r *http.Request) {
+func (c *App) Add(w http.ResponseWriter, r *http.Request) {
 	req := &model.App{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -53,7 +52,7 @@ func (c *AppCtl) Add(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", req)
 }
 
-func (c *AppCtl) Edit(w http.ResponseWriter, r *http.Request) {
+func (c *App) Edit(w http.ResponseWriter, r *http.Request) {
 	req := model.App{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -79,7 +78,7 @@ func (c *AppCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", req)
 }
 
-func (c *AppCtl) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *App) Delete(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
 		Ids []int32 `json:"ids"`
 	}

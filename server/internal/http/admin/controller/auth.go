@@ -1,9 +1,9 @@
-package ctl
+package controller
 
 import (
 	"app/internal/config"
-	"app/internal/http/admin/common"
-	"app/internal/http/admin/service"
+	"app/internal/modles/auth"
+	"app/internal/modles/dblog"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"app/internal/util/captcha"
@@ -12,13 +12,13 @@ import (
 	"net/http"
 )
 
-// AuthCtl 用户控制器
-type AuthCtl struct {
-	common.BaseCtl //继承基础控制器
+// Auth 用户控制器
+type Auth struct {
+	Base //继承基础控制器
 }
 
 // Captcha 获取验证码
-func (c *AuthCtl) Captcha(w http.ResponseWriter, _ *http.Request) {
+func (c *Auth) Captcha(w http.ResponseWriter, _ *http.Request) {
 	data, err := captcha.GenerateSlide()
 	if err != nil {
 		_ = c.Fail(w, 1, "生成验证码失败："+err.Error(), nil)
@@ -29,7 +29,7 @@ func (c *AuthCtl) Captcha(w http.ResponseWriter, _ *http.Request) {
 }
 
 // Login 登录
-func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
+func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
 		Username   string `json:"username" validate:"required,min=5,max=20"`
 		Password   string `json:"password" validate:"required,min=6,max=32"`
@@ -65,7 +65,7 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 登录
-	userData, err := service.LoginUser(r.Context(), req.Username, req.Password)
+	userData, err := auth.LoginUser(r.Context(), req.Username, req.Password)
 	if err != nil {
 		_ = c.Fail(w, 103, "登录失败："+err.Error(), "")
 		return
@@ -92,20 +92,20 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 104, "token配置异常,请联系管理员", err)
 	}
 	// 生成token
-	claims := service.UserClaims{
+	claims := auth.UserClaims{
 		Uid:    userData.ID,
 		Uname:  userData.Nickname,
 		RoleId: userData.RoleID,
 		AppId:  roleData.AppID,
 	}
-	token, err := service.GenerateToken(claims)
+	token, err := auth.GenerateToken(claims)
 	if err != nil {
 		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return
 	}
 
 	// 记录登录日志
-	_ = service.NewLog().
+	_ = dblog.New().
 		WithModel(&model.Log{
 			RequestUserID: userData.ID,
 			RequestUser:   userData.Nickname,
@@ -123,14 +123,14 @@ func (c *AuthCtl) Login(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", res)
 }
 
-func (c *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
+func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 	// 获取jwt并解析
 	jwtValue := r.Context().Value("jwt")
-	if _, ok := jwtValue.(service.UserClaims); !ok {
+	if _, ok := jwtValue.(auth.UserClaims); !ok {
 		_ = c.Fail(w, 101, "获取登录信息失败", "jwt信息不正确")
 		return
 	}
-	claims := jwtValue.(service.UserClaims)
+	claims := jwtValue.(auth.UserClaims)
 
 	uq := query.User
 
@@ -142,7 +142,7 @@ func (c *AuthCtl) GetMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menus, err := service.GetMenu(userInfo)
+	menus, err := auth.GetMenu(userInfo)
 	if err != nil {
 		_ = c.Fail(w, 102, "获取菜单失败", err.Error())
 		return

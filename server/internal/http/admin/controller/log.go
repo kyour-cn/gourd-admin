@@ -1,7 +1,6 @@
-package ctl
+package controller
 
 import (
-	"app/internal/http/admin/common"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"gorm.io/gen"
@@ -10,13 +9,13 @@ import (
 	"time"
 )
 
-// LogCtl 用户控制器
-type LogCtl struct {
-	common.BaseCtl //继承基础控制器
+// Log 用户控制器
+type Log struct {
+	Base //继承基础控制器
 }
 
 // TypeList 日志类型列表
-func (c *LogCtl) TypeList(w http.ResponseWriter, r *http.Request) {
+func (c *Log) TypeList(w http.ResponseWriter, r *http.Request) {
 	type Res struct {
 		Rows  []*model.LogType `json:"rows"`
 		Total int64            `json:"total"`
@@ -42,7 +41,7 @@ func (c *LogCtl) TypeList(w http.ResponseWriter, r *http.Request) {
 }
 
 // List 日志列表
-func (c *LogCtl) List(w http.ResponseWriter, r *http.Request) {
+func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 	type Res struct {
 		Rows  []*model.Log `json:"rows"`
 		Total int64        `json:"total"`
@@ -94,7 +93,7 @@ func (c *LogCtl) List(w http.ResponseWriter, r *http.Request) {
 }
 
 // LogStat 日志统计
-func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
+func (c *Log) LogStat(w http.ResponseWriter, r *http.Request) {
 	type Res struct {
 		Days []string             `json:"days"`
 		Rows []*model.LogStatView `json:"rows"`
@@ -131,7 +130,7 @@ func (c *LogCtl) LogStat(w http.ResponseWriter, r *http.Request) {
 }
 
 // generateDays 时间列表生成
-func (c *LogCtl) generateDays(startDate, endDate time.Time, format string) []string {
+func (c *Log) generateDays(startDate, endDate time.Time, format string) []string {
 	var days []string
 	for current := startDate; !current.After(endDate); current = current.AddDate(0, 0, 1) {
 		days = append(days, current.Format(format))

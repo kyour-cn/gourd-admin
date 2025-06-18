@@ -1,7 +1,6 @@
-package ctl
+package controller
 
 import (
-	"app/internal/http/admin/common"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"crypto/md5"
@@ -11,12 +10,12 @@ import (
 	"net/http"
 )
 
-// UserCtl 用户控制器
-type UserCtl struct {
-	common.BaseCtl //继承基础控制器
+// User 用户控制器
+type User struct {
+	Base //继承基础控制器
 }
 
-func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
+func (c *User) List(w http.ResponseWriter, r *http.Request) {
 	type Res struct {
 		Rows  []*model.User `json:"rows"`
 		Total int64         `json:"total"`
@@ -65,7 +64,7 @@ func (c *UserCtl) List(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", res)
 }
 
-func (c *UserCtl) Add(w http.ResponseWriter, r *http.Request) {
+func (c *User) Add(w http.ResponseWriter, r *http.Request) {
 	req := &model.User{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -87,7 +86,7 @@ func (c *UserCtl) Add(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", req)
 }
 
-func (c *UserCtl) Edit(w http.ResponseWriter, r *http.Request) {
+func (c *User) Edit(w http.ResponseWriter, r *http.Request) {
 	req := model.User{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -124,7 +123,7 @@ func (c *UserCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", req)
 }
 
-func (c *UserCtl) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *User) Delete(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
 		Ids []int32 `json:"ids"`
 	}

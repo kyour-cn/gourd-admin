@@ -2,7 +2,7 @@ package router
 
 import (
 	"app/internal/config"
-	adminRoute "app/internal/http/admin/route"
+	adminRouter "app/internal/http/admin/router"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 	"os"
@@ -49,6 +49,6 @@ func InitRouter() {
 	})
 
 	// 注册admin相关路由
-	r.Mount("/admin", r.Group(adminRoute.RegisterRoute))
+	r.Mount("/admin", r.Group(adminRouter.Router))
 
 }

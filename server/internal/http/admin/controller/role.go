@@ -1,7 +1,6 @@
-package ctl
+package controller
 
 import (
-	"app/internal/http/admin/common"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"gorm.io/gen"
@@ -10,12 +9,12 @@ import (
 	"strconv"
 )
 
-// RoleCtl 用户控制器
-type RoleCtl struct {
-	common.BaseCtl //继承基础控制器
+// Role 用户控制器
+type Role struct {
+	Base //继承基础控制器
 }
 
-func (c *RoleCtl) List(w http.ResponseWriter, r *http.Request) {
+func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 
 	type Res struct {
 		Rows  []*model.Role `json:"rows"`
@@ -52,7 +51,7 @@ func (c *RoleCtl) List(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", res)
 }
 
-func (c *RoleCtl) Add(w http.ResponseWriter, r *http.Request) {
+func (c *Role) Add(w http.ResponseWriter, r *http.Request) {
 	req := &model.Role{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -68,7 +67,7 @@ func (c *RoleCtl) Add(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", req)
 }
 
-func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
+func (c *Role) Edit(w http.ResponseWriter, r *http.Request) {
 	req := model.Role{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -105,7 +104,7 @@ func (c *RoleCtl) Edit(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", req)
 }
 
-func (c *RoleCtl) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *Role) Delete(w http.ResponseWriter, r *http.Request) {
 	type Req struct {
 		Ids []int32 `json:"ids"`
 	}
