@@ -159,8 +159,8 @@ export default {
     },
     methods: {
         async echartsRender() {
-            const start_time = this.date[0]
-            const end_time = this.date[1]
+            const start_time = this.$TOOL.dateFormat(this.date[0])
+            const end_time = this.$TOOL.dateFormat(this.date[1])
 
             let res = await this.$API.admin.log.logStat.get({start_time, end_time});
 
@@ -262,15 +262,16 @@ export default {
             // 点击时间清除判断是否为null
             if (this.date !== null) {
                 this.$refs.table.upData({
-                    start_time: this.date[0],
-                    end_time: this.date[1]
+                    start_time: this.$TOOL.dateFormat(this.date[0]),
+                    end_time: this.$TOOL.dateFormat(this.date[1])
                 })
                 this.echartsRender();
             } else {
                 this.$refs.table.upData({
-                    start_time: this.date?.[0] || '',
-                    end_time: this.date?.[1] || ''
+                    start_time: '',
+                    end_time:  ''
                 })
+                this.echartsRender();
             }
         },
         //获取当前月的第一天
