@@ -9,13 +9,21 @@ import (
 	"github.com/wenlng/go-captcha-assets/resources/images"
 	"github.com/wenlng/go-captcha-assets/resources/tiles"
 	"github.com/wenlng/go-captcha/v2/slide"
-	"log"
+	"log/slog"
 	"time"
 )
 
-var slideCapt slide.Captcha
+var (
+	slideCapt slide.Captcha
+	initEd    = false
+)
 
-func init() {
+func Init() {
+	if initEd {
+		return
+	}
+	initEd = true
+
 	builder := slide.NewBuilder(
 		//slide.WithGenGraphNumber(2),
 		slide.WithEnableGraphVerticalRandom(true),
@@ -24,12 +32,12 @@ func init() {
 	// background images
 	bgImages, err := images.GetImages()
 	if err != nil {
-		log.Fatalln(err)
+		slog.Error(err.Error())
 	}
 
 	graphs, err := tiles.GetTiles()
 	if err != nil {
-		log.Fatalln(err)
+		slog.Error(err.Error())
 	}
 
 	var newGraphs = make([]*slide.GraphImage, 0, len(graphs))
@@ -53,6 +61,9 @@ func init() {
 
 // GenerateSlide 生成滑动验证码
 func GenerateSlide() (any, error) {
+
+	Init()
+
 	captData, err := slideCapt.Generate()
 	if err != nil {
 		return nil, err
