@@ -17,7 +17,7 @@ type UserClaims struct {
 	jwt.RegisteredClaims
 	Sub   int32  `json:"sub"`
 	Name  string `json:"name"`
-	Role  string `json:"role"`
+	Role  int32  `json:"role"`
 	AppId int32  `json:"app_id"` // 移除改为用户多角色
 }
 

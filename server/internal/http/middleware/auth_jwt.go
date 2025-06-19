@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"app/internal/config"
-	"app/internal/modles/auth"
+	"app/internal/modules/auth"
 	"context"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"

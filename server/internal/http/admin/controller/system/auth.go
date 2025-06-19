@@ -2,8 +2,8 @@ package system
 
 import (
 	"app/internal/config"
-	"app/internal/modles/auth"
-	"app/internal/modles/dblog"
+	"app/internal/modules/auth"
+	"app/internal/modules/dblog"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"app/internal/util/captcha"

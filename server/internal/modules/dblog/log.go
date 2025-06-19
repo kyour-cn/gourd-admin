@@ -1,7 +1,7 @@
 package dblog
 
 import (
-	"app/internal/modles/auth"
+	"app/internal/modules/auth"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"context"
