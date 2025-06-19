@@ -5,6 +5,7 @@ import (
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -37,14 +38,14 @@ func (l *Log) WithRequest(r *http.Request) *Log {
 
 	// 取出请求参数
 	l.Model.RequestIP = r.RemoteAddr
-	l.Model.RequestSource = r.URL.String()
+	l.Model.RequestSource = fmt.Sprintf("[%s] %s", r.Method, r.URL.String())
 
 	ctx := r.Context()
 	l.Ctx = ctx
 
 	// 取出用户信息
-	jwtValue := ctx.Value("jwt")
-	if claims, ok := jwtValue.(auth.UserClaims); ok {
+	jwtClaims := ctx.Value("jwt")
+	if claims, ok := jwtClaims.(auth.UserClaims); ok {
 		// 取出uid
 		l.Model.RequestUserID = claims.Uid
 		// 取出用户名称
