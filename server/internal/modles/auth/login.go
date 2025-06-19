@@ -12,12 +12,13 @@ import (
 	"time"
 )
 
+// UserClaims TODO： 待完善调整
 type UserClaims struct {
 	jwt.RegisteredClaims
-	Uid    int32  `json:"uid"`
-	Uname  string `json:"uname"`
-	RoleId int32  `json:"role_id"`
-	AppId  int32  `json:"app_id"`
+	Sub   int32  `json:"sub"`
+	Name  string `json:"name"`
+	Role  string `json:"role"`
+	AppId int32  `json:"app_id"` // 移除改为用户多角色
 }
 
 // LoginUser 登录用户

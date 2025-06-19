@@ -93,10 +93,10 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	// 生成token
 	claims := auth.UserClaims{
-		Uid:    userData.ID,
-		Uname:  userData.Nickname,
-		RoleId: userData.RoleID,
-		AppId:  roleData.AppID,
+		Sub:   userData.ID,
+		Name:  userData.Nickname,
+		Role:  userData.RoleID,
+		AppId: roleData.AppID,
 	}
 	token, err := auth.GenerateToken(claims)
 	if err != nil {
@@ -135,7 +135,7 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 	uq := query.User
 
 	userInfo, err := uq.WithContext(r.Context()).
-		Where(uq.ID.Eq(claims.Uid)).
+		Where(uq.ID.Eq(claims.Sub)).
 		First()
 	if err != nil {
 		_ = c.Fail(w, 101, "获取用户信息失败", err.Error())

@@ -47,9 +47,9 @@ func (l *Log) WithRequest(r *http.Request) *Log {
 	jwtClaims := ctx.Value("jwt")
 	if claims, ok := jwtClaims.(auth.UserClaims); ok {
 		// 取出uid
-		l.Model.RequestUserID = claims.Uid
+		l.Model.RequestUserID = claims.Sub
 		// 取出用户名称
-		l.Model.RequestUser = claims.Uname
+		l.Model.RequestUser = claims.Name
 	}
 
 	return l

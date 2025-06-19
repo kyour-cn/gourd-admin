@@ -70,8 +70,7 @@ func GetMenu(userInfo *model.User) (any, error) {
 		return nil, err
 	}
 	// 构建菜单树
-	menuTreeArr := recursionMenu(menu, 0)
-	return menuTreeArr, nil
+	return recursionMenu(menu, 0), nil
 
 }
 
@@ -92,13 +91,12 @@ func GetMenuFormApp(appId int32) (any, error) {
 		return nil, err
 	}
 	// 构建菜单树
-	menuTreeArr := recursionMenu(menu, 0)
-	return menuTreeArr, nil
+	return recursionMenu(menu, 0), nil
 }
 
 // 递归菜单
 func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
-	var menuTreeArr menuTreeArr
+	var arr menuTreeArr
 	for _, menu := range menus {
 		if menu.Pid == parentId {
 			children := recursionMenu(menus, menu.ID)
@@ -120,8 +118,8 @@ func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 				Children:  children,
 				ApiList:   menu.MenuApi,
 			}
-			menuTreeArr = append(menuTreeArr, menuTree)
+			arr = append(arr, menuTree)
 		}
 	}
-	return menuTreeArr
+	return arr
 }

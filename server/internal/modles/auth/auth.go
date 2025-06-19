@@ -11,7 +11,7 @@ import (
 func CheckJwtPermission(jd UserClaims, r *http.Request) bool {
 
 	// 取出角色ID和应用ID
-	if jd.RoleId == 0 || jd.AppId == 0 {
+	if jd.Role == 0 || jd.AppId == 0 {
 		return false
 	}
 
@@ -31,7 +31,7 @@ func CheckJwtPermission(jd UserClaims, r *http.Request) bool {
 	// 获取用户角色
 	role, err := query.Role.
 		Where(
-			query.Role.ID.Eq(jd.RoleId),
+			query.Role.ID.Eq(jd.Role),
 			query.Role.AppID.Eq(jd.AppId),
 		).
 		Select(
