@@ -35,7 +35,12 @@
 				</el-form-item>
 			</template>
 			<el-form-item label="用户角色" prop="role_name">
-				<roleSelect @onChange="change" :placeholder="state.form.role?.name"/>
+				<roleSelect
+                    v-if="state.form.id"
+                    :ids="state.form.role_id"
+                    :placeholder="state.form.role?.name"
+                    @onChange="change"
+                />
 			</el-form-item>
 
 		</el-form>
@@ -47,8 +52,8 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
-import { ElMessage, ElAlert } from 'element-plus'
+import {reactive, ref} from 'vue'
+import {ElAlert, ElMessage} from 'element-plus'
 import roleSelect from "@/components/admin/roleSelect.vue"
 import systemApi from "@/api/admin/system.js";
 
@@ -111,7 +116,7 @@ const state = reactive({
 })
 
 const change = (val) => {
-	state.form.role_id = val.id
+    state.form.role_id = val.map(item => item.id).join(",")
 }
 
 const open = (mode = 'add') => {

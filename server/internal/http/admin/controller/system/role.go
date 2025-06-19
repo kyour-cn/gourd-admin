@@ -7,6 +7,7 @@ import (
 	"gorm.io/gen/field"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // Role 用户控制器
@@ -24,12 +25,23 @@ func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
-	// 获取参数
-	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
-
 	var conditions []gen.Condition
+
+	// 筛选指定应用
+	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
 	if appId > 0 {
 		conditions = append(conditions, query.Role.AppID.Eq(int32(appId)))
+	}
+
+	// 筛选指定id列表
+	ids := r.URL.Query().Get("ids")
+	if ids != "" {
+		idSlice := make([]int32, 0)
+		for _, v := range strings.Split(ids, ",") {
+			num, _ := strconv.Atoi(v)
+			idSlice = append(idSlice, int32(num))
+		}
+		conditions = append(conditions, query.Role.ID.In(idSlice...))
 	}
 
 	// 查询列表

@@ -8,7 +8,25 @@
 -->
 
 <template>
-	<el-select ref="select" v-model="defaultValue" :size="size" :clearable="clearable" :multiple="multiple" :collapse-tags="collapseTags" :collapse-tags-tooltip="collapseTagsTooltip" :filterable="filterable" :placeholder="placeholder" :disabled="disabled" :filter-method="filterMethod" @remove-tag="removeTag" @visible-change="visibleChange" @clear="clear">
+	<el-select
+        ref="select"
+        v-model="defaultValue"
+        :size="size"
+        :value-key="valueKey"
+        :clearable="clearable"
+        :multiple="multiple"
+        :collapse-tags="collapseTags"
+        :max-collapse-tags="3"
+        :collapse-tags-tooltip="collapseTagsTooltip"
+        :filterable="filterable"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        label="name"
+        :filter-method="filterMethod"
+        @remove-tag="removeTag"
+        @visible-change="visibleChange"
+        @clear="clear"
+    >
 		<template #empty>
 			<div class="sc-table-select__table" :style="{width: tableWidth+'px'}" v-loading="loading">
 				<div class="sc-table-select__header">
@@ -26,8 +44,8 @@
 				</div>
 			</div>
 		</template>
-        <template #label="{ label, value }">
-            {{labelView}}
+        <template v-if="!multiple" #label="{ value }">
+            {{value[defaultProps.label]}}
         </template>
 	</el-select>
 </template>
@@ -68,8 +86,7 @@
 					pageSize: config.request.pageSize,
 					keyword: config.request.keyword
 				},
-				formData: {},
-                labelView: ''
+				formData: {}
 			}
 		},
 		watch: {
@@ -101,32 +118,32 @@
 			//获取表格数据
 			async getData(){
 				this.loading = true;
-				var reqData = {
-					[this.defaultProps.page]: this.currentPage,
-					[this.defaultProps.pageSize]: this.pageSize,
-					[this.defaultProps.keyword]: this.keyword
-				}
-				Object.assign(reqData, this.params, this.formData)
-				var res = await this.apiObj.get(reqData);
-				var parseData = config.parseData(res)
-				this.tableData = parseData.rows;
+                const reqData = {
+                    [this.defaultProps.page]: this.currentPage,
+                    [this.defaultProps.pageSize]: this.pageSize,
+                    [this.defaultProps.keyword]: this.keyword
+                };
+                Object.assign(reqData, this.params, this.formData)
+                const res = await this.apiObj.get(reqData);
+                const parseData = config.parseData(res);
+                this.tableData = parseData.rows;
 				this.total = parseData.total;
 				this.loading = false;
 				//表格默认赋值
-				this.$nextTick(() => {
-					if(this.multiple){
-						this.defaultValue.forEach(row => {
-							var setrow = this.tableData.filter(item => item[this.defaultProps.value]===row[this.defaultProps.value] )
-							if(setrow.length > 0){
-								this.$refs.table.toggleRowSelection(setrow[0], true);
-							}
-						})
-					}else{
-						var setrow = this.tableData.filter(item => item[this.defaultProps.value]===this.defaultValue[this.defaultProps.value] )
-						this.$refs.table.setCurrentRow(setrow[0]);
-					}
-					this.$refs.table.setScrollTop(0)
-				})
+				await this.$nextTick(() => {
+                    if (this.multiple) {
+                        this.defaultValue.forEach(row => {
+                            const setrow = this.tableData.filter(item => item[this.defaultProps.value] === row[this.defaultProps.value])
+                            if (setrow.length > 0) {
+                                this.$refs.table.toggleRowSelection(setrow[0], true);
+                            }
+                        })
+                    } else {
+                        const setrow = this.tableData.filter(item => item[this.defaultProps.value] === this.defaultValue[this.defaultProps.value]);
+                        this.$refs.table.setCurrentRow(setrow[0]);
+                    }
+                    this.$refs.table.setScrollTop(0)
+                })
 			},
 			//插糟表单提交
 			formSubmit(){
@@ -141,15 +158,11 @@
 			//自动模拟options赋值
 			autoCurrentLabel(){
 				this.$nextTick(() => {
-					if(this.multiple){
-                        //TODO: 多选还存在异常
-						this.$refs.select.selected.forEach(item => {
-							item.currentLabel = item.value[this.defaultProps.label]
-						})
-					}else{
-                        // this.$refs.select.selectedLabel = this.defaultValue[this.defaultProps.label]
-                        this.labelView = this.defaultValue[this.defaultProps.label]
-					}
+					if(this.multiple) {
+                        this.defaultValue.forEach(item => {
+                            item.label = item[this.defaultProps.label]
+                        })
+                    }
 				})
 			},
 			//表格勾选事件

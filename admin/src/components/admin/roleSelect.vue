@@ -4,6 +4,7 @@
 		:apiObj="state.apiObj"
 		:table-width="state.tableWidth"
 		clearable
+        multiple
 		collapse-tags
 		:placeholder="placeholder"
 		collapse-tags-tooltip
@@ -32,32 +33,45 @@
 </template>
 
 <script>
-import {getCurrentInstance, reactive} from "vue";
+import {reactive} from "vue";
+import systemApi from "@/api/admin/system.js";
 
 export default {
 	name: "roleSelect",
 	props: {
+        ids: { type: String, default: "" },
 		tableWidth: Number,
 		placeholder: { type: String, default: "请选择" }
 	},
 	setup(props, {emit}) {
 
-        const {proxy} = getCurrentInstance()
-
 		const state = reactive({
-			apiObj: proxy.$API.admin.system.role.list,
+			apiObj: systemApi.role.list,
 			tableWidth: props.tableWidth? props.tableWidth : 600,
 			props: {
 				label: 'name',
 				value: 'id',
 			},
-			value: '',
+			value: [],
 			appList: [],
 			selectedApp: 0
 		})
 
+        // const getInitialData = async () => {
+			systemApi.role.list.get({
+				pageSize: 50,
+                ids: props.ids
+			}).then((res) => {
+                console.log( res.data.rows)
+                res.data.rows.forEach(item => {
+                    state.value.push(item)
+                })
+
+            })
+		// }
+
 		const getApp =  async () => {
-			const res = await proxy.$API.admin.system.role.list.get({
+			const res = await systemApi.app.list.get({
 				pageSize: 50
 			});
 			state.appList = res.data.rows;
