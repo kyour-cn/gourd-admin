@@ -29,7 +29,7 @@
 		</div>
 		<div class="scTable-page" v-if="!hidePagination || !hideDo">
 			<div class="scTable-pagination">
-				<el-pagination v-if="!hidePagination" background :small="true" :layout="paginationLayout" :total="total" :page-size="scPageSize" :page-sizes="pageSizes" v-model:currentPage="currentPage" @current-change="paginationChange" @update:page-size="pageSizeChange"></el-pagination>
+				<el-pagination v-if="!hidePagination" background size="small" :layout="paginationLayout" :total="total" :page-size="scPageSize" :page-sizes="pageSizes" v-model:currentPage="currentPage" @current-change="paginationChange" @update:page-size="pageSizeChange"></el-pagination>
 			</div>
 			<div class="scTable-do" v-if="!hideDo">
 				<el-button v-if="!hideRefresh" @click="refresh" icon="el-icon-refresh" circle style="margin-left:15px"></el-button>
@@ -45,11 +45,11 @@
 					</template>
 					<el-form label-width="80px" label-position="left">
 						<el-form-item label="表格尺寸">
-							<el-radio-group v-model="config.size" size="small" @change="configSizeChange">
-								<el-radio-button label="large">大</el-radio-button>
-								<el-radio-button label="default">正常</el-radio-button>
-								<el-radio-button label="small">小</el-radio-button>
-							</el-radio-group>
+                            <el-radio-group v-model="config.size" size="small" @change="configSizeChange">
+                                <el-radio-button label="large" value="large">大</el-radio-button>
+                                <el-radio-button label="default" value="default">正常</el-radio-button>
+                                <el-radio-button label="small" value="small">小</el-radio-button>
+                            </el-radio-group>
 						</el-form-item>
 						<el-form-item label="样式">
 							<el-checkbox v-model="config.border" label="纵向边框"></el-checkbox>
