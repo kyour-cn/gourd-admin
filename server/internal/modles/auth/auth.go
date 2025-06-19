@@ -1,33 +1,11 @@
 package auth
 
 import (
-	"app/internal/config"
 	"app/internal/orm/query"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
-
-// GenerateToken 生成token
-func GenerateToken(claims UserClaims) (string, error) {
-	// 读取配置
-	conf, err := config.GetJwtConfig()
-	if err != nil {
-		return "", err
-	}
-
-	// 设置签署时间和过期时间
-	claims.IssuedAt = jwt.NewNumericDate(time.Now())
-	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Second * time.Duration(conf.Expire)))
-
-	// 使用HS256算法签名
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Sign and get the complete encoded token as a string using the secret
-	return token.SignedString([]byte(conf.Secret))
-}
 
 // CheckJwtPermission 检查Token接口权限
 func CheckJwtPermission(jd UserClaims, r *http.Request) bool {

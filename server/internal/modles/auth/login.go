@@ -1,14 +1,24 @@
 package auth
 
 import (
+	"app/internal/config"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"app/internal/util/redisutil"
 	"context"
 	"errors"
+	"github.com/golang-jwt/jwt/v5"
 	"strconv"
 	"time"
 )
+
+type UserClaims struct {
+	jwt.RegisteredClaims
+	Uid    int32  `json:"uid"`
+	Uname  string `json:"uname"`
+	RoleId int32  `json:"role_id"`
+	AppId  int32  `json:"app_id"`
+}
 
 // LoginUser 登录用户
 func LoginUser(ctx context.Context, username string, password string) (*model.User, error) {
@@ -58,4 +68,23 @@ func LoginUser(ctx context.Context, username string, password string) (*model.Us
 	rdb.Del(ctx, key)
 
 	return userModel, nil
+}
+
+// GenerateToken 生成token
+func GenerateToken(claims UserClaims) (string, error) {
+	// 读取配置
+	conf, err := config.GetJwtConfig()
+	if err != nil {
+		return "", err
+	}
+
+	// 设置签署时间和过期时间
+	claims.IssuedAt = jwt.NewNumericDate(time.Now())
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Second * time.Duration(conf.Expire)))
+
+	// 使用HS256算法签名
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign and get the complete encoded token as a string using the secret
+	return token.SignedString([]byte(conf.Secret))
 }

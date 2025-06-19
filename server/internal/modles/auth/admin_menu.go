@@ -96,6 +96,7 @@ func GetMenuFormApp(appId int32) (any, error) {
 	return menuTreeArr, nil
 }
 
+// 递归菜单
 func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
 	var menuTreeArr menuTreeArr
 	for _, menu := range menus {

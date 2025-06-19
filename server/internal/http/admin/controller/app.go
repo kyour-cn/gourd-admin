@@ -59,17 +59,11 @@ func (c *App) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	qm := query.App
+	qa := query.App
 
-	_, err := qm.WithContext(r.Context()).
+	_, err := qa.WithContext(r.Context()).
 		Where(query.App.ID.Eq(req.ID)).
-		Select(
-			qm.Name,
-			qm.Key,
-			qm.Remark,
-			qm.Status,
-			qm.Sort,
-		).
+		Select(qa.Name, qa.Key, qa.Remark, qa.Status, qa.Sort).
 		Updates(req)
 	if err != nil {
 		return
