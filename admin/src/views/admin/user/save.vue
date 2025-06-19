@@ -1,185 +1,185 @@
 <template>
-	<el-dialog :title="titleMap[mode]" v-model="visible" :width="500" destroy-on-close @closed="$emit('closed')">
-		<el-form :model="form" :rules="rules" :disabled="mode==='show'" ref="dialogForm" label-width="100px"
+	<el-dialog :title="state.titleMap[state.mode]" v-model="state.visible" :width="500" destroy-on-close @closed="$emit('closed')">
+		<el-form :model="state.form" :rules="state.rules" :disabled="state.mode==='show'" ref="dialogForm" label-width="100px"
                  label-position="left">
 			<!--			<el-form-item label="头像" prop="avatar">-->
 			<!--				<sc-upload v-model="form.avatar" title="上传头像"></sc-upload>-->
 			<!--			</el-form-item>-->
 			<el-form-item label="登录账号" prop="username">
-				<el-input v-model="form.username" placeholder="用于登录系统" clearable></el-input>
+				<el-input v-model="state.form.username" placeholder="用于登录系统" clearable></el-input>
 			</el-form-item>
 			<el-form-item label="昵称" prop="nickname">
-				<el-input v-model="form.nickname" placeholder="请输入完整的真实姓名" clearable></el-input>
+				<el-input v-model="state.form.nickname" placeholder="请输入完整的真实姓名" clearable></el-input>
 			</el-form-item>
 			<el-form-item label="手机号" prop="mobile">
-				<el-input v-model="form.mobile" placeholder="请输入手机号" maxlength="11" clearable></el-input>
+				<el-input v-model="state.form.mobile" placeholder="请输入手机号" maxlength="11" clearable></el-input>
 			</el-form-item>
 			<el-form-item label="是否有效" prop="status">
-				<el-switch v-model="form.status" :active-value="true" :inactive-value="false"></el-switch>
+				<el-switch v-model="state.form.status" :active-value="true" :inactive-value="false"></el-switch>
 			</el-form-item>
-			<template v-if="mode==='add'">
+			<template v-if="state.mode==='add'">
 				<el-form-item label="登录密码" prop="password">
-					<el-input type="password" v-model="form.password" clearable show-password></el-input>
+					<el-input type="password" v-model="state.form.password" clearable show-password></el-input>
 				</el-form-item>
 			</template>
-			<template v-if="mode==='edit'">
+			<template v-if="state.mode==='edit'">
 				<el-form-item label="修改密码">
-					<el-input type="password" v-model="form.password" clearable show-password></el-input>
+					<el-input
+                        type="password"
+                        clearable
+                        show-password
+                        placeholder="请输入新密码，留空则不修改"
+                        v-model="state.form.password"
+                        autocomplete="new-password"
+                    />
 				</el-form-item>
 			</template>
 			<el-form-item label="用户角色" prop="role_name">
-				<roleSelect @onChange="change" :placeholder="form.role?.name"/>
+				<roleSelect @onChange="change" :placeholder="state.form.role?.name"/>
 			</el-form-item>
 
 		</el-form>
 		<template #footer>
-			<el-button @click="visible=false">取 消</el-button>
-			<el-button v-if="mode!=='show'" type="primary" :loading="isSaveing" @click="submit()">保 存</el-button>
+			<el-button @click="state.visible=false">取 消</el-button>
+			<el-button v-if="state.mode!=='show'" type="primary" :loading="state.isSaveing" @click="submit()">保 存</el-button>
 		</template>
 	</el-dialog>
 </template>
 
-<script>
-import roleSelect from "@/components/admin/roleSelect.vue";
+<script setup>
+import { reactive, ref } from 'vue'
+import { ElMessage, ElAlert } from 'element-plus'
+import roleSelect from "@/components/admin/roleSelect.vue"
 
-export default {
-	emits: ['success', 'closed', 'reloadData'],
-	components: {roleSelect},
-	data() {
-		const checkMobile = (rule, value, callback) => {
-            if (value === '') {
-                return callback()
-            }
-			// 手机号正则表达式
-			const regMobile = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/
-			if (regMobile.test(value)) {
-				// 合法的手机号
-				return callback()
-			}
-			callback(new Error('请输入合法的手机号'))
-		}
-		return {
-			mode: "add",
-			titleMap: {
-				add: '新增用户',
-				edit: '编辑用户',
-				show: '查看'
-			},
-			visible: false,
-			isSaveing: false,
-			//表单数据
-			form: {
-				id: "",
-				username: "",
-				// avatar: "",
-				nickname: "",
-				status: true,
-				password: '',
-				mobile: '',
-				role_id: 0,
-                role: null
-			},
-			//验证规则
-			rules: {
-				avatar: [
-					{required: true, message: '请上传头像'}
-				],
-				username: [
-					{required: true, message: '请输入登录账号'}
-				],
-				nickname: [
-					{required: true, message: '请输入昵称'}
-				],
-				// mobile: [
-				// 	// {required: true, message: '请输入手机号'},
-				// 	{validator: checkMobile, trigger: 'blur'}
-				// ],
-				password: [
-					{required: true, message: '请输入登录密码'},
-				],
-				status: [
-					{required: true, message: '请选择当前状态'}
-				]
-			},
-			//所需数据选项
-			groups: [],
-			groupsProps: {
-				value: "id",
-				multiple: true,
-				checkStrictly: true
-			}
-		}
+const emit = defineEmits(['success', 'closed', 'reloadData'])
+
+const dialogForm = ref()
+
+const state = reactive({
+	mode: 'add',
+	visible: false,
+	isSaveing: false,
+	titleMap: {
+		add: '新增用户',
+		edit: '编辑用户',
+		show: '查看'
 	},
-	methods: {
-		//显示
-		open(mode = 'add') {
-			this.mode = mode;
-			this.visible = true;
-			return this
-		},
-		//值变化
-		change(val) {
-			// this.$message('change事件，返回详情查看控制台')
-			this.form.role_id = val.id
-		},
-		//表单提交方法
-		submit() {
-			this.$refs.dialogForm.validate(async (valid) => {
-				if (valid) {
-					this.isSaveing = true;
-					let {username, nickname, status, password, mobile, role_id, id} = this.form
-
-                    status = status? 1:0
-					let res;
-					if (this.mode === 'add') {
-						res = await this.$API.admin.user.add.post({
-							username,
-							nickname,
-							status,
-							password,
-							mobile,
-							role_id
-						});
-					} else {
-                        res = await this.$API.admin.user.edit.post({
-                            id,
-                            username,
-                            nickname,
-                            status,
-                            password,
-                            mobile,
-                            role_id
-                        });
-					}
-					this.isSaveing = false;
-					if (res.code === 0) {
-                        this.$emit('success')
-						this.visible = false;
-						this.$message.success("操作成功")
-					} else {
-						this.$alert(res.message, "提示", {type: 'error'})
-					}
-				} else {
-					return false;
-				}
-			})
-		},
-		//表单注入数据
-		setData(data) {
-			this.form.id = data.id
-			this.form.nickname = data.nickname
-			this.form.avatar = data.avatar
-			this.form.username = data.username
-			this.form.status = data.status === 1
-			this.form.mobile = data.mobile
-			this.form.role_id = data.role_id
-			this.form.role = data.role
-
-			//可以和上面一样单个注入，也可以像下面一样直接合并进去
-			//Object.assign(this.form, data)
-		}
+	form: {
+		id: "",
+		username: "",
+		nickname: "",
+		status: true,
+		password: '',
+		mobile: '',
+		role_id: 0,
+		role: null
+	},
+	rules: {
+		avatar: [
+			{ required: true, message: '请上传头像' }
+		],
+		username: [
+			{ required: true, message: '请输入登录账号' }
+		],
+		nickname: [
+			{ required: true, message: '请输入昵称' }
+		],
+		mobile: [
+			{
+				validator: (rule, value, callback) => {
+					if (value === '') return callback()
+					const regMobile = /^1\d{10}$/
+					if (regMobile.test(value)) return callback()
+					callback(new Error('请输入合法的手机号'))
+				},
+				trigger: 'blur'
+			}
+		],
+		password: [
+			{ required: true, message: '请输入登录密码' },
+		],
+		status: [
+			{ required: true, message: '请选择当前状态' }
+		]
+	},
+	groups: [],
+	groupsProps: {
+		value: "id",
+		multiple: true,
+		checkStrictly: true
 	}
+})
+
+const change = (val) => {
+	state.form.role_id = val.id
 }
+
+const open = (mode = 'add') => {
+	state.mode = mode
+	state.visible = true
+	return this
+}
+
+const submit = async () => {
+	dialogForm.value.validate(async (valid) => {
+		if (valid) {
+			state.isSaveing = true
+			let { username, nickname, status, password, mobile, role_id, id } = state.form
+
+			status = status ? 1 : 0
+			let res
+			if (state.mode === 'add') {
+				res = await $API.admin.user.add.post({
+					username,
+					nickname,
+					status,
+					password,
+					mobile,
+					role_id
+				})
+			} else {
+				res = await $API.admin.user.edit.post({
+					id,
+					username,
+					nickname,
+					status,
+					password,
+					mobile,
+					role_id
+				})
+			}
+			state.isSaveing = false
+			if (res.code === 0) {
+				emit('success')
+				state.visible = false
+				ElMessage.success("操作成功")
+			} else {
+				ElAlert(res.message, "提示", { type: 'error' })
+			}
+		} else {
+			return false
+		}
+	})
+}
+
+const setData = (data) => {
+	Object.assign(state.form, {
+		id: data.id,
+		nickname: data.nickname,
+		avatar: data.avatar,
+		username: data.username,
+		status: data.status === 1,
+		mobile: data.mobile,
+		role_id: data.role_id,
+		role: data.role
+	})
+}
+
+//暴露给父组件的方法
+defineExpose({
+	setData,
+	open
+})
 </script>
 
 <style>

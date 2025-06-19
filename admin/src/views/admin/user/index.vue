@@ -103,7 +103,8 @@ const selectionChange = (val) => {
 const tableShow = (row) => {
     dialog.save = true
     nextTick(() => {
-        saveDialogRef.value.open('show').setData(row)
+        saveDialogRef.value.open('show')
+        saveDialogRef.value.setData(row)
     })
 }
 
@@ -118,7 +119,8 @@ const add = () => {
 const tableEdit = (row) => {
     dialog.save = true
     nextTick(() => {
-        saveDialogRef.value.open('edit').setData(row)
+        saveDialogRef.value.open('edit')
+        saveDialogRef.value.setData(row)
     })
 }
 
