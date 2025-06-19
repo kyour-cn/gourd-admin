@@ -113,7 +113,7 @@
 			},
 			//增加tag
 			addViewTags(route) {
-				if(route.name && !route.meta.fullpage){
+				if(route.name && !route.meta.fullPage){
 					this.$store.commit("pushViewTags",route)
 					this.$store.commit("pushKeepLive",route.name)
 				}

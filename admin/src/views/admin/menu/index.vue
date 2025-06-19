@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <el-aside width="300px" v-loading="menuloading">
+        <el-aside width="300px" v-loading="menuLoading">
             <el-container>
                 <el-header>
                     <el-select v-model="selectedApp">
@@ -11,14 +11,29 @@
                             :value="item.id"
                         />
                     </el-select>
-                    <el-input placeholder="输入关键字过滤" v-model="menuFilterText" clearable
-                              style="margin-left: 10px;"/>
+                    <el-input
+                        style="margin-left: 10px;"
+                        placeholder="输入关键字过滤"
+                        clearable
+                        v-model="menuFilterText"
+                    />
                 </el-header>
                 <el-main class="nopadding">
                     <el-tree
-                        ref="menu" class="menu" node-key="id" :data="menuList" :props="menuProps" draggable
-                        highlight-current :expand-on-click-node="false" check-strictly show-checkbox
-                        :filter-node-method="menuFilterNode" @node-click="menuClick" @node-drop="nodeDrop"
+                        ref="menu"
+                        class="menu"
+                        node-key="id"
+                        draggable
+                        highlight-current
+                        check-strictly
+                        show-checkbox
+                        :expand-on-click-node="false"
+                        :check-on-click-leaf="false"
+                        :data="menuList"
+                        :props="menuProps"
+                        :filter-node-method="menuFilterNode"
+                        @node-click="menuClick"
+                        @node-drop="nodeDrop"
                     >
                         <template #default="{node, data}">
 							<span class="custom-tree-node">
@@ -40,7 +55,7 @@
         </el-aside>
         <el-container>
             <el-main class="nopadding" style="padding:20px;" ref="main">
-                <save ref="save" :menu="menuList" @refreshMenu="refreshMenu"></save>
+                <save ref="save" :menu="menuList" @refreshMenu="refreshMenu"/>
             </el-main>
         </el-container>
     </el-container>
@@ -57,7 +72,7 @@ export default {
     },
     data() {
         return {
-            menuloading: false,
+            menuLoading: false,
             menuList: [],
             menuProps: {
                 label: (data) => {
@@ -96,13 +111,13 @@ export default {
 
         //加载树数据
         async getMenu() {
-            this.menuloading = true
-            var res = await this.$API.admin.menu.list.get({
+            this.menuLoading = true
+            const res = await this.$API.admin.menu.list.get({
                 app_id: this.selectedApp
             });
             this.$refs.save.unsetData()
 
-            this.menuloading = false
+            this.menuLoading = false
             this.menuList = res.data;
         },
         //树点击
@@ -114,7 +129,7 @@ export default {
         //树过滤
         menuFilterNode(value, data) {
             if (!value) return true;
-            var targetText = data.meta.title;
+            const targetText = data.meta.title;
             return targetText.indexOf(value) !== -1;
         },
         //树拖拽
@@ -137,9 +152,9 @@ export default {
                 },
                 app_id: this.selectedApp
             }
-            this.menuloading = true
+            this.menuLoading = true
             const res = await this.$API.admin.menu.add.post(newMenuData);
-            this.menuloading = false
+            this.menuLoading = false
             newMenuData.id = res.data.id
 
             this.$refs.menu.append(newMenuData, node)
@@ -165,12 +180,12 @@ export default {
                 return false
             }
 
-            this.menuloading = true
+            this.menuLoading = true
             const reqData = {
                 ids: CheckedNodes.map(item => item.id)
             };
             const res = await this.$API.admin.menu.delete.post(reqData);
-            this.menuloading = false
+            this.menuLoading = false
 
             if (res.code === 0) {
                 CheckedNodes.forEach(item => {
