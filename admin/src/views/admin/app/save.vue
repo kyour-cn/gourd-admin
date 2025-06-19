@@ -85,9 +85,9 @@ export default {
             data.status = data.status ? 1 : 0;
             let res;
             if (this.mode === 'add') {
-                res = await this.$API.admin.app.add.post(data);
+                res = await this.$API.admin.system.app.add.post(data);
             } else {
-                res = await this.$API.admin.app.edit.post(data);
+                res = await this.$API.admin.system.app.edit.post(data);
             }
             this.isSaveing = false;
             this.visible = false;

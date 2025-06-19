@@ -67,9 +67,9 @@
 <script setup>
 
 import {getCurrentInstance, nextTick, reactive, ref} from "vue"
-
 import SaveDialog from './save'
 import ScTable from "@/components/scTable/index.vue"
+import systemApi from "@/api/admin/system.js";
 
 defineOptions({
     name: 'user',
@@ -90,7 +90,7 @@ const state = reactive({
     }
 })
 
-const apiObj = proxy.$API.admin.user.list
+const apiObj = systemApi.user.list
 
 const dialog = reactive({
     save: false
@@ -126,7 +126,7 @@ const tableEdit = (row) => {
 
 //删除
 const tableDel = async (row) => {
-    const res = await proxy.$API.admin.user.delete.post({
+    const res = await systemApi.user.delete.post({
         ids: [row.id]
     })
     if (res.code === 0) {
@@ -145,7 +145,7 @@ const batchDel = async () => {
     if (!confirmRes) return false
 
     const ids = state.selection.map(v => v.id)
-    const res = await proxy.$API.admin.user.delete.post({ids})
+    const res = await systemApi.user.delete.post({ids})
     if (res.code === 0) {
         table.value.removeKeys(ids)
         proxy.$message.success("操作成功")

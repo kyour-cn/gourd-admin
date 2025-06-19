@@ -97,7 +97,7 @@ import PermissionDialog from './permission.vue'
 import scSelectFilter from "@/components/scSelectFilter"
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
 import ScTable from "@/components/scTable/index.vue"
-import roleApi from "@/api/admin/role";
+import systemApi from "@/api/admin/system.js";
 import tool from '@/utils/tool'
 
 defineOptions({
@@ -133,7 +133,7 @@ const state = reactive({
 	}
 })
 
-const apiObj = roleApi.list
+const apiObj = systemApi.role.list
 
 const dialog = reactive({
 	save: false,
@@ -145,7 +145,7 @@ onMounted(() => {
 })
 
 const getApp = async () => {
-	const res = await proxy.$API.admin.app.list.get()
+	const res = await proxy.$API.admin.system.app.list.get()
 
 	//初始化筛选器
 	const opts = []
@@ -204,7 +204,7 @@ const tableEdit = (row) => {
 
 //删除
 const tableDel = async (row) => {
-	const res = await roleApi.delete.post({
+	const res = await systemApi.role.delete.post({
 		ids: [row.id]
 	})
 	if (res.code === 0) {
@@ -222,7 +222,7 @@ const batchDel = async () => {
 	if (!confirmRes) return false
 
 	const ids = state.selection.map(v => v.id)
-	const res = await roleApi.del.post({ids})
+	const res = await systemApi.role.del.post({ids})
 	if (res.code === 0) {
 		table.value.removeKeys(ids)
         proxy.$message.success("操作成功")

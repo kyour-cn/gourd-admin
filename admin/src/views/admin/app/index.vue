@@ -70,7 +70,7 @@ import SaveDialog from './save'
 import InfoDialog from './info'
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
 import ScTable from "@/components/scTable/index.vue"
-import appApi from "@/api/admin/app";
+import systemApi from "@/api/admin/system.js";
 
 defineOptions({
     name: 'app',
@@ -92,7 +92,7 @@ const state = reactive({
     }
 })
 
-const apiObj = appApi.list
+const apiObj = systemApi.app.list
 
 const dialog = reactive({
     save: false,
@@ -127,7 +127,7 @@ const tableEdit = (row) => {
 
 //删除
 const tableDel = async (row) => {
-    const res = await appApi.delete.post({
+    const res = await systemApi.app.delete.post({
         ids: [row.id]
     })
     if (res.code === 0) {
@@ -145,7 +145,7 @@ const batchDel = async () => {
     if (!confirmRes) return false
 
     const ids = state.selection.map(v => v.id)
-    const res = await appApi.delete.post({ids})
+    const res = await systemApi.app.delete.post({ids})
     if (res.code === 0) {
         table.value.removeKeys(ids)
         proxy.$message.success("操作成功")

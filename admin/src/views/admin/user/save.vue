@@ -50,9 +50,9 @@
 import { reactive, ref } from 'vue'
 import { ElMessage, ElAlert } from 'element-plus'
 import roleSelect from "@/components/admin/roleSelect.vue"
+import systemApi from "@/api/admin/system.js";
 
 const emit = defineEmits(['success', 'closed', 'reloadData'])
-
 const dialogForm = ref()
 
 const state = reactive({
@@ -86,7 +86,7 @@ const state = reactive({
 		],
 		mobile: [
 			{
-				validator: (rule, value, callback) => {
+				validator: (_, value, callback) => {
 					if (value === '') return callback()
 					const regMobile = /^1\d{10}$/
 					if (regMobile.test(value)) return callback()
@@ -129,7 +129,7 @@ const submit = async () => {
 			status = status ? 1 : 0
 			let res
 			if (state.mode === 'add') {
-				res = await $API.admin.user.add.post({
+				res = await systemApi.user.add.post({
 					username,
 					nickname,
 					status,
@@ -138,7 +138,7 @@ const submit = async () => {
 					role_id
 				})
 			} else {
-				res = await $API.admin.user.edit.post({
+				res = await systemApi.user.edit.post({
 					id,
 					username,
 					nickname,

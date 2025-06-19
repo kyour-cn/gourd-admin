@@ -85,7 +85,7 @@ import info from './info'
 import scEcharts from '@/components/scEcharts'
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue";
 import scTable from "@/components/scTable/index.vue";
-import logApi from '@/api/admin/log'
+import systemApi from "@/api/admin/system.js";
 import tool from '@/utils/tool'
 const {proxy} = getCurrentInstance()
 
@@ -156,7 +156,7 @@ const state = reactive({
         tool.dateFormat(getCurrentMonthFirst()),
         tool.dateFormat(new Date()),
     ],
-    apiObj: logApi.list,
+    apiObj: systemApi.log.list,
     search: {
         keyword: ""
     }
@@ -195,7 +195,7 @@ const echartsRender = async () => {
     const start_time = tool.dateFormat(state.date[0])
     const end_time = tool.dateFormat(state.date[1])
 
-    let res = await logApi.logStat.get({start_time, end_time});
+    let res = await systemApi.log.logStat.get({start_time, end_time});
 
     const dateMaps = {}
     for (const i in res.data.days) {
@@ -265,7 +265,7 @@ const arrayPad = (arr, len, val) => {
 }
 
 onMounted(() => {
-    logApi.typeList.get({page_size: 1000}).then((res) => {
+    systemApi.log.typeList.get({page_size: 1000}).then((res) => {
         state.types = res.data.rows
         state.category = renderTreeMenu(res.data.rows)
         echartsRender();

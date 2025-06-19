@@ -98,7 +98,7 @@ export default {
     },
     methods: {
         async getApp() {
-            const res = await this.$API.admin.app.list.get();
+            const res = await this.$API.admin.system.app.list.get();
             this.appList = res.data.rows;
 
             //读取缓存 sys_menu_app_id
@@ -112,7 +112,7 @@ export default {
         //加载树数据
         async getMenu() {
             this.menuLoading = true
-            const res = await this.$API.admin.menu.list.get({
+            const res = await this.$API.admin.system.menu.list.get({
                 app_id: this.selectedApp
             });
             this.$refs.save.unsetData()
@@ -153,7 +153,7 @@ export default {
                 app_id: this.selectedApp
             }
             this.menuLoading = true
-            const res = await this.$API.admin.menu.add.post(newMenuData);
+            const res = await this.$API.admin.system.menu.add.post(newMenuData);
             this.menuLoading = false
             newMenuData.id = res.data.id
 
@@ -184,7 +184,7 @@ export default {
             const reqData = {
                 ids: CheckedNodes.map(item => item.id)
             };
-            const res = await this.$API.admin.menu.delete.post(reqData);
+            const res = await this.$API.admin.system.menu.delete.post(reqData);
             this.menuLoading = false
 
             if (res.code === 0) {

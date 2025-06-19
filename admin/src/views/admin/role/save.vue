@@ -46,8 +46,7 @@
 </template>
 
 <script setup>
-import roleApi from "@/api/admin/role";
-
+import systemApi from "@/api/admin/system.js";
 import {getCurrentInstance, reactive, ref} from "vue";
 
 const {proxy} = getCurrentInstance()
@@ -96,7 +95,7 @@ const submit = () => {
                 delete data.id
             }
 
-            const res = await roleApi[state.mode].post(data);
+            const res = await systemApi.role[state.mode].post(data);
             state.isSaving = false;
             if (res.code === 0) {
                 emits('success', state.form, state.mode)

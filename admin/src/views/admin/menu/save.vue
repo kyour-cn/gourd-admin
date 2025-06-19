@@ -172,7 +172,7 @@ export default {
         //保存
         async save() {
             this.loading = true
-            const res = await this.$API.admin.menu.edit.post(this.form)
+            const res = await this.$API.admin.system.menu.edit.post(this.form)
             this.loading = false
             if (res.code === 0) {
                 this.$message.success("保存成功")

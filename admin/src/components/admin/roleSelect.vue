@@ -45,7 +45,7 @@ export default {
         const {proxy} = getCurrentInstance()
 
 		const state = reactive({
-			apiObj: proxy.$API.admin.role.list,
+			apiObj: proxy.$API.admin.system.role.list,
 			tableWidth: props.tableWidth? props.tableWidth : 600,
 			props: {
 				label: 'name',
@@ -57,7 +57,7 @@ export default {
 		})
 
 		const getApp =  async () => {
-			const res = await proxy.$API.admin.app.list.get({
+			const res = await proxy.$API.admin.system.role.list.get({
 				pageSize: 50
 			});
 			state.appList = res.data.rows;

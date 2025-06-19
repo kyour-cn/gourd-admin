@@ -26,11 +26,10 @@
 </template>
 
 <script setup>
-
 import {getCurrentInstance, nextTick, reactive, ref} from "vue";
+import systemApi from "@/api/admin/system.js";
 
 const {proxy} = getCurrentInstance()
-
 const emit = defineEmits(["success", "closed", "getNewData"])
 
 const state = reactive({
@@ -71,7 +70,7 @@ const submit = async () => {
         rules: checkIds,
         rules_checked: checked
     }
-    const res = await proxy.$API.admin.role.editPermission.post(data);
+    const res = await systemApi.role.editPermission.post(data);
     if (res.code === 0) {
         state.isSaveing = false;
         state.visible = false;
