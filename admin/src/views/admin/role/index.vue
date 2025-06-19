@@ -46,7 +46,7 @@
 				</el-table-column>
 				<el-table-column label="创建时间" prop="create_time" width="170">
 					<template #default="{row,$index}">
-						{{ $TOOL.dateFormat(row.create_time * 1000) }}
+						{{ tool.dateFormat(row.create_time * 1000) }}
 					</template>
 				</el-table-column>
 				<el-table-column label="备注" prop="remark" min-width="150"/>
@@ -98,6 +98,7 @@ import scSelectFilter from "@/components/scSelectFilter"
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
 import ScTable from "@/components/scTable/index.vue"
 import roleApi from "@/api/admin/role";
+import tool from '@/utils/tool'
 
 defineOptions({
     name: 'role',
@@ -224,7 +225,7 @@ const batchDel = async () => {
 	const res = await roleApi.del.post({ids})
 	if (res.code === 0) {
 		table.value.removeKeys(ids)
-		state.$message.success("操作成功")
+        proxy.$message.success("操作成功")
 	} else {
 		await proxy.$alert(res.message, "提示", {type: 'error'})
 	}
