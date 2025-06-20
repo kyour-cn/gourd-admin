@@ -1,7 +1,6 @@
 package main
 
 import (
-	"app/cmd/gorm/gen_tool"
 	"app/cmd/gorm/methods"
 	"app/cmd/gorm/tags"
 	"app/internal/config"
@@ -11,7 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// main 模型代码生成
 func main() {
 
 	// 初始化数据库
@@ -30,8 +28,6 @@ func main() {
 		// 自动时间戳字段属性
 		gen.FieldGORMTag("create_time", tags.CreateField),
 		gen.FieldGORMTag("update_time", tags.UpdateField),
-		gen.FieldType("create_time", "uint"),
-		gen.FieldType("update_time", "uint"),
 
 		// 软删除字段属性
 		gen.FieldType("delete_time", "soft_delete.DeletedAt"),
@@ -41,81 +37,98 @@ func main() {
 	}
 
 	g := gen.NewGenerator(gen.Config{
-		OutPath: "./internal/orm/query",
-		Mode:    gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface, // generate mode
+		OutPath:      "./internal/orm/query",
+		ModelPkgPath: "model",
+		Mode:         gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface, // generate mode
 	})
 
 	g.UseDB(mysqlDb)
 
-	// 使用工具生成模型
-	db := gen_tool.Database{
-		Generator: g,
-		ComOpts:   &comOpts,
-		Tables: []gen_tool.Table{
+	// 生成所有表
+	//g.ApplyBasic(g.GenerateAllTable(comOpts...)...)
 
-			// 系统基础数据表
-			{Name: "app"},
-			{Name: "log"},
-			{Name: "log_type"},
-			{Name: "log_stat_view"},
-			{Name: "menu_api"},
-			{
-				Name: "role",
-				Relate: &[]gen_tool.TableRelate{
-					{
-						TableName:  "app",
-						FieldName:  "App",
-						Type:       field.HasOne,
-						ForeignKey: "app_id",
-						LocalKey:   "id",
-					},
-				},
-			},
-			{
-				Name: "menu",
-				Relate: &[]gen_tool.TableRelate{
-					{
-						TableName:  "menu_api",
-						FieldName:  "MenuApi",
-						Type:       field.HasMany,
-						ForeignKey: "menu_id",
-						LocalKey:   "id",
-					},
-					{
-						TableName:  "app",
-						FieldName:  "App",
-						Type:       field.HasOne,
-						ForeignKey: "app_id",
-						LocalKey:   "id",
-					},
-				},
-			},
-			{
-				Name: "user",
-				Relate: &[]gen_tool.TableRelate{
-					{
-						TableName:  "role",
-						FieldName:  "Role",
-						Type:       field.HasOne,
-						ForeignKey: "role_id",
-						LocalKey:   "id",
-						Relate: &[]gen_tool.TableRelate{
-							{
-								TableName:  "app",
-								FieldName:  "App",
-								Type:       field.HasOne,
-								ForeignKey: "app_id",
-								LocalKey:   "id",
-							},
-						},
-					},
-				},
-			},
+	var allTables []any
 
-			// 业务数据表
+	// App
+	appModel := g.GenerateModel("app", comOpts...)
+	allTables = append(allTables, appModel)
 
-		},
-	}
+	// Role
+	tag := field.GormTag{}
+	tag.Set("foreignKey", "app_id")
+	tag.Set("references", "id")
+	roleModel := g.GenerateModel("role", append(comOpts,
+		gen.FieldRelate(field.HasOne, "App", appModel, &field.RelateConfig{
+			GORMTag: tag,
+		}),
+	)...)
+	allTables = append(allTables, roleModel)
 
-	db.GenTable()
+	// UserRole
+	tag = field.GormTag{}
+	tag.Set("foreignKey", "role_id")
+	tag.Set("references", "id")
+	userRoleModel := g.GenerateModel("user_role", append(comOpts,
+		gen.FieldRelate(field.HasOne, "Role", roleModel, &field.RelateConfig{
+			GORMTag: tag,
+		}),
+	)...)
+	allTables = append(allTables, userRoleModel)
+
+	// User
+	tag = field.GormTag{}
+	tag.Set("foreignKey", "user_id")
+	tag.Set("references", "id")
+	userModel := g.GenerateModel("user", append(comOpts,
+		gen.FieldRelate(field.HasMany, "UserRole", userRoleModel, &field.RelateConfig{
+			GORMTag: tag,
+		}),
+	)...)
+	allTables = append(allTables, userModel)
+
+	// MenuApi
+	menuApiModel := g.GenerateModel("menu_api", comOpts...)
+	allTables = append(allTables, menuApiModel)
+
+	// Menu
+	tag = field.GormTag{}
+	tag.Set("foreignKey", "app_id")
+	tag.Set("references", "id")
+	tag2 := field.GormTag{}
+	tag2.Set("foreignKey", "menu_id")
+	tag2.Set("references", "id")
+	menuModel := g.GenerateModel("menu", append(comOpts,
+		gen.FieldRelate(field.HasOne, "App", appModel, &field.RelateConfig{
+			GORMTag: tag,
+		}),
+		gen.FieldRelate(field.HasMany, "MenuApi", menuApiModel, &field.RelateConfig{
+			GORMTag: tag2,
+		}),
+	)...)
+	allTables = append(allTables, menuModel)
+
+	// LogStatView
+	logStatViewModel := g.GenerateModel("log_stat_view", comOpts...)
+	allTables = append(allTables, logStatViewModel)
+
+	// Log
+	tag = field.GormTag{}
+	tag.Set("foreignKey", "type_id")
+	tag.Set("references", "id")
+	logModel := g.GenerateModel("log", append(comOpts,
+		gen.FieldRelate(field.HasOne, "User", userModel, &field.RelateConfig{
+			GORMTag: tag,
+		}),
+	)...)
+	allTables = append(allTables, logModel)
+
+	// LogType
+	logTypeModel := g.GenerateModel("log_type", comOpts...)
+	allTables = append(allTables, logTypeModel)
+
+	// 生成指定表
+	g.ApplyBasic(allTables...)
+
+	// 执行生成
+	g.Execute()
 }
