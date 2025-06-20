@@ -39,7 +39,7 @@ import systemApi from "@/api/admin/system.js";
 export default {
 	name: "roleSelect",
 	props: {
-        ids: { type: String, default: "" },
+        roles: { type: Array, default: () => [] },
 		tableWidth: Number,
 		placeholder: { type: String, default: "请选择" }
 	},
@@ -52,23 +52,20 @@ export default {
 				label: 'name',
 				value: 'id',
 			},
-			value: [],
+			value: props.roles,
 			appList: [],
 			selectedApp: 0
 		})
 
-        // const getInitialData = async () => {
-			systemApi.role.list.get({
-				pageSize: 50,
-                ids: props.ids
-			}).then((res) => {
-                console.log( res.data.rows)
-                res.data.rows.forEach(item => {
-                    state.value.push(item)
-                })
-
-            })
-		// }
+        // systemApi.role.list.get({
+        //     pageSize: 50,
+        //     ids: props.ids
+        // }).then((res) => {
+        //     console.log( res.data.rows)
+        //     res.data.rows.forEach(item => {
+        //         state.value.push(item)
+        //     })
+        // })
 
 		const getApp =  async () => {
 			const res = await systemApi.app.list.get({

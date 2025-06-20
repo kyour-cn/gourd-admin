@@ -19,26 +19,32 @@
 			</el-form-item>
 			<template v-if="state.mode==='add'">
 				<el-form-item label="登录密码" prop="password">
-					<el-input type="password" v-model="state.form.password" clearable show-password></el-input>
+					<el-input
+                        v-model="state.form.password"
+                        type="password"
+                        autocomplete="new-password"
+                        placeholder="请输入密码"
+                        clearable
+                        show-password
+                    ></el-input>
 				</el-form-item>
 			</template>
 			<template v-if="state.mode==='edit'">
 				<el-form-item label="修改密码">
 					<el-input
+                        v-model="state.form.password"
                         type="password"
+                        autocomplete="new-password"
+                        placeholder="请输入新密码，留空则不修改"
                         clearable
                         show-password
-                        placeholder="请输入新密码，留空则不修改"
-                        v-model="state.form.password"
-                        autocomplete="new-password"
                     />
 				</el-form-item>
 			</template>
 			<el-form-item label="用户角色" prop="role_name">
 				<roleSelect
-                    v-if="state.form.id"
-                    :ids="state.form.role_id"
-                    :placeholder="state.form.role?.name"
+                    :roles="state.roles"
+                    placeholder="请选择用户角色"
                     @onChange="change"
                 />
 			</el-form-item>
@@ -76,8 +82,6 @@ const state = reactive({
 		status: true,
 		password: '',
 		mobile: '',
-		role_id: 0,
-		role: null
 	},
 	rules: {
 		avatar: [
@@ -107,16 +111,11 @@ const state = reactive({
 			{ required: true, message: '请选择当前状态' }
 		]
 	},
-	groups: [],
-	groupsProps: {
-		value: "id",
-		multiple: true,
-		checkStrictly: true
-	}
+    roles: []
 })
 
 const change = (val) => {
-    state.form.role_id = val.map(item => item.id).join(",")
+    state.roles = val
 }
 
 const open = (mode = 'add') => {
@@ -129,7 +128,9 @@ const submit = async () => {
 	dialogForm.value.validate(async (valid) => {
 		if (valid) {
 			state.isSaveing = true
-			let { username, nickname, status, password, mobile, role_id, id } = state.form
+			let { username, nickname, status, password, mobile, id } = state.form
+
+            let roles = state.roles.map(item => item.id)
 
 			status = status ? 1 : 0
 			let res
@@ -140,7 +141,7 @@ const submit = async () => {
 					status,
 					password,
 					mobile,
-					role_id
+                    roles
 				})
 			} else {
 				res = await systemApi.user.edit.post({
@@ -150,7 +151,7 @@ const submit = async () => {
 					status,
 					password,
 					mobile,
-					role_id
+                    roles
 				})
 			}
 			state.isSaveing = false
@@ -168,6 +169,11 @@ const submit = async () => {
 }
 
 const setData = (data) => {
+    if(data.user_role) {
+        for (const i in data.user_role) {
+            state.roles.push(data.user_role[i].role)
+        }
+    }
 	Object.assign(state.form, {
 		id: data.id,
 		nickname: data.nickname,
@@ -175,8 +181,6 @@ const setData = (data) => {
 		username: data.username,
 		status: data.status === 1,
 		mobile: data.mobile,
-		role_id: data.role_id,
-		role: data.role
 	})
 }
 
