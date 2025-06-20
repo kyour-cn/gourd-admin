@@ -12,7 +12,6 @@
         ref="select"
         v-model="defaultValue"
         :size="size"
-        :value-key="valueKey"
         :clearable="clearable"
         :multiple="multiple"
         :collapse-tags="collapseTags"

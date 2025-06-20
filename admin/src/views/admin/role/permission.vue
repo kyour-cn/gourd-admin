@@ -83,7 +83,7 @@ const submit = async () => {
 }
 
 const getRule = async () => {
-    const res = await proxy.$API.admin.menu.list.get({
+    const res = await systemApi.menu.list.get({
         app_id: state.row.app_id
     });
     if (res.code === 0) {

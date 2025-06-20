@@ -67,6 +67,7 @@ const state = reactive({
         id: "",
         name: "",
         sort: 1,
+        is_admin: 0,
         status: 1,
         remark: "",
         app_id: 0
@@ -89,6 +90,7 @@ const submit = () => {
             state.isSaving = true;
 
             const data = state.form
+            data.is_admin = data.is_admin ? 1 : 0;
             data.status = data.status ? 1 : 0;
 
             if(state.mode === 'add') {
@@ -114,8 +116,8 @@ const open = (mode = 'add') => {
 }
 
 const setData = (data) => {
-    console.log(data)
     Object.assign(state.form, data)
+    state.form.is_admin = data.is_admin === 1
     state.form.status = data.status === 1
 }
 

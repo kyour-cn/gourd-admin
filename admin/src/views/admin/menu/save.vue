@@ -17,10 +17,10 @@
                     </el-form-item>
                     <el-form-item label="类型" prop="meta.type">
                         <el-radio-group v-model="form.meta.type">
-                            <el-radio-button label="menu">菜单</el-radio-button>
-                            <el-radio-button label="iframe">Iframe</el-radio-button>
-                            <el-radio-button label="link">外链</el-radio-button>
-                            <el-radio-button label="rule">权限</el-radio-button>
+                            <el-radio-button value="menu">菜单</el-radio-button>
+                            <el-radio-button value="iframe">Iframe</el-radio-button>
+                            <el-radio-button value="link">外链</el-radio-button>
+                            <el-radio-button value="rule">权限</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="别名" prop="name">
