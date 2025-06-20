@@ -25,6 +25,7 @@ var (
 	MenuAPI     *menuAPI
 	Role        *role
 	User        *user
+	UserRole    *userRole
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
@@ -37,6 +38,7 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	MenuAPI = &Q.MenuAPI
 	Role = &Q.Role
 	User = &Q.User
+	UserRole = &Q.UserRole
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
@@ -50,6 +52,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		MenuAPI:     newMenuAPI(db, opts...),
 		Role:        newRole(db, opts...),
 		User:        newUser(db, opts...),
+		UserRole:    newUserRole(db, opts...),
 	}
 }
 
@@ -64,6 +67,7 @@ type Query struct {
 	MenuAPI     menuAPI
 	Role        role
 	User        user
+	UserRole    userRole
 }
 
 func (q *Query) Available() bool { return q.db != nil }
@@ -79,6 +83,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		MenuAPI:     q.MenuAPI.clone(db),
 		Role:        q.Role.clone(db),
 		User:        q.User.clone(db),
+		UserRole:    q.UserRole.clone(db),
 	}
 }
 
@@ -101,6 +106,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		MenuAPI:     q.MenuAPI.replaceDB(db),
 		Role:        q.Role.replaceDB(db),
 		User:        q.User.replaceDB(db),
+		UserRole:    q.UserRole.replaceDB(db),
 	}
 }
 
@@ -113,6 +119,7 @@ type queryCtx struct {
 	MenuAPI     IMenuAPIDo
 	Role        IRoleDo
 	User        IUserDo
+	UserRole    IUserRoleDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
@@ -125,6 +132,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		MenuAPI:     q.MenuAPI.WithContext(ctx),
 		Role:        q.Role.WithContext(ctx),
 		User:        q.User.WithContext(ctx),
+		UserRole:    q.UserRole.WithContext(ctx),
 	}
 }
 

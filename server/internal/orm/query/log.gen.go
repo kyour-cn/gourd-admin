@@ -39,9 +39,38 @@ func newLog(db *gorm.DB, opts ...gen.DOOption) log {
 	_log.RequestIP = field.NewString(tableName, "request_ip")
 	_log.RequestUserID = field.NewInt32(tableName, "request_user_id")
 	_log.RequestUser = field.NewString(tableName, "request_user")
-	_log.CreateTime = field.NewUint(tableName, "create_time")
-	_log.UpdateTime = field.NewUint(tableName, "update_time")
+	_log.CreateTime = field.NewInt32(tableName, "create_time")
+	_log.UpdateTime = field.NewInt32(tableName, "update_time")
 	_log.Status = field.NewInt32(tableName, "status")
+	_log.User = logHasOneUser{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("User", "model.User"),
+		UserRole: struct {
+			field.RelationField
+			Role struct {
+				field.RelationField
+				App struct {
+					field.RelationField
+				}
+			}
+		}{
+			RelationField: field.NewRelation("User.UserRole", "model.UserRole"),
+			Role: struct {
+				field.RelationField
+				App struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("User.UserRole.Role", "model.Role"),
+				App: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("User.UserRole.Role.App", "model.App"),
+				},
+			},
+		},
+	}
 
 	_log.fillFieldMap()
 
@@ -64,9 +93,10 @@ type log struct {
 	RequestIP     field.String // 请求来源IP
 	RequestUserID field.Int32  // 操作人ID
 	RequestUser   field.String // 操作人
-	CreateTime    field.Uint   // 记录时间
-	UpdateTime    field.Uint   // 更新时间
+	CreateTime    field.Int32  // 记录时间
+	UpdateTime    field.Int32  // 更新时间
 	Status        field.Int32  // 状态 0=未处理 1=已查看 2=已处理
+	User          logHasOneUser
 
 	fieldMap map[string]field.Expr
 }
@@ -94,8 +124,8 @@ func (l *log) updateTableName(table string) *log {
 	l.RequestIP = field.NewString(table, "request_ip")
 	l.RequestUserID = field.NewInt32(table, "request_user_id")
 	l.RequestUser = field.NewString(table, "request_user")
-	l.CreateTime = field.NewUint(table, "create_time")
-	l.UpdateTime = field.NewUint(table, "update_time")
+	l.CreateTime = field.NewInt32(table, "create_time")
+	l.UpdateTime = field.NewInt32(table, "update_time")
 	l.Status = field.NewInt32(table, "status")
 
 	l.fillFieldMap()
@@ -113,7 +143,7 @@ func (l *log) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (l *log) fillFieldMap() {
-	l.fieldMap = make(map[string]field.Expr, 14)
+	l.fieldMap = make(map[string]field.Expr, 15)
 	l.fieldMap["id"] = l.ID
 	l.fieldMap["app_id"] = l.AppID
 	l.fieldMap["type_id"] = l.TypeID
@@ -128,16 +158,111 @@ func (l *log) fillFieldMap() {
 	l.fieldMap["create_time"] = l.CreateTime
 	l.fieldMap["update_time"] = l.UpdateTime
 	l.fieldMap["status"] = l.Status
+
 }
 
 func (l log) clone(db *gorm.DB) log {
 	l.logDo.ReplaceConnPool(db.Statement.ConnPool)
+	l.User.db = db.Session(&gorm.Session{Initialized: true})
+	l.User.db.Statement.ConnPool = db.Statement.ConnPool
 	return l
 }
 
 func (l log) replaceDB(db *gorm.DB) log {
 	l.logDo.ReplaceDB(db)
+	l.User.db = db.Session(&gorm.Session{})
 	return l
+}
+
+type logHasOneUser struct {
+	db *gorm.DB
+
+	field.RelationField
+
+	UserRole struct {
+		field.RelationField
+		Role struct {
+			field.RelationField
+			App struct {
+				field.RelationField
+			}
+		}
+	}
+}
+
+func (a logHasOneUser) Where(conds ...field.Expr) *logHasOneUser {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a logHasOneUser) WithContext(ctx context.Context) *logHasOneUser {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a logHasOneUser) Session(session *gorm.Session) *logHasOneUser {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a logHasOneUser) Model(m *model.Log) *logHasOneUserTx {
+	return &logHasOneUserTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a logHasOneUser) Unscoped() *logHasOneUser {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type logHasOneUserTx struct{ tx *gorm.Association }
+
+func (a logHasOneUserTx) Find() (result *model.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a logHasOneUserTx) Append(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a logHasOneUserTx) Replace(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a logHasOneUserTx) Delete(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a logHasOneUserTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a logHasOneUserTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a logHasOneUserTx) Unscoped() *logHasOneUserTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type logDo struct{ gen.DO }

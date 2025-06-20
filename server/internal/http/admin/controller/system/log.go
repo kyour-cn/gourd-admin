@@ -65,7 +65,7 @@ func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 101, "时间格式异常", nil)
 		return
 	}
-	condition = append(condition, query.Log.CreateTime.Between(uint(startTime.Unix()), uint(entTime.Unix())))
+	condition = append(condition, query.Log.CreateTime.Between(int32(startTime.Unix()), int32(entTime.Unix())))
 
 	// 类型筛选
 	logType := params.Get("type_id")

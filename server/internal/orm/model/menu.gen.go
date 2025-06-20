@@ -23,8 +23,8 @@ type Menu struct {
 	Status    int32     `gorm:"column:status;not null;default:1;comment:是否启用" json:"status"` // 是否启用
 	Sort      int32     `gorm:"column:sort;not null;comment:排序" json:"sort"`                 // 排序
 	Meta      string    `gorm:"column:meta;not null;comment:meta路由参数" json:"meta"`           // meta路由参数
-	MenuApi   []MenuAPI `gorm:"foreignKey:menu_id;references:id" json:"menu_api"`
 	App       App       `gorm:"foreignKey:app_id;references:id" json:"app"`
+	MenuApi   []MenuAPI `gorm:"foreignKey:menu_id;references:id" json:"menu_api"`
 }
 
 // MarshalBinary 支持json序列化

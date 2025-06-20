@@ -15,10 +15,8 @@ import (
 // UserClaims TODO： 待完善调整
 type UserClaims struct {
 	jwt.RegisteredClaims
-	Sub   int32  `json:"sub"`
-	Name  string `json:"name"`
-	Role  int32  `json:"role"`
-	AppId int32  `json:"app_id"` // 移除改为用户多角色
+	Sub  int32  `json:"sub"`
+	Name string `json:"name"`
 }
 
 // LoginUser 登录用户
@@ -54,7 +52,6 @@ func LoginUser(ctx context.Context, username string, password string) (*model.Us
 			uq.Avatar,
 			uq.CreateTime,
 			uq.Status,
-			uq.RoleID,
 		).
 		First()
 	if err != nil {

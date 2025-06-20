@@ -46,7 +46,7 @@ func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 
 	// 查询列表
 	list, count, err := query.Role.WithContext(r.Context()).
-		Preload(query.Role.App).
+		//Preload(query.Role.App).
 		Where(conditions...).
 		Order(query.Role.AppID.Asc(), query.Role.Sort.Asc()).
 		FindByPage((page-1)*pageSize, pageSize)

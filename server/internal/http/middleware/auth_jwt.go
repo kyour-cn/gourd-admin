@@ -44,7 +44,7 @@ func AuthJwtMiddleware(next http.Handler) http.Handler {
 		}
 
 		// 验证 JWT token 的接口权限
-		if !auth.CheckJwtPermission(claims, r) {
+		if !auth.CheckPath(claims, r) {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}

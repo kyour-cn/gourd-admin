@@ -4,6 +4,7 @@ import (
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"encoding/json"
+	"errors"
 	"gorm.io/gen"
 	"strconv"
 	"strings"
@@ -35,33 +36,43 @@ type menuTree struct {
 type menuTreeArr []menuTree
 
 // GetMenu 获取用户菜单
-func GetMenu(userInfo *model.User) (any, error) {
+func GetMenu(userInfo *model.User, appId int32) (any, error) {
+	if len(userInfo.UserRole) == 0 {
+		return nil, errors.New("用户角色不存在")
+	}
 
-	// 查询角色
-	roleInfo, err := query.Role.
-		Where(query.Role.ID.Eq(userInfo.RoleID)).
-		First()
-	if err != nil {
-		return nil, err
+	isAdmin := false
+
+	// 筛选指定id列表
+	mIds := make([]int32, 0)
+	for _, v := range userInfo.UserRole {
+		if v.Role.AppID != appId {
+			continue
+		}
+		if v.Role.IsAdmin == 1 {
+			isAdmin = true
+		}
+		for _, v := range strings.Split(v.Role.Rules, ",") {
+			i, _ := strconv.Atoi(v)
+			mIds = append(mIds, int32(i))
+		}
 	}
 
 	qm := query.Menu
 	conditions := []gen.Condition{
 		qm.Status.Eq(1),
-		qm.AppID.Eq(roleInfo.AppID),
+		qm.AppID.Eq(appId),
 	}
 
 	// 判断是否管理员
-	if roleInfo.IsAdmin == 0 {
-		var ids []int32
-		arr := strings.Split(roleInfo.Rules, ",")
-		for _, v := range arr {
-			num, _ := strconv.Atoi(v)
-			ids = append(ids, int32(num))
+	if !isAdmin {
+		if len(mIds) == 0 {
+			return nil, errors.New("暂无权限")
 		}
-		conditions = append(conditions, qm.ID.In(ids...))
+		conditions = append(conditions, qm.ID.In(mIds...))
 	}
 
+	// 获取菜单
 	menu, err := query.Menu.
 		Preload(query.Menu.MenuApi).
 		Where(conditions...).
@@ -69,9 +80,9 @@ func GetMenu(userInfo *model.User) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	// 构建菜单树
 	return recursionMenu(menu, 0), nil
-
 }
 
 // GetMenuFormApp 获取指定应用的菜单

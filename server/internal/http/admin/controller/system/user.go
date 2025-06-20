@@ -44,7 +44,8 @@ func (c *User) List(w http.ResponseWriter, r *http.Request) {
 	// 查询列表
 	list, count, err := query.User.WithContext(r.Context()).
 		Preload(
-			query.User.Role.Select(
+			query.User.UserRole,
+			query.User.UserRole.Role.Select(
 				query.Role.ID,
 				query.Role.Name,
 			),
@@ -101,7 +102,6 @@ func (c *User) Edit(w http.ResponseWriter, r *http.Request) {
 		qu.Mobile,
 		qu.Avatar,
 		qu.Status,
-		qu.RoleID,
 	}
 
 	// 如果密码不为空，则加密后更新密码

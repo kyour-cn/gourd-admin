@@ -7,62 +7,55 @@ import (
 	"strings"
 )
 
-// CheckJwtPermission 检查Token接口权限
-func CheckJwtPermission(jd UserClaims, r *http.Request) bool {
+// CheckPath 检查Token接口权限
+func CheckPath(claims UserClaims, r *http.Request) bool {
+	url := r.URL.Path
 
-	// 取出角色ID和应用ID
-	if jd.Role == 0 || jd.AppId == 0 {
+	apis, err := query.MenuAPI.
+		Where(query.MenuAPI.Path.Eq(url)).
+		Select(query.MenuAPI.ID).
+		Find()
+	if err == nil && len(apis) == 0 {
+		// 路由未定义，不限制
+		return true
+	} else if err != nil {
 		return false
 	}
 
-	url := r.URL.Path
-	apis, err := query.MenuAPI.
-		Where(
-			query.MenuAPI.Path.Eq(url),
-			query.MenuAPI.AppID.Eq(jd.AppId),
-		).
-		Select(query.MenuAPI.ID).
-		Find()
-	if err != nil {
-		// 路由未定义，不限制
-		return true
-	}
+	uq := query.User
 
-	// 获取用户角色
-	role, err := query.Role.
-		Where(
-			query.Role.ID.Eq(jd.Role),
-			query.Role.AppID.Eq(jd.AppId),
+	userInfo, err := uq.WithContext(r.Context()).
+		Preload(
+			query.User.UserRole,
+			query.User.UserRole.Role,
 		).
-		Select(
-			query.Role.ID,
-			query.Role.IsAdmin,
-			query.Role.Rules,
+		Where(
+			uq.ID.Eq(claims.Sub),
+			uq.Status.Eq(1),
 		).
 		First()
 	if err != nil {
+		// 用户状态已失效
 		return false
 	}
-	// 管理员角色拥有所有权限
-	if role.IsAdmin == 1 {
-		return true
+
+	// 权限匹配
+	ruleSet := make(map[int32]bool)
+	for _, v := range userInfo.UserRole {
+		// 管理员角色拥有所有权限
+		if v.Role.IsAdmin == 1 {
+			return true
+		}
+		for _, ruleIDStr := range strings.Split(v.Role.Rules, ",") {
+			ruleID, _ := strconv.Atoi(ruleIDStr)
+			ruleSet[int32(ruleID)] = true
+		}
 	}
 
-	var ruleIds []int32
-	for _, rule := range apis {
-		ruleIds = append(ruleIds, rule.ID)
-	}
-
-	ruleArr := strings.Split(role.Rules, ",")
-
-	// 判断 ruleIds 和 role.Rules 是否有交集
-	for _, rid := range ruleIds {
-		for _, rid2 := range ruleArr {
-			_id, _ := strconv.Atoi(rid2)
-			if rid == int32(_id) {
-				// 权限匹配成功
-				return true
-			}
+	// 判断是否有交集
+	for _, api := range apis {
+		if ruleSet[api.ID] {
+			return true
 		}
 	}
 

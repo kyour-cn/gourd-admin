@@ -17,8 +17,8 @@ type Role struct {
 	Name        string `gorm:"column:name;not null;comment:角色名称" json:"name"`                              // 角色名称
 	Rules       string `gorm:"column:rules;not null;comment:权限ID ,分割a" json:"rules"`                       // 权限ID ,分割a
 	RulesCheckd string `gorm:"column:rules_checkd;not null;comment:权限树选中的字节点ID" json:"rules_checkd"`       // 权限树选中的字节点ID
-	CreateTime  uint   `gorm:"column:create_time;not null;autoCreateTime;comment:创建时间" json:"create_time"` // 创建时间
-	UpdateTime  uint   `gorm:"column:update_time;not null;autoUpdateTime;comment:更新时间" json:"update_time"` // 更新时间
+	CreateTime  int32  `gorm:"column:create_time;not null;autoCreateTime;comment:创建时间" json:"create_time"` // 创建时间
+	UpdateTime  int32  `gorm:"column:update_time;not null;autoUpdateTime;comment:更新时间" json:"update_time"` // 更新时间
 	Remark      string `gorm:"column:remark;not null;comment:简介" json:"remark"`                            // 简介
 	Status      int32  `gorm:"column:status;not null;default:1;comment:状态" json:"status"`                  // 状态
 	Sort        int32  `gorm:"column:sort;not null;comment:排序" json:"sort"`                                // 排序

@@ -34,19 +34,26 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.Mobile = field.NewString(tableName, "mobile")
 	_user.Avatar = field.NewString(tableName, "avatar")
 	_user.Password = field.NewString(tableName, "password")
-	_user.CreateTime = field.NewUint(tableName, "create_time")
+	_user.CreateTime = field.NewInt32(tableName, "create_time")
 	_user.LoginTime = field.NewInt32(tableName, "login_time")
 	_user.Status = field.NewInt32(tableName, "status")
 	_user.DeleteTime = field.NewField(tableName, "delete_time")
-	_user.RoleID = field.NewInt32(tableName, "role_id")
-	_user.Role = userHasOneRole{
+	_user.UserRole = userHasManyUserRole{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("Role", "model.Role"),
-		App: struct {
+		RelationField: field.NewRelation("UserRole", "model.UserRole"),
+		Role: struct {
 			field.RelationField
+			App struct {
+				field.RelationField
+			}
 		}{
-			RelationField: field.NewRelation("Role.App", "model.App"),
+			RelationField: field.NewRelation("UserRole.Role", "model.Role"),
+			App: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("UserRole.Role.App", "model.App"),
+			},
 		},
 	}
 
@@ -66,12 +73,11 @@ type user struct {
 	Mobile     field.String // 手机号
 	Avatar     field.String // 头像
 	Password   field.String // 密码 md5
-	CreateTime field.Uint   // 创建|注册时间
+	CreateTime field.Int32  // 创建|注册时间
 	LoginTime  field.Int32  // 登录时间
 	Status     field.Int32  // 状态
 	DeleteTime field.Field  // 删除时间
-	RoleID     field.Int32  // 角色ID
-	Role       userHasOneRole
+	UserRole   userHasManyUserRole
 
 	fieldMap map[string]field.Expr
 }
@@ -94,11 +100,10 @@ func (u *user) updateTableName(table string) *user {
 	u.Mobile = field.NewString(table, "mobile")
 	u.Avatar = field.NewString(table, "avatar")
 	u.Password = field.NewString(table, "password")
-	u.CreateTime = field.NewUint(table, "create_time")
+	u.CreateTime = field.NewInt32(table, "create_time")
 	u.LoginTime = field.NewInt32(table, "login_time")
 	u.Status = field.NewInt32(table, "status")
 	u.DeleteTime = field.NewField(table, "delete_time")
-	u.RoleID = field.NewInt32(table, "role_id")
 
 	u.fillFieldMap()
 
@@ -115,7 +120,7 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 12)
+	u.fieldMap = make(map[string]field.Expr, 11)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["nickname"] = u.Nickname
 	u.fieldMap["username"] = u.Username
@@ -126,34 +131,36 @@ func (u *user) fillFieldMap() {
 	u.fieldMap["login_time"] = u.LoginTime
 	u.fieldMap["status"] = u.Status
 	u.fieldMap["delete_time"] = u.DeleteTime
-	u.fieldMap["role_id"] = u.RoleID
 
 }
 
 func (u user) clone(db *gorm.DB) user {
 	u.userDo.ReplaceConnPool(db.Statement.ConnPool)
-	u.Role.db = db.Session(&gorm.Session{Initialized: true})
-	u.Role.db.Statement.ConnPool = db.Statement.ConnPool
+	u.UserRole.db = db.Session(&gorm.Session{Initialized: true})
+	u.UserRole.db.Statement.ConnPool = db.Statement.ConnPool
 	return u
 }
 
 func (u user) replaceDB(db *gorm.DB) user {
 	u.userDo.ReplaceDB(db)
-	u.Role.db = db.Session(&gorm.Session{})
+	u.UserRole.db = db.Session(&gorm.Session{})
 	return u
 }
 
-type userHasOneRole struct {
+type userHasManyUserRole struct {
 	db *gorm.DB
 
 	field.RelationField
 
-	App struct {
+	Role struct {
 		field.RelationField
+		App struct {
+			field.RelationField
+		}
 	}
 }
 
-func (a userHasOneRole) Where(conds ...field.Expr) *userHasOneRole {
+func (a userHasManyUserRole) Where(conds ...field.Expr) *userHasManyUserRole {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -166,32 +173,32 @@ func (a userHasOneRole) Where(conds ...field.Expr) *userHasOneRole {
 	return &a
 }
 
-func (a userHasOneRole) WithContext(ctx context.Context) *userHasOneRole {
+func (a userHasManyUserRole) WithContext(ctx context.Context) *userHasManyUserRole {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a userHasOneRole) Session(session *gorm.Session) *userHasOneRole {
+func (a userHasManyUserRole) Session(session *gorm.Session) *userHasManyUserRole {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a userHasOneRole) Model(m *model.User) *userHasOneRoleTx {
-	return &userHasOneRoleTx{a.db.Model(m).Association(a.Name())}
+func (a userHasManyUserRole) Model(m *model.User) *userHasManyUserRoleTx {
+	return &userHasManyUserRoleTx{a.db.Model(m).Association(a.Name())}
 }
 
-func (a userHasOneRole) Unscoped() *userHasOneRole {
+func (a userHasManyUserRole) Unscoped() *userHasManyUserRole {
 	a.db = a.db.Unscoped()
 	return &a
 }
 
-type userHasOneRoleTx struct{ tx *gorm.Association }
+type userHasManyUserRoleTx struct{ tx *gorm.Association }
 
-func (a userHasOneRoleTx) Find() (result *model.Role, err error) {
+func (a userHasManyUserRoleTx) Find() (result []*model.UserRole, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a userHasOneRoleTx) Append(values ...*model.Role) (err error) {
+func (a userHasManyUserRoleTx) Append(values ...*model.UserRole) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -199,7 +206,7 @@ func (a userHasOneRoleTx) Append(values ...*model.Role) (err error) {
 	return a.tx.Append(targetValues...)
 }
 
-func (a userHasOneRoleTx) Replace(values ...*model.Role) (err error) {
+func (a userHasManyUserRoleTx) Replace(values ...*model.UserRole) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -207,7 +214,7 @@ func (a userHasOneRoleTx) Replace(values ...*model.Role) (err error) {
 	return a.tx.Replace(targetValues...)
 }
 
-func (a userHasOneRoleTx) Delete(values ...*model.Role) (err error) {
+func (a userHasManyUserRoleTx) Delete(values ...*model.UserRole) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -215,15 +222,15 @@ func (a userHasOneRoleTx) Delete(values ...*model.Role) (err error) {
 	return a.tx.Delete(targetValues...)
 }
 
-func (a userHasOneRoleTx) Clear() error {
+func (a userHasManyUserRoleTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a userHasOneRoleTx) Count() int64 {
+func (a userHasManyUserRoleTx) Count() int64 {
 	return a.tx.Count()
 }
 
-func (a userHasOneRoleTx) Unscoped() *userHasOneRoleTx {
+func (a userHasManyUserRoleTx) Unscoped() *userHasManyUserRoleTx {
 	a.tx = a.tx.Unscoped()
 	return &a
 }

@@ -75,28 +75,15 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 获取角色信息
-	roleData, err := query.Role.WithContext(r.Context()).
-		Where(
-			query.Role.ID.Eq(userData.RoleID),
-			query.Role.Status.Eq(1),
-		).
-		First()
-	if err != nil {
-		_ = c.Fail(w, 104, "账号角色异常,请联系管理员", err)
-		return
-	}
-
+	// 创建token
 	jwtConf, err := config.GetJwtConfig()
 	if err != nil {
 		_ = c.Fail(w, 104, "token配置异常,请联系管理员", err)
 	}
 	// 生成token
 	claims := auth.UserClaims{
-		Sub:   userData.ID,
-		Name:  userData.Nickname,
-		Role:  userData.RoleID,
-		AppId: roleData.AppID,
+		Sub:  userData.ID,
+		Name: userData.Nickname,
 	}
 	token, err := auth.GenerateToken(claims)
 	if err != nil {
@@ -135,6 +122,10 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 	uq := query.User
 
 	userInfo, err := uq.WithContext(r.Context()).
+		Preload(
+			query.User.UserRole,
+			query.User.UserRole.Role,
+		).
 		Where(uq.ID.Eq(claims.Sub)).
 		First()
 	if err != nil {
@@ -142,7 +133,8 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menus, err := auth.GetMenu(userInfo)
+	// TODO: APPID应由前端指定
+	menus, err := auth.GetMenu(userInfo, 1)
 	if err != nil {
 		_ = c.Fail(w, 102, "获取菜单失败", err.Error())
 		return
