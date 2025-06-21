@@ -35,7 +35,6 @@
                 <el-table-column label="操作" fixed="right" align="right" width="300">
                     <template #default="scope">
                         <el-button-group>
-                            <el-button text plain type="success" size="small" @click="tableShow(scope.row)">查看</el-button>
                             <el-button text plain type="primary" size="small" @click="tableEdit(scope.row)">编辑</el-button>
                             <el-popconfirm title="确定删除吗？" @confirm="tableDel(scope.row)">
                                 <template #reference>
@@ -56,10 +55,6 @@
         @closed="dialog.save=false"
     />
 
-    <el-drawer v-model="dialog.info" :size="800" title="详细" class="drawerBG" direction="rtl" destroy-on-close>
-        <InfoDialog ref="infoDialog"/>
-    </el-drawer>
-
 </template>
 
 <script setup>
@@ -67,7 +62,6 @@
 import {getCurrentInstance, nextTick, reactive, ref} from "vue"
 
 import SaveDialog from './save'
-import InfoDialog from './info'
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
 import ScTable from "@/components/scTable/index.vue"
 import systemApi from "@/api/admin/system.js";
@@ -79,7 +73,6 @@ defineOptions({
 const {proxy} = getCurrentInstance()
 
 const saveDialogRef = ref(null)
-const infoDialogRef = ref(null)
 const table = ref(null)
 
 const state = reactive({
@@ -101,13 +94,6 @@ const dialog = reactive({
 
 const selectionChange = (val) => {
     state.selection = val
-}
-
-const tableShow = (row) => {
-    dialog.info = true
-    nextTick(() => {
-        infoDialogRef.value.setData(row)
-    })
 }
 
 //添加
