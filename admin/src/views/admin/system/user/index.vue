@@ -66,16 +66,15 @@
 
 <script setup>
 
-import {getCurrentInstance, nextTick, reactive, ref} from "vue"
+import {nextTick, reactive, ref} from "vue"
 import SaveDialog from './save'
 import ScTable from "@/components/scTable/index.vue"
 import systemApi from "@/api/admin/system.js";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 defineOptions({
     name: 'user',
 })
-
-const {proxy} = getCurrentInstance()
 
 const saveDialogRef = ref(null)
 const table = ref(null)
@@ -130,14 +129,14 @@ const tableDel = async (row) => {
         ids: [row.id]
     })
     if (res.code === 0) {
-        proxy.$message.success("操作成功")
+        ElMessage.success("操作成功");
         table.value.upData()
     }
 }
 
 //批量删除
 const batchDel = async () => {
-    const confirmRes = await proxy.$confirm(`确定删除选中的 ${state.selection.length} 项吗？`, '提示', {
+    const confirmRes = await ElMessageBox.confirm(`确定删除选中的 ${state.selection.length} 项吗？`, '提示', {
         type: 'warning',
         confirmButtonText: '删除',
         confirmButtonClass: 'el-button--danger'
@@ -148,9 +147,9 @@ const batchDel = async () => {
     const res = await systemApi.user.delete.post({ids})
     if (res.code === 0) {
         table.value.removeKeys(ids)
-        proxy.$message.success("操作成功")
+        ElMessage.success("操作成功");
     } else {
-        await proxy.$alert(res.message, "提示", {type: 'error'})
+        await ElMessageBox.alert(res.message, "提示", {type: 'error'});
     }
 }
 

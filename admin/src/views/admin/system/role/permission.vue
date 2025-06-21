@@ -26,10 +26,10 @@
 </template>
 
 <script setup>
-import {getCurrentInstance, nextTick, reactive, ref} from "vue";
+import {nextTick, reactive, ref} from "vue";
 import systemApi from "@/api/admin/system.js";
+import {ElMessage, ElMessageBox} from "element-plus";
 
-const {proxy} = getCurrentInstance()
 const emit = defineEmits(["success", "closed", "getNewData"])
 
 const state = reactive({
@@ -74,11 +74,11 @@ const submit = async () => {
     if (res.code === 0) {
         state.isSaveing = false;
         state.visible = false;
-        proxy.$message.success("操作成功")
+        ElMessage.success("操作成功");
         emit('success')
         emit('getNewData')
     } else {
-        await proxy.$alert(res.message, "提示", {type: 'error'})
+        await ElMessageBox.alert(res.message, "提示", {type: 'error'});
     }
 }
 
@@ -96,7 +96,7 @@ const getRule = async () => {
             })
         })
     } else {
-        await proxy.$alert(res.message, "提示", {type: 'error'})
+        await ElMessageBox.alert(res.message, "提示", {type: 'error'});
     }
 }
 

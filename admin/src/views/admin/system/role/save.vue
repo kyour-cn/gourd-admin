@@ -4,7 +4,7 @@
         destroy-on-close
         :title="state.titleMap[state.mode]"
         :width="500"
-        @closed="$emit('closed')"
+        @closed="emits('closed')"
     >
         <el-form
             ref="dialogForm"
@@ -47,9 +47,9 @@
 
 <script setup>
 import systemApi from "@/api/admin/system.js";
-import {getCurrentInstance, reactive, ref} from "vue";
+import {reactive, ref} from "vue";
+import {ElMessage, ElMessageBox} from "element-plus";
 
-const {proxy} = getCurrentInstance()
 const emits = defineEmits(['success', 'closed'])
 const dialogForm = ref(null)
 
@@ -102,9 +102,9 @@ const submit = () => {
             if (res.code === 0) {
                 emits('success', state.form, state.mode)
                 state.visible = false;
-                proxy.$message.success("操作成功")
+                ElMessage.success("操作成功");
             } else {
-                await proxy.$alert(res.message, "提示", {type: 'error'})
+                await ElMessageBox.alert(res.message, "提示", {type: 'error'});
             }
         }
     })

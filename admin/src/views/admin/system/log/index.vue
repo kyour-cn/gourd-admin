@@ -62,7 +62,7 @@
                             <el-table-column label="请求ip" prop="request_ip" width="150"/>
                             <el-table-column label="用户" prop="request_user" width="100"/>
                             <el-table-column label="请求时间" prop="create_time" width="170">
-                                <template #default="{row,$index}">
+                                <template #default="{row}">
                                     {{ tool.dateFormat(row.create_time * 1000) }}
                                 </template>
                             </el-table-column>
@@ -80,14 +80,14 @@
 
 <script setup>
 
-import {ref, reactive, onMounted, getCurrentInstance, nextTick} from "vue"
+import {ref, reactive, onMounted, nextTick} from "vue"
 import info from './info'
 import scEcharts from '@/components/scEcharts'
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue";
 import scTable from "@/components/scTable/index.vue";
 import systemApi from "@/api/admin/system.js";
 import tool from '@/utils/tool'
-const {proxy} = getCurrentInstance()
+import {ElMessage} from "element-plus";
 
 // 定义组件名称
 defineOptions({
@@ -253,7 +253,7 @@ const echartsRender = async () => {
         state.seriesData = [];
         state.logsChartOption.series = [];
         state.logsChartOption.xAxis.data = [0];
-        proxy.$message("操作成功")
+        ElMessage.success("操作成功");
     }
 }
 

@@ -32,59 +32,55 @@
 	</sc-table-select>
 </template>
 
-<script>
+<script setup>
 import {reactive} from "vue";
 import systemApi from "@/api/admin/system.js";
 
-export default {
-	name: "roleSelect",
-	props: {
-        roles: { type: Array, default: () => [] },
-		tableWidth: Number,
-		placeholder: { type: String, default: "请选择" }
-	},
-	setup(props, {emit}) {
+defineOptions({
+    name: 'roleSelect',
+})
 
-		const state = reactive({
-			apiObj: systemApi.role.list,
-			tableWidth: props.tableWidth? props.tableWidth : 600,
-			props: {
-				label: 'name',
-				value: 'id',
-			},
-			value: props.roles,
-			appList: [],
-			selectedApp: 0
-		})
+const props = defineProps({
+    roles: { type: Array, default: () => [] },
+    tableWidth: Number,
+    placeholder: { type: String, default: "请选择" }
+})
 
-        // systemApi.role.list.get({
-        //     pageSize: 50,
-        //     ids: props.ids
-        // }).then((res) => {
-        //     console.log( res.data.rows)
-        //     res.data.rows.forEach(item => {
-        //         state.value.push(item)
-        //     })
-        // })
+const emits = defineEmits(['onChange'])
 
-		const getApp =  async () => {
-			const res = await systemApi.app.list.get({
-				pageSize: 50
-			});
-			state.appList = res.data.rows;
-			state.selectedApp = res.data.rows[0].id;
-		}
-		getApp();
+const state = reactive({
+    apiObj: systemApi.role.list,
+    tableWidth: props.tableWidth? props.tableWidth : 600,
+    props: {
+        label: 'name',
+        value: 'id',
+    },
+    value: props.roles,
+    appList: [],
+    selectedApp: 0
+})
 
-		const onChange = (data) => {
-			emit('onChange', data)
-		}
+// systemApi.role.list.get({
+//     pageSize: 50,
+//     ids: props.ids
+// }).then((res) => {
+//     console.log( res.data.rows)
+//     res.data.rows.forEach(item => {
+//         state.value.push(item)
+//     })
+// })
 
-		return { state, onChange}
-	}
+const getApp =  async () => {
+    const res = await systemApi.app.list.get({
+        pageSize: 50
+    });
+    state.appList = res.data.rows;
+    state.selectedApp = res.data.rows[0].id;
 }
+getApp();
+
+const onChange = (data) => {
+    emits('onChange', data)
+}
+
 </script>
-
-<style scoped>
-
-</style>

@@ -95,8 +95,7 @@
 
 <script setup>
 
-import {getCurrentInstance, nextTick, onMounted, reactive, ref} from "vue"
-
+import {nextTick, onMounted, reactive, ref} from "vue"
 import SaveDialog from './save'
 import PermissionDialog from './permission.vue'
 import scSelectFilter from "@/components/scSelectFilter"
@@ -104,12 +103,11 @@ import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
 import ScTable from "@/components/scTable/index.vue"
 import systemApi from "@/api/admin/system.js";
 import tool from '@/utils/tool'
+import {ElMessage, ElMessageBox} from "element-plus";
 
 defineOptions({
     name: 'role',
 })
-
-const {proxy} = getCurrentInstance()
 
 const permissionDialogRef = ref(null)
 const saveDialogRef = ref(null)
@@ -150,7 +148,7 @@ onMounted(() => {
 })
 
 const getApp = async () => {
-	const res = await proxy.$API.admin.system.app.list.get()
+	const res = await systemApi.app.list.get()
 
 	//初始化筛选器
 	const opts = []
@@ -219,7 +217,7 @@ const tableDel = async (row) => {
 
 //批量删除
 const batchDel = async () => {
-	const confirmRes = await proxy.$confirm(`确定删除选中的 ${state.selection.length} 项吗？`, '提示', {
+	const confirmRes = await ElMessageBox.confirm(`确定删除选中的 ${state.selection.length} 项吗？`, '提示', {
 		type: 'warning',
 		confirmButtonText: '删除',
 		confirmButtonClass: 'el-button--danger'
@@ -230,10 +228,10 @@ const batchDel = async () => {
 	const res = await systemApi.role.del.post({ids})
 	if (res.code === 0) {
 		table.value.removeKeys(ids)
-        proxy.$message.success("操作成功")
-	} else {
-		await proxy.$alert(res.message, "提示", {type: 'error'})
-	}
+        ElMessage.success("操作成功");
+    } else {
+        await ElMessageBox.alert(res.message, "提示", {type: 'error'});
+    }
 }
 
 //权限设置
