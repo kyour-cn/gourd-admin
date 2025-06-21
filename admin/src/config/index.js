@@ -9,7 +9,7 @@ const DEFAULT_CONFIG = {
 	APP_VER: "1.0.0",
 
 	//内核版本号
-	CORE_VER: "1.6.9",
+	CORE_VER: "2.0.0",
 
 	//接口地址
 	// API_URL: window.location.origin,
