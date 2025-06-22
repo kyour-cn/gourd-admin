@@ -33,17 +33,17 @@ type menuTree struct {
 	Children  []menuTree      `json:"children"`
 	ApiList   []model.MenuAPI `json:"apiList"`
 }
-type menuTreeArr []menuTree
+type MenuTreeArr []menuTree
 
 // GetMenu 获取用户菜单
-func GetMenu(userInfo *model.User, appId int32) (any, error) {
+func GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, error) {
 	if len(userInfo.UserRole) == 0 {
 		return nil, errors.New("用户角色不存在")
 	}
 
 	isAdmin := false
 
-	// 筛选指定id列表
+	// 筛选指定appid的菜单列表
 	mIds := make([]int32, 0)
 	for _, v := range userInfo.UserRole {
 		if v.Role.AppID != appId {
@@ -85,6 +85,58 @@ func GetMenu(userInfo *model.User, appId int32) (any, error) {
 	return recursionMenu(menu, 0), nil
 }
 
+func GetPermission(userInfo *model.User, appId int32) ([]string, error) {
+	if len(userInfo.UserRole) == 0 {
+		return nil, errors.New("用户角色不存在")
+	}
+
+	isAdmin := false
+
+	// 筛选指定appid的菜单列表
+	mIds := make([]int32, 0)
+	for _, v := range userInfo.UserRole {
+		if v.Role.AppID != appId {
+			continue
+		}
+		if v.Role.IsAdmin == 1 {
+			isAdmin = true
+		}
+		for _, v := range strings.Split(v.Role.Rules, ",") {
+			i, _ := strconv.Atoi(v)
+			mIds = append(mIds, int32(i))
+		}
+	}
+
+	qma := query.MenuAPI
+	conditions := []gen.Condition{
+		qma.AppID.Eq(appId),
+	}
+
+	// 判断是否管理员
+	if !isAdmin {
+		if len(mIds) == 0 {
+			return []string{}, nil
+		}
+		conditions = append(conditions, qma.MenuID.In(mIds...))
+	}
+
+	// 查询菜单的全部接口权限
+	list, err := query.MenuAPI.
+		Where(query.MenuAPI.MenuID.In(mIds...)).
+		Select(query.MenuAPI.ID, query.MenuAPI.Tag).
+		Find()
+	if err != nil {
+		return nil, errors.New("获取权限列表失败")
+	}
+
+	var arr []string
+	for _, v := range list {
+		arr = append(arr, v.Tag)
+	}
+
+	return arr, nil
+}
+
 // GetMenuFormApp 获取指定应用的菜单
 func GetMenuFormApp(appId int32) (any, error) {
 
@@ -106,8 +158,8 @@ func GetMenuFormApp(appId int32) (any, error) {
 }
 
 // 递归菜单
-func recursionMenu(menus []*model.Menu, parentId int32) menuTreeArr {
-	var arr menuTreeArr
+func recursionMenu(menus []*model.Menu, parentId int32) MenuTreeArr {
+	var arr MenuTreeArr
 	for _, menu := range menus {
 		if menu.Pid == parentId {
 			children := recursionMenu(menus, menu.ID)
