@@ -152,9 +152,9 @@ export default {
 				return false
 			}
 			//获取菜单
-			const menu = await this.$API.common.auth.menu.get();
-			if (menu.code === 0) {
-				if (menu.data.length === 0) {
+			const res = await this.$API.common.auth.menu.get();
+			if (res.code === 0) {
+				if (res.data.menu.length === 0) {
 					this.islogin = false
 					await this.$alert("当前用户无任何菜单权限，请联系系统管理员", "无权限访问", {
 						type: 'error',
@@ -162,11 +162,11 @@ export default {
 					})
 					return false
 				}
-				this.$TOOL.data.set("MENU", menu.data)
-				// this.$TOOL.data.set("PERMISSIONS", menu.data.permissions)
+				this.$TOOL.data.set("MENU", res.data.menu)
+				this.$TOOL.data.set("PERMISSIONS", res.data.permissions)
 			} else {
 				this.islogin = false
-				this.$message.warning(menu.message)
+				this.$message.warning(res.message)
 				return false
 			}
 			//默认路由地址
@@ -185,9 +185,9 @@ export default {
 				return false
 			}
 			//不存在默认路由，跳转到第一个菜单
-			if (!findDefaultRoute(menu.data)) {
+			if (!findDefaultRoute(res.data.menu)) {
 				//取第一个菜单
-				let menuItem = menu.data[0];
+				let menuItem = res.data.menu[0];
 				if (menuItem.children?.length) {
 					menuItem = menuItem.children[0]
 				}
@@ -196,7 +196,7 @@ export default {
 				})
 			} else {
 				this.$router.replace({
-					path: '/'
+					path: defaultRoute
 				})
 			}
 

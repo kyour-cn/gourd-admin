@@ -1,6 +1,7 @@
 package system
 
 import (
+	"app/internal/http/admin/controller/common"
 	"app/internal/modules/auth"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
@@ -11,7 +12,7 @@ import (
 
 // Menu 用户控制器
 type Menu struct {
-	Base //继承基础控制器
+	common.Base //继承基础控制器
 }
 
 func (c *Menu) List(w http.ResponseWriter, r *http.Request) {

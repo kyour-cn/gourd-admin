@@ -1,6 +1,7 @@
 package router
 
 import (
+	"app/internal/http/admin/controller/common"
 	"app/internal/http/admin/controller/system"
 	"app/internal/http/middleware"
 	"github.com/go-chi/chi/v5"
@@ -14,7 +15,7 @@ func Router(r chi.Router) {
 
 	// 登录相关路由
 	r.Route("/auth", func(r chi.Router) {
-		c := system.Auth{}
+		c := common.Auth{}
 		r.HandleFunc("/captcha", c.Captcha)
 		r.HandleFunc("/login", c.Login)
 		r.With(middleware.AuthJwtMiddleware).

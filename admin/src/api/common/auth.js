@@ -18,7 +18,7 @@ export default {
     },
     menu: {
         url: `${config.API_URL}/admin/auth/menu`,
-        name: "获取我的菜单",
+        name: "获取菜单",
         get: async function () {
             return await http.get(this.url);
         }

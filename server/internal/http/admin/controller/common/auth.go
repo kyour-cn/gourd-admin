@@ -1,4 +1,4 @@
-package system
+package common
 
 import (
 	"app/internal/config"
@@ -39,12 +39,6 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 			X int `json:"x"`
 			Y int `json:"y"`
 		}
-	}
-
-	type Resp struct {
-		Token    string      `json:"token"`
-		UserInfo *model.User `json:"userInfo"`
-		Expire   int64       `json:"expire"`
 	}
 
 	req := Req{}
@@ -101,7 +95,11 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		WithTypeLabel("login").
 		Write("登录后台", "")
 
-	res := Resp{
+	res := struct {
+		Token    string      `json:"token"`
+		UserInfo *model.User `json:"userInfo"`
+		Expire   int64       `json:"expire"`
+	}{
 		Token:    token,
 		UserInfo: userData,
 		Expire:   jwtConf.Expire,
@@ -119,6 +117,9 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 	}
 	claims := jwtValue.(auth.UserClaims)
 
+	// TODO: APPID应由前端指定
+	var appId int32 = 1
+
 	uq := query.User
 
 	userInfo, err := uq.WithContext(r.Context()).
@@ -133,12 +134,25 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: APPID应由前端指定
-	menus, err := auth.GetMenu(userInfo, 1)
+	menus, err := auth.GetMenu(userInfo, appId)
 	if err != nil {
 		_ = c.Fail(w, 102, "获取菜单失败", err.Error())
 		return
 	}
 
-	_ = c.Success(w, "", menus)
+	permissions, err := auth.GetPermission(userInfo, appId)
+	if err != nil {
+		_ = c.Fail(w, 102, "获取权限失败", err.Error())
+		return
+	}
+
+	res := struct {
+		Menu        auth.MenuTreeArr `json:"menu"`
+		Permissions []string         `json:"permissions"`
+	}{
+		Menu:        menus,
+		Permissions: permissions,
+	}
+
+	_ = c.Success(w, "", res)
 }

@@ -1,6 +1,7 @@
 package system
 
 import (
+	"app/internal/http/admin/controller/common"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"gorm.io/gen"
@@ -12,7 +13,7 @@ import (
 
 // Role 用户控制器
 type Role struct {
-	Base //继承基础控制器
+	common.Base //继承基础控制器
 }
 
 func (c *Role) List(w http.ResponseWriter, r *http.Request) {

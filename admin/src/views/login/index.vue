@@ -96,7 +96,7 @@
 			this.$TOOL.cookie.remove("TOKEN")
 			this.$TOOL.data.remove("USER_INFO")
 			this.$TOOL.data.remove("MENU")
-			// this.$TOOL.data.remove("PERMISSIONS")
+			this.$TOOL.data.remove("PERMISSIONS")
 			this.$TOOL.data.remove("grid")
 			this.$store.commit("clearViewTags")
 			this.$store.commit("clearKeepLive")
@@ -111,7 +111,7 @@
 			},
 			wechatLogin(){
 				this.showWechatLogin = true
-				this.WechatLoginCode = "SCUI-823677237287236-" + new Date().getTime()
+				this.WechatLoginCode = "GA-" + new Date().getTime()
 				this.isWechatLoginResult = false
 				setTimeout(()=>{
 					this.isWechatLoginResult = true

@@ -1,6 +1,7 @@
 package system
 
 import (
+	"app/internal/http/admin/controller/common"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"gorm.io/gen"
@@ -11,7 +12,7 @@ import (
 
 // Log 用户控制器
 type Log struct {
-	Base //继承基础控制器
+	common.Base //继承基础控制器
 }
 
 // TypeList 日志类型列表
