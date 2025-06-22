@@ -2,8 +2,8 @@
     <el-container>
         <el-header>
             <div class="left-panel">
-                <el-button type="primary" icon="el-icon-plus" @click="add"/>
-                <el-button type="danger" plain icon="el-icon-delete" :disabled="!state.selection.length"
+                <el-button v-auth="'admin.system.app.add'" type="primary" icon="el-icon-plus" @click="add"/>
+                <el-button v-auth="'admin.system.app.delete'" type="danger" plain icon="el-icon-delete" :disabled="!state.selection.length"
                            @click="batchDel"/>
             </div>
             <div class="right-panel">
@@ -35,8 +35,8 @@
                 <el-table-column label="操作" fixed="right" align="right" width="300">
                     <template #default="scope">
                         <el-button-group>
-                            <el-button text plain type="primary" size="small" @click="tableEdit(scope.row)">编辑</el-button>
-                            <el-popconfirm title="确定删除吗？" @confirm="tableDel(scope.row)">
+                            <el-button v-auth="'admin.system.app.edit'" text plain type="primary" size="small" @click="tableEdit(scope.row)">编辑</el-button>
+                            <el-popconfirm v-auth="'admin.system.app.delete'" title="确定删除吗？" @confirm="tableDel(scope.row)">
                                 <template #reference>
                                     <el-button text plain type="danger" size="small">删除</el-button>
                                 </template>

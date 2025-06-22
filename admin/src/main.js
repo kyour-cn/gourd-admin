@@ -7,9 +7,6 @@ import i18n from './locales'
 import router from './router'
 import store from './store'
 import App from './App.vue'
-// 引入mock index.js 执行一遍
-// import '@/mock/index.js'
-
 import "go-captcha-vue/dist/style.css"
 
 const app = createApp(App);

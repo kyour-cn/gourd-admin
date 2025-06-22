@@ -51,6 +51,7 @@ func GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, error) {
 		}
 		if v.Role.IsAdmin == 1 {
 			isAdmin = true
+			break
 		}
 		for _, v := range strings.Split(v.Role.Rules, ",") {
 			i, _ := strconv.Atoi(v)
@@ -100,6 +101,7 @@ func GetPermission(userInfo *model.User, appId int32) ([]string, error) {
 		}
 		if v.Role.IsAdmin == 1 {
 			isAdmin = true
+			break
 		}
 		for _, v := range strings.Split(v.Role.Rules, ",") {
 			i, _ := strconv.Atoi(v)
@@ -122,7 +124,7 @@ func GetPermission(userInfo *model.User, appId int32) ([]string, error) {
 
 	// 查询菜单的全部接口权限
 	list, err := query.MenuAPI.
-		Where(query.MenuAPI.MenuID.In(mIds...)).
+		Where(conditions...).
 		Select(query.MenuAPI.ID, query.MenuAPI.Tag).
 		Find()
 	if err != nil {
