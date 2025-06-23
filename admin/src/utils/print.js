@@ -52,13 +52,13 @@ Print.prototype = {
 		var selects = document.querySelectorAll('select');
 
 		for (var k = 0; k < inputs.length; k++) {
-			if (inputs[k].type == "checkbox" || inputs[k].type == "radio") {
-				if (inputs[k].checked == true) {
+			if (inputs[k].type === "checkbox" || inputs[k].type === "radio") {
+				if (inputs[k].checked === true) {
 					inputs[k].setAttribute('checked', "checked")
 				} else {
 					inputs[k].removeAttribute('checked')
 				}
-			} else if (inputs[k].type == "text") {
+			} else if (inputs[k].type === "text") {
 				inputs[k].setAttribute('value', inputs[k].value)
 			} else {
 				inputs[k].setAttribute('value', inputs[k].value)

@@ -25,10 +25,7 @@ func CheckPath(claims UserClaims, r *http.Request) bool {
 	uq := query.User
 
 	userInfo, err := uq.WithContext(r.Context()).
-		Preload(
-			query.User.UserRole,
-			query.User.UserRole.Role,
-		).
+		Preload(uq.UserRole, uq.UserRole.Role).
 		Where(
 			uq.ID.Eq(claims.Sub),
 			uq.Status.Eq(1),

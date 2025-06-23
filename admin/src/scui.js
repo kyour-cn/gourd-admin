@@ -24,9 +24,7 @@ import scStatusIndicator from './components/scMini/scStatusIndicator'
 import scTrend from './components/scMini/scTrend'
 
 import auth from './directives/auth'
-import role from './directives/role'
 import time from './directives/time'
-import copy from './directives/copy'
 import errorHandler from './utils/errorHandler'
 
 import * as elIcons from '@element-plus/icons-vue'
@@ -63,9 +61,7 @@ export default {
 
 		//注册全局指令
 		app.directive('auth', auth)
-		app.directive('role', role)
 		app.directive('time', time)
-		app.directive('copy', copy)
 
 		//统一注册el-icon图标
 		for(let icon in elIcons){

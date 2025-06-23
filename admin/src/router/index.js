@@ -1,12 +1,12 @@
 import {createRouter, createWebHashHistory} from 'vue-router';
-import { ElNotification } from 'element-plus';
+import {ElNotification} from 'element-plus';
 import config from "@/config"
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import tool from '@/utils/tool';
 import systemRouter from './systemRouter';
 import userRoutes from '@/config/route';
-import {beforeEach, afterEach} from './scrollBehavior';
+import {afterEach, beforeEach} from './scrollBehavior';
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
@@ -79,13 +79,13 @@ router.beforeEach(async (to, from, next) => {
 			return node.meta.role ? node.meta.role.filter(item=>userInfo.role.indexOf(item)>-1).length > 0 : true
 		})
 		let menu = [...userMenu, ...apiMenu]
-		var menuRouter = filterAsyncRouter(menu)
+		let menuRouter = filterAsyncRouter(menu);
 		menuRouter = flatAsyncRoutes(menuRouter)
 		menuRouter.forEach(item => {
 			router.addRoute("layout", item)
 		})
 		routes_404_r = router.addRoute(routes_404)
-		if (to.matched.length == 0) {
+		if (to.matched.length === 0) {
 			router.push(to.fullPath);
 		}
 		isGetRouter = true;
@@ -114,8 +114,7 @@ router.sc_getMenu = () => {
 	let userMenu = treeFilter(userRoutes, node => {
 		return node.meta.role ? node.meta.role.filter(item=>userInfo.role.indexOf(item)>-1).length > 0 : true
 	})
-	var menu = [...userMenu, ...apiMenu]
-	return menu
+	return [...userMenu, ...apiMenu]
 }
 
 //转换
@@ -124,19 +123,19 @@ function filterAsyncRouter(routerMap) {
 	routerMap.forEach(item => {
 		item.meta = item.meta?item.meta:{};
 		//处理外部链接特殊路由
-		if(item.meta.type=='iframe'){
+		if(item.meta.type==='iframe'){
 			item.meta.url = item.path;
 			item.path = `/i/${item.name}`;
 		}
 		//MAP转路由对象
-		var route = {
+		const route = {
 			path: item.path,
 			name: item.name,
 			meta: item.meta,
 			redirect: item.redirect,
 			children: item.children ? filterAsyncRouter(item.children) : null,
 			component: loadComponent(item.component)
-		}
+		};
 		accessedRouters.push(route)
 	})
 	return accessedRouters
