@@ -35,6 +35,7 @@
 <script setup>
 import {reactive} from "vue";
 import systemApi from "@/api/admin/system.js";
+import ScTableSelect from "@/components/scTableSelect";
 
 defineOptions({
     name: 'roleSelect',

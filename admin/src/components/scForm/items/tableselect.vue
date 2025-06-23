@@ -5,8 +5,13 @@
 </template>
 
 <script>
+    import ScTableSelect from "@/components/scTableSelect";
+
 	export default {
 		name: 'uploadRender',
+        components: {
+			ScTableSelect
+		},
 		props: {
 			modelValue: [String, Number, Boolean, Date, Object, Array],
 			item: { type: Object, default: () => {} }

@@ -50,11 +50,13 @@
 <script>
 	import passwordForm from './components/passwordForm'
 	import phoneForm from './components/phoneForm'
+	import ScQrCode from '@/components/scQrCode'
 
 	export default {
 		components: {
 			passwordForm,
-			phoneForm
+			phoneForm,
+            ScQrCode
 		},
 		data() {
 			return {

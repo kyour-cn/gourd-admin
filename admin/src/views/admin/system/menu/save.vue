@@ -92,11 +92,13 @@
 </template>
 
 <script>
-import scIconSelect from '@/components/scIconSelect'
+import ScIconSelect from '@/components/scIconSelect'
+import ScFormTable from '@/components/scFormTable'
 
 export default {
     components: {
-        scIconSelect
+        ScIconSelect,
+        ScFormTable,
     },
     props: {
         menu: {
