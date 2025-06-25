@@ -69,6 +69,11 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	apps := make(map[int32]model.App)
+	for _, ur := range userData.UserRole {
+		apps[ur.Role.App.ID] = ur.Role.App
+	}
+
 	// 创建token
 	jwtConf, err := config.GetJwtConfig()
 	if err != nil {
@@ -98,10 +103,12 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		Token    string      `json:"token"`
 		UserInfo *model.User `json:"userInfo"`
 		Expire   int64       `json:"expire"`
+		Apps     any         `json:"apps"`
 	}{
 		Token:    token,
 		UserInfo: userData,
 		Expire:   jwtConf.Expire,
+		Apps:     apps,
 	}
 
 	_ = c.Success(w, "", res)

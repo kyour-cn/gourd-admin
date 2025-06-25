@@ -40,29 +40,19 @@ func LoginUser(ctx context.Context, username string, password string) (*model.Us
 
 	// 查询用户
 	userModel, err := uq.
+		Preload(uq.UserRole, uq.UserRole.Role, uq.UserRole.Role.App).
 		Where(
 			uq.Username.Eq(username),
 			uq.Password.Eq(password),
 		).
-		Select(
-			uq.ID,
-			uq.Nickname,
-			uq.Username,
-			uq.Mobile,
-			uq.Avatar,
-			uq.CreateTime,
-			uq.Status,
-		).
+		Select(uq.ID, uq.Nickname, uq.Username, uq.Mobile, uq.Avatar, uq.CreateTime, uq.Status).
 		First()
 	if err != nil {
-
 		// 登录失败次数+1
 		rdb.Incr(ctx, key)
 		rdb.Expire(ctx, key, 10*time.Second)
-
 		return nil, errors.New("用户名或密码错误")
 	}
-
 	rdb.Del(ctx, key)
 
 	return userModel, nil

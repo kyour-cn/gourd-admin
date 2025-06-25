@@ -10,20 +10,20 @@ import (
 )
 
 type Log struct {
-	Ctx   context.Context
-	Type  *model.LogType
-	Model *model.Log
+	Ctx       context.Context
+	TypeLabel string
+	Type      *model.LogType
+	Model     *model.Log
 }
 
 // New create a new log instance
 func New(typeLabel string) *Log {
 	log := &Log{
-		Model: &model.Log{},
-		Ctx:   context.Background(),
+		Model:     &model.Log{},
+		Ctx:       context.Background(),
+		TypeLabel: typeLabel,
 	}
-	if typeLabel != "" {
-		log.WithTypeLabel(typeLabel)
-	}
+
 	return log
 }
 
@@ -92,6 +92,13 @@ func (l *Log) Write(title string, value string) error {
 	}
 	if value != "" {
 		l.Model.Value = value
+	}
+	// 关联类型
+	if l.Model.TypeID == 0 {
+		if l.TypeLabel == "" {
+			return nil
+		}
+		l.WithTypeLabel(l.TypeLabel)
 	}
 
 	return query.Log.WithContext(l.Ctx).Create(l.Model)

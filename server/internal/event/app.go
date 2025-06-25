@@ -2,7 +2,6 @@ package event
 
 import (
 	"app/internal/initialize"
-	"app/internal/modules/dblog"
 	"app/internal/util/redisutil"
 	"context"
 	"github.com/go-gourd/gourd/event"
@@ -49,10 +48,6 @@ func RegisterAppEvent(_ context.Context) {
 
 		// 初始化Http服务
 		initialize.InitHttpServer()
-
-		// 记录启动日志
-		_ = dblog.New("info").
-			Write("应用启动", "")
 
 	})
 
