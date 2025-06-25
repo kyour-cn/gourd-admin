@@ -86,13 +86,12 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 记录登录日志
-	_ = dblog.New().
+	_ = dblog.New("login").
 		WithModel(&model.Log{
 			RequestUserID: userData.ID,
 			RequestUser:   userData.Nickname,
 		}).
 		WithRequest(r).
-		WithTypeLabel("login").
 		Write("登录后台", "")
 
 	res := struct {

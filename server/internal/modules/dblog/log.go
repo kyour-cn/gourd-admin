@@ -16,10 +16,13 @@ type Log struct {
 }
 
 // New create a new log instance
-func New() *Log {
+func New(typeLabel string) *Log {
 	log := &Log{
 		Model: &model.Log{},
 		Ctx:   context.Background(),
+	}
+	if typeLabel != "" {
+		log.WithTypeLabel(typeLabel)
 	}
 	return log
 }
