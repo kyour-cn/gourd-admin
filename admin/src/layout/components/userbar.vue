@@ -127,7 +127,7 @@
 			//个人信息
 			handleUser(command) {
 				if(command === "uc"){
-					this.$router.push({path: '/usercenter'});
+					this.$router.push({path: '/admin/home/user_center'});
 				}
 				if(command === "clearCache"){
 					this.$confirm('清除缓存会将系统初始化，包括登录状态、主题、语言设置等，是否继续？','提示', {

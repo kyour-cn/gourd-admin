@@ -4,7 +4,7 @@
 			<el-container>
 				<el-header style="height: auto;display: block;">
 					<div class="user-info-top">
-						<el-avatar :size="70" :src="require('@/assets/images/avatar.jpg')"></el-avatar>
+						<el-avatar :size="70" src="/admin/img/avatar.png"></el-avatar>
 						<h2>{{ user.userName }}</h2>
 						<p><el-tag effect="dark" round size="large" disable-transitions>{{ user.role }}</el-tag></p>
 					</div>
@@ -40,7 +40,7 @@
 	import { defineAsyncComponent } from 'vue'
 
 	export default {
-		name: 'userCenter',
+		name: 'user_center',
 		components: {
 			account: defineAsyncComponent(() => import('./user/account')),
 			seting: defineAsyncComponent(() => import('./user/seting')),
@@ -132,3 +132,15 @@
 		}
 	}
 </script>
+
+<style lang="scss">
+.page-user {
+    .user-info-top {text-align: center;}
+    .user-info-top h2 {font-size: 18px;margin-top: 5px;}
+    .user-info-top p {margin: 8px 0 10px 0;}
+    .menu {background: none;}
+    .menu .el-menu-item {font-size: 12px;--el-menu-item-height:50px;}
+    .menu .el-menu-item-group {border-top: 1px solid var(--el-border-color-light);}
+    .menu .el-menu-item-group:first-child {border: 0;}
+}
+</style>
