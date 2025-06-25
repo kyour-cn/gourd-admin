@@ -47,7 +47,7 @@ func InitDatabase() error {
 	}
 
 	// 设置全局数据库连接
-	global.SetDb("mysql", mysqlDb)
+	global.SetDb("default", mysqlDb)
 
 	// 设置默认查询器
 	query.SetDefault(mysqlDb)
