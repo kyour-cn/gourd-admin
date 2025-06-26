@@ -176,11 +176,7 @@ const confirmEvent = async(point) => {
     }
 
     state.appList = Object.values(user.data.apps)
-    state.appList.push( {
-        id: 100,
-        name: "系统管理",
-
-    })
+    selectedApp.value = null
 
     // 获取应用
     if(!user.data.apps) {
