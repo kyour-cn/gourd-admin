@@ -10,6 +10,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"net/http"
+	"strconv"
 )
 
 // Auth 用户控制器
@@ -123,8 +124,7 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 	}
 	claims := jwtValue.(auth.UserClaims)
 
-	// TODO: APPID应由前端指定
-	var appId int32 = 1
+	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
 
 	uq := query.User
 
@@ -140,13 +140,13 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menus, err := auth.GetMenu(userInfo, appId)
+	menus, err := auth.GetMenu(userInfo, int32(appId))
 	if err != nil {
 		_ = c.Fail(w, 102, "获取菜单失败", err.Error())
 		return
 	}
 
-	permissions, err := auth.GetPermission(userInfo, appId)
+	permissions, err := auth.GetPermission(userInfo, int32(appId))
 	if err != nil {
 		_ = c.Fail(w, 102, "获取权限失败", err.Error())
 		return

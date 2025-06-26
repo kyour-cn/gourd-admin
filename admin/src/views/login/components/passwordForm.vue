@@ -36,7 +36,7 @@
                     }"
                 />
                 <template #reference>
-                    <el-button type="primary" style="width: 100%;" :loading="islogin" round @click="onVerify">
+                    <el-button type="primary" style="width: 100%;" :loading="state.islogin" round @click="onVerify">
                         {{ $t('login.signIn') }}
                     </el-button>
                 </template>
@@ -47,6 +47,39 @@
 			<router-link to="/user_register">{{ $t('login.createAccount') }}</router-link>
 		</div>
 	</el-form>
+
+    <el-dialog
+        v-model="state.dialogRoleVisible"
+        title="请选择应用"
+        width="600px"
+        :before-close="handleClose"
+    >
+        <div class="app-list">
+            <el-row :gutter="20">
+                <el-col
+                    v-for="item in state.appList"
+                    :key="item.id"
+                    :span="12"
+                >
+                    <el-card
+                        :class="['app-item', { 'is-selected': selectedApp?.id === item.id }]"
+                        shadow="hover"
+                        @click="selectApp(item)"
+                    >
+                        <div class="app-header">
+                            <span class="app-name">{{ item.name }}</span>
+                        </div>
+                        <div class="app-remark">{{ item.remark }}</div>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </div>
+
+        <template #footer>
+            <el-button @click="handleClose">取 消</el-button>
+            <el-button type="primary" @click="confirm">确 定</el-button>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup>
@@ -76,8 +109,12 @@ const state = reactive({
     islogin: false,
     captchaShow: false,
     captchaConfig: null,
-    captchaData: null
+    captchaData: null,
+    dialogRoleVisible: false,
+    appList: [],
 })
+
+const selectedApp = ref(null)
 
 const onVerify = () => {
     state.captchaShow = false
@@ -106,7 +143,7 @@ const refreshCaptcha = () => {
 const closeCaptcha = () => {
     state.captchaShow = false
 }
-const confirmEvent = async(point, clear) => {
+const confirmEvent = async(point) => {
     closeCaptcha()
 
     const validate = await loginForm.value.validate().catch()
@@ -137,8 +174,53 @@ const confirmEvent = async(point, clear) => {
         proxy.$message.warning(user.message)
         return false
     }
+
+    state.appList = Object.values(user.data.apps)
+    state.appList.push( {
+        id: 100,
+        name: "系统管理",
+
+    })
+
+    // 获取应用
+    if(!user.data.apps) {
+        proxy.$message.error("暂无应用权限！")
+        return
+    }else if(state.appList.length === 1) {
+        await getMenu(state.appList[0].id)
+    }else{
+        // 存在多个应用，让用户选择
+        state.dialogRoleVisible = true
+    }
+
+    state.islogin = false
+}
+
+// 点击选中
+function selectApp(item) {
+    selectedApp.value = item
+}
+
+// 确认选择
+function confirm() {
+    if (!selectedApp.value) {
+        return proxy.$message.warning('请先选择一个应用')
+    }
+    state.dialogRoleVisible = false
+    getMenu(selectedApp.value.id)
+}
+
+// 关闭弹窗前清空
+function handleClose() {
+    selectedApp.value = null
+    state.dialogRoleVisible = false
+}
+
+const getMenu = async (appId) => {
     //获取菜单
-    const res = await authApi.menu.get();
+    const res = await authApi.menu.get({
+        app_id: appId
+    });
     if (res.code === 0) {
         if (res.data.menu.length === 0) {
             state.islogin = false
@@ -187,10 +269,48 @@ const confirmEvent = async(point, clear) => {
     }
 
     proxy.$message.success("登录成功")
-    state.islogin = false
 }
 
 </script>
 
-<style>
+<style lang="scss">
+.app-list {
+    margin-top: 20px;
+}
+
+.app-item {
+    cursor: pointer;
+    border: 1px solid #ebeef5;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &.is-selected {
+        border-color: #409eff;
+        background-color: #f0f9ff;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .app-header {
+        .app-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #303133;
+        }
+    }
+
+    .app-remark {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #606266;
+        line-height: 1.4;
+    }
+}
+
+.el-dialog__footer {
+    text-align: right;
+}
 </style>
