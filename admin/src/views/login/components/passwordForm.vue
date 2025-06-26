@@ -87,6 +87,9 @@ import config from "@/config"
 import {Slide as CaptchaSlide} from 'go-captcha-vue'
 import {getCurrentInstance, reactive, ref} from "vue";
 import authApi from "@/api/common/auth.js"
+import tool from "@/utils/tool.js";
+import {ElMessage, ElMessageBox} from "element-plus";
+import router from "@/router/index.js";
 
 const proxy = getCurrentInstance().proxy
 
@@ -133,7 +136,7 @@ const onVerify = () => {
 
             state.captchaShow = true
         }else{
-            proxy.$message.error(res.message)
+            ElMessage.error(res.message)
         }
     })
 }
@@ -154,7 +157,7 @@ const confirmEvent = async(point) => {
     state.islogin = true
     const data = {
         username: state.form.user,
-        password: proxy.$TOOL.crypto.MD5(state.form.password),
+        password: tool.crypto.MD5(state.form.password),
         md5: true,
         point: point,
         captcha_key: state.captchaData.captKey
@@ -162,16 +165,16 @@ const confirmEvent = async(point) => {
     //获取token
     const user = await authApi.login.post(data);
     if (user.code === 0) {
-        proxy.$TOOL.cookie.set("TOKEN", user.data.token, {
+        tool.cookie.set("TOKEN", user.data.token, {
             expires: state.form.autologin ? user.data.expire : 0
         })
-        proxy.$TOOL.data.set("USER_INFO", user.data.userInfo)
+        tool.data.set("USER_INFO", user.data.userInfo)
     } else {
         if(user.code === 102) {
             refreshCaptcha()
         }
         state.islogin = false
-        proxy.$message.warning(user.message)
+        ElMessage.warning(user.message)
         return false
     }
 
@@ -180,7 +183,7 @@ const confirmEvent = async(point) => {
 
     // 获取应用
     if(!user.data.apps) {
-        proxy.$message.error("暂无应用权限！")
+        ElMessage.error("暂无应用权限！")
         return
     }else if(state.appList.length === 1) {
         await getMenu(state.appList[0].id)
@@ -202,7 +205,7 @@ function selectApp(item) {
 // 确认选择
 function confirm() {
     if (!selectedApp.value) {
-        return proxy.$message.warning('请先选择一个应用')
+        return ElMessage.warning('请先选择一个应用')
     }
     state.dialogRoleVisible = false
     getMenu(selectedApp.value.id)
@@ -222,17 +225,17 @@ const getMenu = async (appId) => {
     if (res.code === 0) {
         if (res.data.menu.length === 0) {
             state.islogin = false
-            await proxy.$alert("当前用户无任何菜单权限，请联系系统管理员", "无权限访问", {
+            await ElMessageBox.alert("当前用户无任何菜单权限，请联系系统管理员", "无权限访问", {
                 type: 'error',
                 center: true
             })
             return false
         }
-        proxy.$TOOL.data.set("MENU", res.data.menu)
-        proxy.$TOOL.data.set("PERMISSIONS", res.data.permissions)
+        tool.data.set("MENU", res.data.menu)
+        tool.data.set("PERMISSIONS", res.data.permissions)
     } else {
         state.islogin = false
-        proxy.$message.warning(res.message)
+        ElMessage.warning(res.message)
         return false
     }
     //默认路由地址
@@ -257,16 +260,16 @@ const getMenu = async (appId) => {
         if (menuItem.children?.length) {
             menuItem = menuItem.children[0]
         }
-        proxy.$router.replace({
+        await router.replace({
             path: menuItem.path
         })
     } else {
-        proxy.$router.replace({
+        await router.replace({
             path: defaultRoute
         })
     }
 
-    proxy.$message.success("登录成功")
+    ElMessage.success("登录成功")
 }
 
 </script>

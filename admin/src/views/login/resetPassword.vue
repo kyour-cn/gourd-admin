@@ -4,7 +4,7 @@
 		    <el-step title="填写新密码" />
 		    <el-step title="完成重置" />
 		</el-steps>
-		<el-form v-if="stepActive==0" ref="form" :model="form" :rules="rules" :label-width="120">
+		<el-form v-if="stepActive===0" ref="form" :model="form" :rules="rules" :label-width="120">
 			<el-form-item label="登录账号" prop="user">
 				<el-input v-model="form.user" placeholder="请输入登录账号"></el-input>
 				<div class="el-form-item-msg">请输入注册时填写的登录账号</div>
@@ -38,84 +38,74 @@
 	</common-page>
 </template>
 
-<script>
-	import commonPage from './components/commonPage'
+<script setup>
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import commonPage from './components/commonPage'
 
-	export default {
-		components: {
-			commonPage
-		},
-		data() {
-			return {
-				stepActive: 0,
-				form: {
-					user: "",
-					phone: "",
-					yzm: "",
-					newpw: "",
-					newpw2: ""
-				},
-				rules: {
-					user: [
-						{ required: true, message: '请输入登录账号'}
-					],
-					phone: [
-						{ required: true, message: '请输入手机号'}
-					],
-					yzm: [
-						{ required: true, message: '请输入短信验证码'}
-					],
-					newpw: [
-						{ required: true, message: '请输入新的密码'}
-					],
-					newpw2: [
-						{ required: true, message: '请再次输入新的密码'},
-						{validator: (rule, value, callback) => {
-							if (value !== this.form.newpw) {
-								callback(new Error('两次输入密码不一致'));
-							}else{
-								callback();
-							}
-						}}
-					],
-				},
-				disabled: false,
-				time: 0
-			}
-		},
-		mounted() {
+const stepActive = ref(0)
+const form = reactive({
+  user: '',
+  phone: '',
+  yzm: '',
+  newpw: '',
+  newpw2: ''
+})
+const rules = {
+  user: [
+    { required: true, message: '请输入登录账号' }
+  ],
+  phone: [
+    { required: true, message: '请输入手机号' }
+  ],
+  yzm: [
+    { required: true, message: '请输入短信验证码' }
+  ],
+  newpw: [
+    { required: true, message: '请输入新的密码' }
+  ],
+  newpw2: [
+    { required: true, message: '请再次输入新的密码' },
+    { validator: (rule, value, callback) => {
+      if (value !== form.newpw) {
+        callback(new Error('两次输入密码不一致'))
+      } else {
+        callback()
+      }
+    } }
+  ]
+}
+const disabled = ref(false)
+const time = ref(0)
+const formRef = ref(null)
+const router = useRouter()
 
-		},
-		methods: {
-			async getYzm(){
-				var validate = await this.$refs.form.validateField("phone").catch(()=>{})
-				if(!validate){ return false }
+async function getYzm() {
+  const validate = await formRef.value.validateField('phone').catch(() => {})
+  if (!validate) return false
+  ElMessage.success('已发送短信至手机号码')
+  disabled.value = true
+  time.value = 60
+  const t = setInterval(() => {
+    time.value -= 1
+    if (time.value < 1) {
+      clearInterval(t)
+      disabled.value = false
+      time.value = 0
+    }
+  }, 1000)
+}
 
-				this.$message.success("已发送短信至手机号码")
-				this.disabled = true
-				this.time = 60
-				var t = setInterval(() => {
-					this.time -= 1
-					if(this.time < 1){
-						clearInterval(t)
-						this.disabled = false
-						this.time = 0
-					}
-				},1000)
-			},
-			async save(){
-				var validate = await this.$refs.form.validate().catch(()=>{})
-				if(!validate){ return false }
+async function save() {
+  const validate = await formRef.value.validate().catch(() => {})
+  if (!validate) return false
+  stepActive.value = 1
+}
 
-				this.stepActive = 1
-			},
-			backLogin(){
-				this.$router.push({
-					path: '/login'
-				})
-			}
-		}
-	}
+function backLogin() {
+  router.push({ path: '/login' })
+}
 </script>
 
 <style scoped>

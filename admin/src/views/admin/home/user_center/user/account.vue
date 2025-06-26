@@ -27,19 +27,18 @@
 	</el-card>
 </template>
 
-<script>
-	export default {
-		data() {
-			return {
-				form: {
-					user: "administrator@scuiadmin.com",
-					name: "Sakuya",
-					sex: "0",
-					about: "正所谓富贵险中求"
-				}
-			}
-		}
-	}
+<script setup>
+import {ref} from "vue";
+import tool from "@/utils/tool.js";
+
+const userInfo = tool.data.get("USER_INFO")
+
+const form = ref({
+    user: "administrator@scuiadmin.com",
+    name: "Sakuya",
+    sex: "0",
+    about: "正所谓富贵险中求"
+})
 </script>
 
 <style>
