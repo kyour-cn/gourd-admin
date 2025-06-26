@@ -123,20 +123,15 @@ const state = reactive({
             show: true,
             trigger: 'axis',
             formatter: (params) => {
-                let result = ''
-                if (state.map.length !== 0) {
-                    const xAxis_val = `${params[0].axisValue}</br>`
-                    for (let i = 0; i < state.seriesData.length; i++) {
-                        if (!params[i].data) continue;
-                        result += `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${state.seriesData[i].color}"></span>`
-                        result += `${state.map[i].name}:${params[i].data}`
-                        result += `</br>`
-                    }
-                    result = xAxis_val + result
-                } else {
-                    result = '暂无数据'
-                }
-                return result
+                const xAxis_val = `${params[0].axisValue}</br>`
+                const result = params.map((p, i) => {
+                    const color = p.color || '#000'
+                    return `
+            <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${color}"></span>
+            ${p.seriesName}:${p.data}</br>
+        `
+                }).join('')
+                return xAxis_val + result
             }
         },
         xAxis: {
@@ -192,6 +187,9 @@ const renderTreeMenu = (data) => {
 }
 
 const echartsRender = async () => {
+    state.seriesData = []
+    state.map = []
+
     const start_time = tool.dateFormat(state.date[0])
     const end_time = tool.dateFormat(state.date[1])
 
@@ -202,7 +200,7 @@ const echartsRender = async () => {
         dateMaps[res.data.days[i]] = i
     }
     // 填充x轴的数据
-    state.logsChartOption.xAxis.data = res.data.days;
+    state.logsChartOption.xAxis.data = res.data.days.length ? res.data.days : [0]
 
     // 填充图表数据
     if (res.data.rows.length !== 0) {
@@ -239,6 +237,7 @@ const echartsRender = async () => {
 
         for (const key in state.map) {
             state.seriesData.push({
+                name: state.map[key].name,
                 data: state.map[key].data,
                 type: 'bar',
                 stack: 'log',
@@ -246,9 +245,7 @@ const echartsRender = async () => {
                 color: state.map[key].color
             })
         }
-        setTimeout(() => {
-            state.logsChartOption.series = state.seriesData
-        }, 500)
+        state.logsChartOption.series = state.seriesData
     } else {
         state.seriesData = [];
         state.logsChartOption.series = [];
