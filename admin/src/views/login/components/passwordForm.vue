@@ -187,6 +187,8 @@ const confirmEvent = async(point) => {
     }else{
         // 存在多个应用，让用户选择
         state.dialogRoleVisible = true
+        // 默认选中第一个
+        selectApp(state.appList[0])
     }
 
     state.islogin = false
