@@ -17,12 +17,6 @@ type Log struct {
 
 // TypeList 日志类型列表
 func (c *Log) TypeList(w http.ResponseWriter, r *http.Request) {
-	type Res struct {
-		Rows  []*model.LogType `json:"rows"`
-		Total int64            `json:"total"`
-	}
-
-	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
 	// 查询列表
@@ -33,7 +27,10 @@ func (c *Log) TypeList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := Res{
+	res := struct {
+		Rows  []*model.LogType `json:"rows"`
+		Total int64            `json:"total"`
+	}{
 		Rows:  list,
 		Total: count,
 	}
@@ -43,11 +40,6 @@ func (c *Log) TypeList(w http.ResponseWriter, r *http.Request) {
 
 // List 日志列表
 func (c *Log) List(w http.ResponseWriter, r *http.Request) {
-	type Res struct {
-		Rows  []*model.Log `json:"rows"`
-		Total int64        `json:"total"`
-	}
-
 	params := r.URL.Query()
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
@@ -85,7 +77,10 @@ func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := Res{
+	res := struct {
+		Rows  []*model.Log `json:"rows"`
+		Total int64        `json:"total"`
+	}{
 		Rows:  list,
 		Total: count,
 	}
@@ -95,10 +90,6 @@ func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 
 // LogStat 日志统计
 func (c *Log) LogStat(w http.ResponseWriter, r *http.Request) {
-	type Res struct {
-		Days []string             `json:"days"`
-		Rows []*model.LogStatView `json:"rows"`
-	}
 	params := r.URL.Query()
 
 	// 获取参数
@@ -124,7 +115,10 @@ func (c *Log) LogStat(w http.ResponseWriter, r *http.Request) {
 		entTime.Format(time.DateOnly),
 	)).Find()
 
-	_ = c.Success(w, "", Res{
+	_ = c.Success(w, "", struct {
+		Days []string             `json:"days"`
+		Rows []*model.LogStatView `json:"rows"`
+	}{
 		Days: days,
 		Rows: list,
 	})

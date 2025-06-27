@@ -16,12 +16,9 @@ type Menu struct {
 }
 
 func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
-
-	type Req struct {
+	req := struct {
 		AppId int32 `json:"app_id"`
-	}
-	// 获取参数
-	req := Req{
+	}{
 		AppId: 1,
 	}
 	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
@@ -38,16 +35,14 @@ func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
-	type Req struct {
+	req := struct {
 		ParentId  int32         `json:"parentId"`
 		Name      string        `json:"name"`
 		Path      string        `json:"path"`
 		Component string        `json:"component"`
 		Meta      auth.MenuMate `json:"meta"`
 		AppId     int32         `json:"app_id"`
-	}
-	// 获取参数
-	req := Req{}
+	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
@@ -77,7 +72,7 @@ func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
-	type Req struct {
+	req := struct {
 		Id        int32         `json:"id"`
 		Name      string        `json:"name"`
 		Path      string        `json:"path"`
@@ -89,10 +84,7 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 			Path string `json:"path"`
 			Tag  string `json:"tag"`
 		} `json:"apiList"`
-	}
-
-	// 获取参数
-	req := Req{}
+	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
@@ -135,11 +127,9 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Menu) Delete(w http.ResponseWriter, r *http.Request) {
-	type Req struct {
+	req := struct {
 		Ids []int32 `json:"ids"`
-	}
-
-	req := Req{}
+	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return

@@ -31,7 +31,7 @@ func (c *Auth) Captcha(w http.ResponseWriter, _ *http.Request) {
 
 // Login 登录
 func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
-	type Req struct {
+	req := struct {
 		Username   string `json:"username" validate:"required,min=5,max=20"`
 		Password   string `json:"password" validate:"required,min=6,max=32"`
 		CaptchaKey string `json:"captcha_key" validate:"required"`
@@ -40,9 +40,7 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 			X int `json:"x"`
 			Y int `json:"y"`
 		}
-	}
-
-	req := Req{}
+	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return

@@ -67,13 +67,11 @@ func (c *User) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type Req struct {
+	req := struct {
 		UserPassword       string `json:"user_password" validate:"required,min=6,max=32"`
 		NewPassword        string `json:"new_password" validate:"required,min=6,max=32"`
 		ConfirmNewPassword string `json:"confirm_new_password" validate:"required,min=6,max=32"`
-	}
-
-	req := Req{}
+	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return

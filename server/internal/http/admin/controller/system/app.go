@@ -13,11 +13,6 @@ type App struct {
 }
 
 func (c *App) List(w http.ResponseWriter, r *http.Request) {
-	type Res struct {
-		Rows  []*model.App `json:"rows"`
-		Total int64        `json:"total"`
-	}
-
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
@@ -29,7 +24,10 @@ func (c *App) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := Res{
+	res := struct {
+		Rows  []*model.App `json:"rows"`
+		Total int64        `json:"total"`
+	}{
 		Rows:  list,
 		Total: count,
 	}
@@ -74,11 +72,9 @@ func (c *App) Edit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *App) Delete(w http.ResponseWriter, r *http.Request) {
-	type Req struct {
+	req := struct {
 		Ids []int32 `json:"ids"`
-	}
-
-	req := Req{}
+	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return

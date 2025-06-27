@@ -26,10 +26,8 @@ func Router(r chi.Router) {
 	r.Route("/user", func(r chi.Router) {
 		c := common.User{}
 		r.Use(middleware.AuthJwtMiddleware)
-		r.HandleFunc("/info", c.Info) // 获取用户信息
-		//r.Post("/edit", c.Edit)                 // 修改用户信息
+		r.HandleFunc("/info", c.Info)        // 获取用户信息
 		r.Post("/password", c.ResetPassword) // 修改密码
-		//r.Post("/logout", c.Logout)             // 退出登录
 	})
 
 	// 系统相关路由

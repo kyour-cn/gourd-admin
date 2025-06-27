@@ -17,12 +17,6 @@ type Role struct {
 }
 
 func (c *Role) List(w http.ResponseWriter, r *http.Request) {
-
-	type Res struct {
-		Rows  []*model.Role `json:"rows"`
-		Total int64         `json:"total"`
-	}
-
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
@@ -56,7 +50,10 @@ func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := Res{
+	res := struct {
+		Rows  []*model.Role `json:"rows"`
+		Total int64         `json:"total"`
+	}{
 		Rows:  list,
 		Total: count,
 	}
@@ -93,16 +90,11 @@ func (c *Role) Edit(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Get("type") == "permission" {
 		// 权限编辑
 		fields = append(fields,
-			qm.Rules,
-			qm.RulesCheckd,
+			qm.Rules, qm.RulesCheckd,
 		)
 	} else {
 		fields = append(fields,
-			qm.IsAdmin,
-			qm.Name,
-			qm.Remark,
-			qm.Status,
-			qm.Sort,
+			qm.IsAdmin, qm.Name, qm.Remark, qm.Status, qm.Sort,
 		)
 	}
 
@@ -118,11 +110,9 @@ func (c *Role) Edit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Role) Delete(w http.ResponseWriter, r *http.Request) {
-	type Req struct {
+	req := struct {
 		Ids []int32 `json:"ids"`
-	}
-
-	req := Req{}
+	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
