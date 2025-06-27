@@ -116,13 +116,11 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
-	// 获取jwt并解析
-	jwtValue := r.Context().Value("jwt")
-	if _, ok := jwtValue.(auth.UserClaims); !ok {
-		_ = c.Fail(w, 101, "获取登录信息失败", "jwt信息不正确")
+	claims, err := c.GetJwt(r)
+	if err != nil {
+		_ = c.Fail(w, 101, err.Error(), "")
 		return
 	}
-	claims := jwtValue.(auth.UserClaims)
 
 	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
 

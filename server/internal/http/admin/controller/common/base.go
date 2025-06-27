@@ -1,7 +1,9 @@
 package common
 
 import (
+	"app/internal/modules/auth"
 	"encoding/json"
+	"errors"
 	"github.com/go-playground/validator/v10"
 	"net/http"
 	"strconv"
@@ -67,4 +69,13 @@ func (*Base) PageParam(r *http.Request, defaultPage int, defaultSize int) (int, 
 		pageSize = defaultSize
 	}
 	return page, pageSize
+}
+
+func (*Base) GetJwt(r *http.Request) (*auth.UserClaims, error) {
+	jwtValue := r.Context().Value("jwt")
+	if _, ok := jwtValue.(auth.UserClaims); !ok {
+		return nil, errors.New("获取登录信息失败")
+	}
+	claims := jwtValue.(auth.UserClaims)
+	return &claims, nil
 }

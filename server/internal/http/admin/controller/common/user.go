@@ -1,7 +1,6 @@
 package common
 
 import (
-	"app/internal/modules/auth"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"crypto/md5"
@@ -14,14 +13,59 @@ type User struct {
 	Base //继承基础控制器
 }
 
-// ResetPassword 重置密码
-func (c *User) ResetPassword(w http.ResponseWriter, r *http.Request) {
-	jwtValue := r.Context().Value("jwt")
-	if _, ok := jwtValue.(auth.UserClaims); !ok {
-		_ = c.Fail(w, 101, "获取登录信息失败", "jwt信息不正确")
+// Info 用户信息查询、编辑
+func (c *User) Info(w http.ResponseWriter, r *http.Request) {
+	claims, err := c.GetJwt(r)
+	if err != nil {
+		_ = c.Fail(w, 101, err.Error(), "")
 		return
 	}
-	claims := jwtValue.(auth.UserClaims)
+
+	// 查询用户信息
+	qu := query.User
+	user, err := qu.WithContext(r.Context()).
+		Where(qu.ID.Eq(claims.Sub)).
+		Select(qu.Username, qu.Nickname).
+		First()
+	if err != nil {
+		_ = c.Fail(w, 1, "查询用户信息失败", err.Error())
+		return
+	}
+
+	// 如果是POST请求
+	if r.Method == http.MethodPost {
+		req := struct {
+			Nickname string `json:"nickname" validate:"required,min=2,max=20"`
+		}{}
+		if err := c.JsonReqUnmarshal(r, &req); err != nil {
+			_ = c.Fail(w, 101, "请求参数异常", err.Error())
+			return
+		}
+		// 更新用户信息
+		_, err = qu.WithContext(r.Context()).
+			Where(qu.ID.Eq(claims.Sub)).
+			Select(qu.Nickname).
+			Updates(&model.User{
+				Nickname: req.Nickname,
+			})
+		if err != nil {
+			_ = c.Fail(w, 1, "更新用户信息失败", err.Error())
+			return
+		}
+
+		_ = c.Success(w, "编辑成功", "")
+	} else {
+		_ = c.Success(w, "获取用户信息成功", user)
+	}
+}
+
+// ResetPassword 重置密码
+func (c *User) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	claims, err := c.GetJwt(r)
+	if err != nil {
+		_ = c.Fail(w, 101, err.Error(), "")
+		return
+	}
 
 	type Req struct {
 		UserPassword       string `json:"user_password" validate:"required,min=6,max=32"`
@@ -60,7 +104,7 @@ func (c *User) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	newPass := hex.EncodeToString(newHash[:])
 
 	// 更新密码
-	_, err := query.User.WithContext(r.Context()).
+	_, err = query.User.WithContext(r.Context()).
 		Where(query.User.ID.Eq(claims.Sub)).
 		Select(query.User.Password).
 		Updates(model.User{

@@ -48,13 +48,13 @@
 						/>
 					</template>
 				</el-table-column>
-                <el-table-column label="备注" prop="remark" min-width="150"/>
                 <el-table-column label="排序" prop="sort" width="80"/>
 				<el-table-column label="创建时间" prop="create_time" width="170">
 					<template #default="{row}">
 						{{ tool.dateFormat(row.create_time * 1000) }}
 					</template>
 				</el-table-column>
+                <el-table-column label="备注" prop="remark" min-width="150"/>
 				<el-table-column label="操作" fixed="right" align="right" width="160">
 					<template #default="scope">
 						<el-button-group>

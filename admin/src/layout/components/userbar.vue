@@ -119,8 +119,8 @@
 			}
 		},
 		created() {
-			var userInfo = this.$TOOL.data.get("USER_INFO");
-			this.userName = userInfo.nickname;
+            const userInfo = this.$TOOL.data.get("USER_INFO");
+            this.userName = userInfo.nickname;
 			this.userNameF = this.userName.substring(0,1);
 		},
 		methods: {
@@ -158,8 +158,8 @@
 			},
 			//全屏
 			screen(){
-				var element = document.documentElement;
-				this.$TOOL.screen(element)
+                const element = document.documentElement;
+                this.$TOOL.screen(element)
 			},
 			//显示短消息
 			showMsg(){
