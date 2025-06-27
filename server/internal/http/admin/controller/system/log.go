@@ -49,7 +49,7 @@ func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 	// 时间筛选
 	startTimeStr, endTimeStr := params.Get("start_time"), params.Get("end_time")
 	if startTimeStr == "" || endTimeStr == "" {
-		_ = c.Fail(w, 1, "时间不能为空", nil)
+		_ = c.Fail(w, 1, "时间范围不能为空", nil)
 		return
 	}
 	startTime, err1 := time.Parse(time.DateTime, startTimeStr)
@@ -63,8 +63,8 @@ func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 	// 类型筛选
 	logType := params.Get("type_id")
 	if logType != "" {
-		logType, _ := strconv.Atoi(logType)
-		condition = append(condition, query.Log.TypeID.Eq(int32(logType)))
+		typeId, _ := strconv.Atoi(logType)
+		condition = append(condition, query.Log.TypeID.Eq(int32(typeId)))
 	}
 
 	// 查询列表
@@ -107,7 +107,7 @@ func (c *Log) LogStat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 生成时间列表
-	days := c.generateDays(startTime, entTime, "2006-01-02")
+	days := c.generateDays(startTime, entTime, time.DateOnly)
 
 	type LogStat struct {
 		Date     string `gorm:"column:date" json:"date"`
