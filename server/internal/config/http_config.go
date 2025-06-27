@@ -4,7 +4,7 @@ package config
 type HttpConfig struct {
 	Enable bool   `toml:"enable" json:"enable"` // 是否启用Http服务器
 	Host   string `toml:"host" json:"host"`     // 监听域名、IP
-	Port   uint32 `toml:"port" json:"port"`     // 监听端口
+	Port   uint16 `toml:"port" json:"port"`     // 监听端口
 	Static string `toml:"static" json:"static"` // 静态资源目录
 }
 
@@ -17,10 +17,8 @@ func GetHttpConfig() (*HttpConfig, error) {
 	// 初始化配置
 	if httpConf == nil {
 		_conf := &HttpConfig{
-			Enable: false,
-			Host:   "0.0.0.0",
-			Port:   8080,
-			Static: "",
+			Host: "0.0.0.0",
+			Port: 8080,
 		}
 
 		// 如果配置不存在，则创建默认配置

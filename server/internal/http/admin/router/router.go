@@ -22,11 +22,19 @@ func Router(r chi.Router) {
 			HandleFunc("/menu", c.GetMenu)
 	})
 
+	// 上传相关路由
+	r.Route("/upload", func(r chi.Router) {
+		c := common.Upload{}
+		r.Use(middleware.AuthJwtMiddleware)
+		r.Post("/image", c.Image) // 上传图片
+		r.Post("/file", c.File)   // 上传文件
+	})
+
 	// 用户
 	r.Route("/user", func(r chi.Router) {
 		c := common.User{}
 		r.Use(middleware.AuthJwtMiddleware)
-		r.HandleFunc("/info", c.Info)        // 获取用户信息
+		r.HandleFunc("/info", c.Info)        // 用户信息
 		r.Post("/password", c.ResetPassword) // 修改密码
 	})
 
@@ -67,19 +75,19 @@ func Router(r chi.Router) {
 		r.Route("/user", func(r chi.Router) {
 			c := system.User{}
 			r.Use(middleware.AuthJwtMiddleware)
-			r.HandleFunc("/list", c.List)
-			r.HandleFunc("/add", c.Add)
-			r.HandleFunc("/edit", c.Edit)
-			r.HandleFunc("/delete", c.Delete)
+			r.Get("/list", c.List)
+			r.Post("/add", c.Add)
+			r.Post("/edit", c.Edit)
+			r.Post("/delete", c.Delete)
 		})
 
 		// log相关路由
 		r.Route("/log", func(r chi.Router) {
 			c := system.Log{}
 			r.Use(middleware.AuthJwtMiddleware)
-			r.HandleFunc("/typeList", c.TypeList)
-			r.HandleFunc("/list", c.List)
-			r.HandleFunc("/logStat", c.LogStat)
+			r.Get("/list", c.List)
+			r.Get("/typeList", c.TypeList)
+			r.Get("/logStat", c.LogStat)
 		})
 	})
 
