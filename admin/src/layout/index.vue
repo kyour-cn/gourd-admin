@@ -1,6 +1,6 @@
 <template>
 	<!-- 通栏布局 -->
-	<template v-if="layout=='header'">
+	<template v-if="layout==='header'">
 		<header class="adminui-header">
 			<div class="adminui-header-left">
 				<div class="logo-bar">
@@ -8,14 +8,14 @@
 					<span>{{ $CONFIG.APP_NAME }}</span>
 				</div>
 				<ul v-if="!ismobile" class="nav">
-					<li v-for="item in menu" :key="item" :class="pmenu.path==item.path?'active':''" @click="showMenu(item)">
+					<li v-for="item in menu" :key="item" :class="pmenu.path===item.path?'active':''" @click="showMenu(item)">
 						<el-icon><component :is="item.meta.icon || 'el-icon-menu'" /></el-icon>
 						<span>{{ item.meta.title }}</span>
 					</li>
 				</ul>
 			</div>
 			<div class="adminui-header-right">
-				<userbar></userbar>
+				<UserBar></UserBar>
 			</div>
 		</header>
 		<section class="aminui-wrapper">
@@ -51,7 +51,7 @@
 	</template>
 
 	<!-- 经典布局 -->
-	<template v-else-if="layout=='menu'">
+	<template v-else-if="layout==='menu'">
 		<header class="adminui-header">
 			<div class="adminui-header-left">
 				<div class="logo-bar">
@@ -60,7 +60,7 @@
 				</div>
 			</div>
 			<div class="adminui-header-right">
-				<userbar></userbar>
+				<UserBar></UserBar>
 			</div>
 		</header>
 		<section class="aminui-wrapper">
@@ -93,7 +93,7 @@
 	</template>
 
 	<!-- 功能坞布局 -->
-	<template v-else-if="layout=='dock'">
+	<template v-else-if="layout==='dock'">
 		<header class="adminui-header">
 			<div class="adminui-header-left">
 				<div class="logo-bar">
@@ -108,7 +108,7 @@
 					</el-menu>
 				</div>
 				<Side-m v-if="ismobile"></Side-m>
-				<userbar></userbar>
+				<UserBar></UserBar>
 			</div>
 		</header>
 		<section class="aminui-wrapper">
@@ -132,15 +132,15 @@
 			<div v-if="!ismobile" class="aminui-side-split">
 				<div class="aminui-side-split-top">
 					<router-link :to="$CONFIG.DASHBOARD_URL">
-						<img class="logo" :title="$CONFIG.APP_NAME" src="/admin/img/logo-r.png">
+						<img class="logo" :title="$CONFIG.APP_NAME" src="/admin/img/logo.png" alt="">
 					</router-link>
 				</div>
 				<div class="adminui-side-split-scroll">
 					<el-scrollbar>
 						<ul>
-							<li v-for="item in menu" :key="item" :class="pmenu.path==item.path?'active':''"
+							<li v-for="item in menu" :key="item" :class="pmenu.path===item.path?'active':''"
 								@click="showMenu(item)">
-								<el-icon><component :is="item.meta.icon || el-icon-menu" /></el-icon>
+								<el-icon><component :is="item.meta.icon || 'el-icon-menu'" /></el-icon>
 								<p>{{ item.meta.title }}</p>
 							</li>
 						</ul>
@@ -165,7 +165,7 @@
 			<Side-m v-if="ismobile"></Side-m>
 			<div class="aminui-body el-container">
 				<Topbar>
-					<userbar></userbar>
+					<UserBar></UserBar>
 				</Topbar>
 				<Tags v-if="!ismobile && layoutTags"></Tags>
 				<div class="adminui-main" id="adminui-main">
@@ -196,7 +196,7 @@
 	import Topbar from './components/topbar.vue';
 	import Tags from './components/tags.vue';
 	import NavMenu from './components/NavMenu.vue';
-	import userbar from './components/userbar.vue';
+	import UserBar from './components/userbar.vue';
 	import setting from './components/setting.vue';
 	import iframeView from './components/iframeView.vue';
 	import autoExit from './other/autoExit.js';
@@ -208,7 +208,7 @@
 			Topbar,
 			Tags,
 			NavMenu,
-			userbar,
+			UserBar,
 			setting,
 			iframeView,
 			autoExit
