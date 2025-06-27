@@ -109,18 +109,38 @@ func (c *Log) LogStat(w http.ResponseWriter, r *http.Request) {
 	// 生成时间列表
 	days := c.generateDays(startTime, entTime, "2006-01-02")
 
+	type LogStat struct {
+		Date     string `gorm:"column:date" json:"date"`
+		Count_   int64  `gorm:"column:count;not null" json:"count"`
+		TypeName string `gorm:"column:type_name;not null;comment:日志级别名称" json:"type_name"`
+		TypeID   int32  `gorm:"column:type_id;not null;comment:日志级别 <10为系统日志" json:"type_id"`
+	}
+	var logRows []*LogStat
+
+	db := query.App.UnderlyingDB()
+
 	// 查询日志数量
-	list, _ := query.LogStatView.Where(query.LogStatView.Date.Between(
-		startTime.Format(time.DateOnly),
-		entTime.Format(time.DateOnly),
-	)).Find()
+	rows := db.Table(query.Log.TableName()).
+		Select(
+			"date_format(from_unixtime(`create_time`), '%Y-%m-%d') AS `date`",
+			"count(0) AS `count`",
+			"type_name",
+			"type_id",
+		).
+		Where("`create_time` BETWEEN ? AND ?", startTime.Unix(), entTime.Unix()).
+		Group("date, type_name, type_id").
+		Find(&logRows)
+	if rows.Error != nil {
+		_ = c.Fail(w, 500, "查询日志统计失败", rows.Error.Error())
+		return
+	}
 
 	_ = c.Success(w, "", struct {
-		Days []string             `json:"days"`
-		Rows []*model.LogStatView `json:"rows"`
+		Days []string   `json:"days"`
+		Rows []*LogStat `json:"rows"`
 	}{
 		Days: days,
-		Rows: list,
+		Rows: logRows,
 	})
 }
 

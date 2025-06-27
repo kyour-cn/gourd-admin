@@ -37,6 +37,7 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.CreateTime = field.NewInt32(tableName, "create_time")
 	_user.LoginTime = field.NewInt32(tableName, "login_time")
 	_user.Status = field.NewInt32(tableName, "status")
+	_user.Profile = field.NewString(tableName, "profile")
 	_user.DeleteTime = field.NewField(tableName, "delete_time")
 	_user.UserRole = userHasManyUserRole{
 		db: db.Session(&gorm.Session{}),
@@ -76,6 +77,7 @@ type user struct {
 	CreateTime field.Int32  // 创建|注册时间
 	LoginTime  field.Int32  // 登录时间
 	Status     field.Int32  // 状态
+	Profile    field.String // 用户个性化配置
 	DeleteTime field.Field  // 删除时间
 	UserRole   userHasManyUserRole
 
@@ -103,6 +105,7 @@ func (u *user) updateTableName(table string) *user {
 	u.CreateTime = field.NewInt32(table, "create_time")
 	u.LoginTime = field.NewInt32(table, "login_time")
 	u.Status = field.NewInt32(table, "status")
+	u.Profile = field.NewString(table, "profile")
 	u.DeleteTime = field.NewField(table, "delete_time")
 
 	u.fillFieldMap()
@@ -120,7 +123,7 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 11)
+	u.fieldMap = make(map[string]field.Expr, 12)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["nickname"] = u.Nickname
 	u.fieldMap["username"] = u.Username
@@ -130,6 +133,7 @@ func (u *user) fillFieldMap() {
 	u.fieldMap["create_time"] = u.CreateTime
 	u.fieldMap["login_time"] = u.LoginTime
 	u.fieldMap["status"] = u.Status
+	u.fieldMap["profile"] = u.Profile
 	u.fieldMap["delete_time"] = u.DeleteTime
 
 }

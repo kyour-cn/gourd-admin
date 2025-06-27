@@ -16,23 +16,21 @@ import (
 )
 
 var (
-	Q           = new(Query)
-	App         *app
-	Log         *log
-	LogStatView *logStatView
-	LogType     *logType
-	Menu        *menu
-	MenuAPI     *menuAPI
-	Role        *role
-	User        *user
-	UserRole    *userRole
+	Q        = new(Query)
+	App      *app
+	Log      *log
+	LogType  *logType
+	Menu     *menu
+	MenuAPI  *menuAPI
+	Role     *role
+	User     *user
+	UserRole *userRole
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
 	App = &Q.App
 	Log = &Q.Log
-	LogStatView = &Q.LogStatView
 	LogType = &Q.LogType
 	Menu = &Q.Menu
 	MenuAPI = &Q.MenuAPI
@@ -43,47 +41,44 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:          db,
-		App:         newApp(db, opts...),
-		Log:         newLog(db, opts...),
-		LogStatView: newLogStatView(db, opts...),
-		LogType:     newLogType(db, opts...),
-		Menu:        newMenu(db, opts...),
-		MenuAPI:     newMenuAPI(db, opts...),
-		Role:        newRole(db, opts...),
-		User:        newUser(db, opts...),
-		UserRole:    newUserRole(db, opts...),
+		db:       db,
+		App:      newApp(db, opts...),
+		Log:      newLog(db, opts...),
+		LogType:  newLogType(db, opts...),
+		Menu:     newMenu(db, opts...),
+		MenuAPI:  newMenuAPI(db, opts...),
+		Role:     newRole(db, opts...),
+		User:     newUser(db, opts...),
+		UserRole: newUserRole(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	App         app
-	Log         log
-	LogStatView logStatView
-	LogType     logType
-	Menu        menu
-	MenuAPI     menuAPI
-	Role        role
-	User        user
-	UserRole    userRole
+	App      app
+	Log      log
+	LogType  logType
+	Menu     menu
+	MenuAPI  menuAPI
+	Role     role
+	User     user
+	UserRole userRole
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:          db,
-		App:         q.App.clone(db),
-		Log:         q.Log.clone(db),
-		LogStatView: q.LogStatView.clone(db),
-		LogType:     q.LogType.clone(db),
-		Menu:        q.Menu.clone(db),
-		MenuAPI:     q.MenuAPI.clone(db),
-		Role:        q.Role.clone(db),
-		User:        q.User.clone(db),
-		UserRole:    q.UserRole.clone(db),
+		db:       db,
+		App:      q.App.clone(db),
+		Log:      q.Log.clone(db),
+		LogType:  q.LogType.clone(db),
+		Menu:     q.Menu.clone(db),
+		MenuAPI:  q.MenuAPI.clone(db),
+		Role:     q.Role.clone(db),
+		User:     q.User.clone(db),
+		UserRole: q.UserRole.clone(db),
 	}
 }
 
@@ -97,42 +92,39 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:          db,
-		App:         q.App.replaceDB(db),
-		Log:         q.Log.replaceDB(db),
-		LogStatView: q.LogStatView.replaceDB(db),
-		LogType:     q.LogType.replaceDB(db),
-		Menu:        q.Menu.replaceDB(db),
-		MenuAPI:     q.MenuAPI.replaceDB(db),
-		Role:        q.Role.replaceDB(db),
-		User:        q.User.replaceDB(db),
-		UserRole:    q.UserRole.replaceDB(db),
+		db:       db,
+		App:      q.App.replaceDB(db),
+		Log:      q.Log.replaceDB(db),
+		LogType:  q.LogType.replaceDB(db),
+		Menu:     q.Menu.replaceDB(db),
+		MenuAPI:  q.MenuAPI.replaceDB(db),
+		Role:     q.Role.replaceDB(db),
+		User:     q.User.replaceDB(db),
+		UserRole: q.UserRole.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	App         IAppDo
-	Log         ILogDo
-	LogStatView ILogStatViewDo
-	LogType     ILogTypeDo
-	Menu        IMenuDo
-	MenuAPI     IMenuAPIDo
-	Role        IRoleDo
-	User        IUserDo
-	UserRole    IUserRoleDo
+	App      IAppDo
+	Log      ILogDo
+	LogType  ILogTypeDo
+	Menu     IMenuDo
+	MenuAPI  IMenuAPIDo
+	Role     IRoleDo
+	User     IUserDo
+	UserRole IUserRoleDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		App:         q.App.WithContext(ctx),
-		Log:         q.Log.WithContext(ctx),
-		LogStatView: q.LogStatView.WithContext(ctx),
-		LogType:     q.LogType.WithContext(ctx),
-		Menu:        q.Menu.WithContext(ctx),
-		MenuAPI:     q.MenuAPI.WithContext(ctx),
-		Role:        q.Role.WithContext(ctx),
-		User:        q.User.WithContext(ctx),
-		UserRole:    q.UserRole.WithContext(ctx),
+		App:      q.App.WithContext(ctx),
+		Log:      q.Log.WithContext(ctx),
+		LogType:  q.LogType.WithContext(ctx),
+		Menu:     q.Menu.WithContext(ctx),
+		MenuAPI:  q.MenuAPI.WithContext(ctx),
+		Role:     q.Role.WithContext(ctx),
+		User:     q.User.WithContext(ctx),
+		UserRole: q.UserRole.WithContext(ctx),
 	}
 }
 

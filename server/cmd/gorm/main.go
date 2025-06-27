@@ -107,10 +107,6 @@ func main() {
 	)...)
 	allTables = append(allTables, menuModel)
 
-	// LogStatView
-	logStatViewModel := g.GenerateModel("log_stat_view", comOpts...)
-	allTables = append(allTables, logStatViewModel)
-
 	// Log
 	tag = field.GormTag{}
 	tag.Set("foreignKey", "type_id")
