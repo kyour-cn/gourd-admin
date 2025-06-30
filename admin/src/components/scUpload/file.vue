@@ -154,8 +154,8 @@
 				window.open(uploadFile.url)
 			},
 			request(param){
-				var apiObj = config.apiObjFile;
-				if(this.apiObj){
+                let apiObj = config.apiObjFile;
+                if(this.apiObj){
 					apiObj = this.apiObj;
 				}
 				const data = new FormData();
@@ -169,8 +169,8 @@
 						param.onProgress({percent: complete})
 					}
 				}).then(res => {
-					var response = config.parseData(res);
-					if(response.code == config.successCode){
+                    const response = config.parseData(res);
+                    if(response.code === config.successCode){
 						param.onSuccess(res)
 					}else{
 						param.onError(response.msg || "未知错误")

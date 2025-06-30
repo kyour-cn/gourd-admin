@@ -1,12 +1,12 @@
 <template>
 	<div class="sc-upload" :class="{'sc-upload-round':round}" :style="style">
-		<div v-if="file && file.status != 'success'" class="sc-upload__uploading">
+		<div v-if="file && file.status !== 'success'" class="sc-upload__uploading">
 			<div class="sc-upload__progress">
 				<el-progress :percentage="file.percentage" :text-inside="true" :stroke-width="16"/>
 			</div>
 			<el-image class="image" :src="file.tempFile" fit="cover"></el-image>
 		</div>
-		<div v-if="file && file.status=='success'" class="sc-upload__img">
+		<div v-if="file && file.status==='success'" class="sc-upload__img">
 			<el-image class="image" :src="file.url" :preview-src-list="[file.url]" fit="cover" hide-on-click-modal append-to-body :z-index="9999">
 				<template #placeholder>
 					<div class="sc-upload__img-slot">
@@ -154,7 +154,7 @@
 				if(files.length > 1){
 					files.splice(0, 1)
 				}
-				if(this.cropper && file.status=='ready'){
+				if(this.cropper && file.status==='ready'){
 					const acceptIncludes = ["image/gif", "image/jpeg", "image/png"].includes(file.raw.type)
 					if(!acceptIncludes){
 						this.$notify.warning({
@@ -169,7 +169,7 @@
 					return false
 				}
 				this.file = file
-				if(file.status=='ready'){
+				if(file.status==='ready'){
 					file.tempFile = URL.createObjectURL(file.raw)
 				}
 			},
@@ -199,16 +199,16 @@
 				//释放内存删除blob
 				URL.revokeObjectURL(file.tempFile)
 				delete file.tempFile
-				var os = this.onSuccess(res, file)
-				if(os!=undefined && os==false){
+                const os = this.onSuccess(res, file);
+                if(os!==undefined && os===false){
 					this.$nextTick(() => {
 						this.file = null
 						this.value = ""
 					})
 					return false
 				}
-				var response = config.parseData(res)
-				file.url = response.src
+                const response = config.parseData(res);
+                file.url = response.src
 				this.value = file.url
 			},
 			error(err){
@@ -221,8 +221,8 @@
 				})
 			},
 			request(param){
-				var apiObj = config.apiObj;
-				if(this.apiObj){
+                let apiObj = config.apiObj;
+                if(this.apiObj){
 					apiObj = this.apiObj;
 				}
 				const data = new FormData();
@@ -236,8 +236,8 @@
 						param.onProgress({percent: complete})
 					}
 				}).then(res => {
-					var response = config.parseData(res);
-					if(response.code == config.successCode){
+                    const response = config.parseData(res);
+                    if(response.code === config.successCode){
 						param.onSuccess(res)
 					}else{
 						param.onError(response.msg || "未知错误")

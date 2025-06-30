@@ -2,9 +2,9 @@
 	<el-dialog :title="state.titleMap[state.mode]" v-model="state.visible" :width="500" destroy-on-close @closed="$emit('closed')">
 		<el-form :model="state.form" :rules="state.rules" :disabled="state.mode==='show'" ref="dialogForm" label-width="100px"
                  label-position="left">
-			<!--			<el-form-item label="头像" prop="avatar">-->
-			<!--				<sc-upload v-model="form.avatar" title="上传头像"></sc-upload>-->
-			<!--			</el-form-item>-->
+            <el-form-item label="头像" prop="avatar">
+                <sc-upload v-model="state.form.avatar" title="上传头像"></sc-upload>
+            </el-form-item>
 			<el-form-item label="登录账号" prop="username">
 				<el-input v-model="state.form.username" placeholder="用于登录系统" clearable></el-input>
 			</el-form-item>
@@ -59,8 +59,9 @@
 
 <script setup>
 import {reactive, ref} from 'vue'
-import {ElAlert, ElMessage} from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import roleSelect from "@/components/admin/roleSelect.vue"
+import ScUpload from "@/components/scUpload/index.vue"
 import systemApi from "@/api/admin/system.js";
 
 const emit = defineEmits(['success', 'closed', 'reloadData'])
@@ -160,7 +161,7 @@ const submit = async () => {
 				state.visible = false
 				ElMessage.success("操作成功")
 			} else {
-				ElAlert(res.message, "提示", { type: 'error' })
+                await ElMessageBox.alert(res.message, "提示", {type: 'error'});
 			}
 		} else {
 			return false
