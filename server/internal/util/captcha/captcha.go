@@ -1,8 +1,7 @@
 package captcha
 
 import (
-	"app/internal/util/redisutil"
-	"context"
+	"app/internal/util/cache"
 	"encoding/json"
 	"errors"
 	"github.com/wenlng/go-captcha-assets/helper"
@@ -61,7 +60,6 @@ func Init() {
 
 // GenerateSlide 生成滑动验证码
 func GenerateSlide() (any, error) {
-
 	Init()
 
 	captData, err := slideCapt.Generate()
@@ -82,12 +80,7 @@ func GenerateSlide() (any, error) {
 	key := "captcha:" + helper.StringToMD5(string(dotsByte))
 
 	// 缓存
-	redis, err := redisutil.GetRedis(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	redis.Set(context.Background(), key, dotsByte, time.Second*300)
+	cache.Set(key, dotsByte, time.Second*300)
 
 	bt := map[string]any{
 		"code":         0,
@@ -105,22 +98,16 @@ func GenerateSlide() (any, error) {
 
 // VerifySlide 验证滑动验证码
 func VerifySlide(captchaKey string, x int, y int) bool {
-	redis, err := redisutil.GetRedis(context.Background())
-	if err != nil {
-		return false
-	}
-
-	ctx := context.Background()
-	captchaByte, err := redis.Get(ctx, captchaKey).Bytes()
-	if err != nil {
+	captcha, ok := cache.Get(captchaKey)
+	if !ok {
 		return false
 	}
 
 	// 删除缓存
-	redis.Del(ctx, captchaKey)
+	cache.Delete(captchaKey)
 
 	var dct *slide.Block
-	if err := json.Unmarshal(captchaByte, &dct); err != nil {
+	if err := json.Unmarshal(captcha.([]byte), &dct); err != nil {
 		return false
 	}
 

@@ -4,15 +4,13 @@ import (
 	"app/internal/config"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
-	"app/internal/util/redisutil"
+	"app/internal/util/cache"
 	"context"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
-	"strconv"
 	"time"
 )
 
-// UserClaims TODO： 待完善调整
 type UserClaims struct {
 	jwt.RegisteredClaims
 	Sub  int32  `json:"sub"`
@@ -20,17 +18,14 @@ type UserClaims struct {
 }
 
 // LoginUser 登录用户
-func LoginUser(ctx context.Context, username string, password string) (*model.User, error) {
-
-	rdb, err := redisutil.GetRedis(ctx)
-	if err != nil {
-		return nil, errors.New("redis连接失败")
-	}
-
+func LoginUser(_ context.Context, username string, password string) (*model.User, error) {
 	// 登录频率限制锁 10秒
 	key := "login_lock:" + username
-	val, _ := rdb.Get(ctx, key).Result()
-	failures, _ := strconv.Atoi(val)
+	val, ok := cache.Get(key)
+	if !ok {
+		val = 0
+	}
+	failures, _ := val.(int)
 	// 10秒登录失败次数超过3次，禁止登录
 	if failures > 3 {
 		return nil, errors.New("登录失败次数过多，请稍后再试")
@@ -49,11 +44,10 @@ func LoginUser(ctx context.Context, username string, password string) (*model.Us
 		First()
 	if err != nil {
 		// 登录失败次数+1
-		rdb.Incr(ctx, key)
-		rdb.Expire(ctx, key, 10*time.Second)
+		cache.Set(key, failures+1, 10*time.Second)
 		return nil, errors.New("用户名或密码错误")
 	}
-	rdb.Del(ctx, key)
+	cache.Delete(key)
 
 	return userModel, nil
 }

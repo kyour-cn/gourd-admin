@@ -2,14 +2,14 @@ package event
 
 import (
 	"app/internal/initialize"
-	"app/internal/util/redisutil"
+	"app/internal/util/cache"
 	"context"
 	"github.com/go-gourd/gourd/event"
 	"log/slog"
 )
 
 // RegisterAppEvent 事件注册
-func RegisterAppEvent(_ context.Context) {
+func RegisterAppEvent(ctx context.Context) {
 
 	// Boot事件(应用) -初始化应用时执行
 	event.Listen("app.boot", func(ctx context.Context) {
@@ -25,10 +25,13 @@ func RegisterAppEvent(_ context.Context) {
 			panic(err)
 		}
 
-		_, err = redisutil.InitRedis(ctx)
-		if err != nil {
-			panic(err)
-		}
+		// 初始化缓存
+		cache.InitCommonCache(ctx)
+
+		//_, err = redisutil.InitRedis(ctx)
+		//if err != nil {
+		//	panic(err)
+		//}
 
 		// 初始化命令行
 		initialize.InitCmd()
