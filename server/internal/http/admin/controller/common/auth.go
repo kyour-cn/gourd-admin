@@ -2,8 +2,9 @@ package common
 
 import (
 	"app/internal/config"
-	"app/internal/modules/auth"
-	"app/internal/modules/dblog"
+	"app/internal/modules/admin/auth"
+	auth2 "app/internal/modules/common/auth"
+	"app/internal/modules/common/dblog"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"app/internal/util/captcha"
@@ -58,7 +59,7 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 登录
-	userData, err := auth.LoginUser(r.Context(), req.Username, req.Password)
+	userData, err := auth2.LoginUser(r.Context(), req.Username, req.Password)
 	if err != nil {
 		_ = c.Fail(w, 103, "登录失败："+err.Error(), "")
 		return
@@ -79,11 +80,11 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 104, "token配置异常,请联系管理员", err)
 	}
 	// 生成token
-	claims := auth.UserClaims{
+	claims := auth2.UserClaims{
 		Sub:  userData.ID,
 		Name: userData.Nickname,
 	}
-	token, err := auth.GenerateToken(claims)
+	token, err := auth2.GenerateToken(claims)
 	if err != nil {
 		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return

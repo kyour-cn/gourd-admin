@@ -17,11 +17,6 @@ type User struct {
 }
 
 func (c *User) List(w http.ResponseWriter, r *http.Request) {
-	type Res struct {
-		Rows  []*model.User `json:"rows"`
-		Total int64         `json:"total"`
-	}
-
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
@@ -53,7 +48,10 @@ func (c *User) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := Res{
+	res := struct {
+		Rows  []*model.User `json:"rows"`
+		Total int64         `json:"total"`
+	}{
 		Rows:  list,
 		Total: count,
 	}
@@ -183,11 +181,9 @@ func (c *User) UpdateRole(userID int32, roleIDs []int32) error {
 }
 
 func (c *User) Delete(w http.ResponseWriter, r *http.Request) {
-	type Req struct {
+	req := struct {
 		Ids []int32 `json:"ids"`
-	}
-
-	req := Req{}
+	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return

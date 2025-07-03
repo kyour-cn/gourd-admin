@@ -107,7 +107,7 @@ func main() {
 	)...)
 	allTables = append(allTables, menuModel)
 
-	// Log
+	// Log/LogType
 	tag = field.GormTag{}
 	tag.Set("foreignKey", "type_id")
 	tag.Set("references", "id")
@@ -117,10 +117,14 @@ func main() {
 		}),
 	)...)
 	allTables = append(allTables, logModel)
-
-	// LogType
 	logTypeModel := g.GenerateModel("log_type", comOpts...)
 	allTables = append(allTables, logTypeModel)
+
+	// File/FileStorage
+	fileModel := g.GenerateModel("file", comOpts...)
+	allTables = append(allTables, fileModel)
+	fileStorageModel := g.GenerateModel("file_storage", comOpts...)
+	allTables = append(allTables, fileStorageModel)
 
 	// 生成指定表
 	g.ApplyBasic(allTables...)

@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"app/internal/config"
-	"app/internal/modules/auth"
+	auth2 "app/internal/modules/common/auth"
 	"context"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
@@ -28,7 +28,7 @@ func AuthJwtMiddleware(next http.Handler) http.Handler {
 		}
 
 		// 解析 JWT token到Claims
-		claims := auth.UserClaims{}
+		claims := auth2.UserClaims{}
 		token, err := jwt.ParseWithClaims(headerToken, &claims, func(token *jwt.Token) (any, error) {
 			return []byte(conf.Secret), nil
 		})
@@ -44,7 +44,7 @@ func AuthJwtMiddleware(next http.Handler) http.Handler {
 		}
 
 		// 验证 JWT token 的接口权限
-		if !auth.CheckPath(claims, r) {
+		if !auth2.CheckPath(claims, r) {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}

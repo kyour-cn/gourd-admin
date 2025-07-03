@@ -9,7 +9,7 @@ import (
 )
 
 // RegisterAppEvent 事件注册
-func RegisterAppEvent(ctx context.Context) {
+func RegisterAppEvent(_ context.Context) {
 
 	// Boot事件(应用) -初始化应用时执行
 	event.Listen("app.boot", func(ctx context.Context) {
@@ -27,11 +27,6 @@ func RegisterAppEvent(ctx context.Context) {
 
 		// 初始化缓存
 		cache.InitCommonCache(ctx)
-
-		//_, err = redisutil.InitRedis(ctx)
-		//if err != nil {
-		//	panic(err)
-		//}
 
 		// 初始化命令行
 		initialize.InitCmd()

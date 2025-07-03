@@ -2,7 +2,7 @@ package system
 
 import (
 	"app/internal/http/admin/controller/common"
-	"app/internal/modules/auth"
+	"app/internal/modules/admin/auth"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"encoding/json"

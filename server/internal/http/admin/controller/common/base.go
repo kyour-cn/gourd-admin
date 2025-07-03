@@ -1,7 +1,7 @@
 package common
 
 import (
-	"app/internal/modules/auth"
+	"app/internal/modules/common/auth"
 	"encoding/json"
 	"errors"
 	"github.com/go-playground/validator/v10"

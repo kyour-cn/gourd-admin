@@ -3,7 +3,7 @@ package initialize
 import (
 	"app/internal/config"
 	"app/internal/global"
-	"app/internal/modules/dblog"
+	"app/internal/modules/common/dblog"
 	"context"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
