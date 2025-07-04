@@ -9,7 +9,7 @@ export default {
     parseData(res) {
         return {
             code: res.code,				// 分析状态字段结构
-            fileName: res.data.file,    // 分析文件名称
+            fileName: res.data.fileName,// 分析文件名称
             src: res.data.url,			// 分析图片远程地址结构
             msg: res.message			// 分析描述字段结构
         }
