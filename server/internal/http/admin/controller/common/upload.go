@@ -2,6 +2,8 @@ package common
 
 import (
 	"app/internal/modules/common/upload"
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/google/uuid"
@@ -18,6 +20,12 @@ type Upload struct {
 
 // Image 上传图片
 func (c *Upload) Image(w http.ResponseWriter, r *http.Request) {
+	claims, err := c.GetJwt(r)
+	if err != nil {
+		_ = c.Fail(w, 101, err.Error(), nil)
+		return
+	}
+
 	// 限制上传大小：最大 10MB
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		_ = c.Fail(w, 500, "获取请求失败", err.Error())
@@ -64,14 +72,28 @@ func (c *Upload) Image(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 502, "获取上传器失败", err.Error())
 		return
 	}
-
-	// 开始上传
 	output, err := uploader.Upload(r.Context(), input, savePath)
 	if err != nil {
 		_ = c.Fail(w, 502, "上传图片失败", err.Error())
 		return
 	}
 
+	// 保存图片信息到数据库
+	err = query.File.Create(&model.File{
+		FileName:   handler.Filename,
+		FileType:   "image/" + ext[1:], // 如 image/png
+		FileExt:    ext,
+		FileSize:   handler.Size,
+		FilePath:   savePath,
+		StorageID:  uploader.GetStorageModel().ID,
+		StorageKey: uploader.GetStorageModel().Key,
+		HashMd5:    output.Hash,
+		UserID:     claims.Sub,
+	})
+	if err != nil {
+		_ = c.Fail(w, 503, "保存图片信息失败", err.Error())
+		return
+	}
 	_ = c.Success(w, "上传图片成功", output)
 }
 

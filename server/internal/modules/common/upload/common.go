@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"context"
 	"fmt"
@@ -29,6 +30,7 @@ type Output struct {
 type Uploader interface {
 	Upload(ctx context.Context, input Input, savePath string) (*Output, error)
 	Delete(path string) error
+	GetStorageModel() *model.FileStorage // 获取存储模型
 }
 
 // GetUploader 获取上传器
@@ -57,7 +59,7 @@ func GetUploader(key string) (Uploader, error) {
 
 	switch storage.Key {
 	case "local":
-		return NewLocalUploader(), nil
+		return NewLocalUploader(storage), nil
 	default:
 		return nil, fmt.Errorf("不支持的上传类型: %s", storage.Key)
 	}

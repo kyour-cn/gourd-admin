@@ -12,13 +12,14 @@ const TableNameFile = "file"
 
 // File mapped from table <file>
 type File struct {
-	ID         int32  `gorm:"column:id;primaryKey" json:"id"`
+	ID         int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	FileName   string `gorm:"column:file_name;not null;comment:文件名" json:"file_name"`                      // 文件名
 	FileType   string `gorm:"column:file_type;not null;comment:文件类型（MIME类型，如 image/png）" json:"file_type"` // 文件类型（MIME类型，如 image/png）
 	FileExt    string `gorm:"column:file_ext;not null;comment:文件后缀（如 .jpg/.pdf）文件后缀" json:"file_ext"`      // 文件后缀（如 .jpg/.pdf）文件后缀
 	FileSize   int64  `gorm:"column:file_size;not null;comment:文件大小（字节）" json:"file_size"`                 // 文件大小（字节）
 	FilePath   string `gorm:"column:file_path;not null;comment:存储路径（从/开始）" json:"file_path"`               // 存储路径（从/开始）
 	StorageID  int32  `gorm:"column:storage_id;not null;comment:存储方式ID" json:"storage_id"`                 // 存储方式ID
+	StorageKey string `gorm:"column:storage_key;not null;comment:储存方式KEY" json:"storage_key"`              // 储存方式KEY
 	HashMd5    string `gorm:"column:hash_md5;not null;comment:文件内容的MD5" json:"hash_md5"`                   // 文件内容的MD5
 	UserID     int32  `gorm:"column:user_id;comment:上传用户ID" json:"user_id"`                                // 上传用户ID
 	Status     int32  `gorm:"column:status;not null;default:1;comment:状态 1=正常 0=停用" json:"status"`         // 状态 1=正常 0=停用
