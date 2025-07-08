@@ -158,8 +158,8 @@
 			},
 			//全屏
 			screen(){
-                const element = document.documentElement;
-                this.$TOOL.screen(element)
+        const element = document.documentElement;
+        this.$TOOL.screen(element)
 			},
 			//显示短消息
 			showMsg(){

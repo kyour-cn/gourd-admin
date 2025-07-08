@@ -7,9 +7,9 @@ import { createStore } from 'vuex';
 const files = import.meta.glob('./modules/*.js', { eager: true })
 const modules = {}
 Object.keys(files).forEach(key => {
-	modules[key.replace(/^\.\/modules\/(.*)\.js$/g, '$1')] = files[key].default
+  modules[key.replace(/^\.\/modules\/(.*)\.js$/g, '$1')] = files[key].default
 })
 
 export default createStore({
-	modules
+  modules
 });

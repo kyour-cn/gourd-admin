@@ -3,9 +3,9 @@
 // 详情见 src/config/index.js
 
 const APP_CONFIG = {
-	//标题
-	//APP_NAME: "GourdAdmin",
+  //标题
+  //APP_NAME: "GourdAdmin",
 
-	//接口地址，如遇跨域需使用nginx代理
-	API_URL: "https://gourd.kyour.cn"
+  //接口地址，如遇跨域需使用nginx代理
+  API_URL: "https://gourd.kyour.cn"
 }

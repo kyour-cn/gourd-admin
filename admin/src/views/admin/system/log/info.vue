@@ -21,35 +21,35 @@
 
 <script setup>
 
-import { reactive } from 'vue'
+import {reactive} from 'vue'
 import tool from '@/utils/tool'
 
 const state = reactive({
-    data: {
-        title: '',
-        type_name: '',
-        request_source: '',
-        request_user: '',
-        request_user_id: '',
-        request_ip: '',
-        create_time: '',
-        value: ''
-    },
-    activeNames: ['1'],
-    typeMap: {
-        'info': "info",
-        'warn': "warning",
-        'error': "error"
-    }
+  data: {
+    title: '',
+    type_name: '',
+    request_source: '',
+    request_user: '',
+    request_user_id: '',
+    request_ip: '',
+    create_time: '',
+    value: ''
+  },
+  activeNames: ['1'],
+  typeMap: {
+    'info': "info",
+    'warn': "warning",
+    'error': "error"
+  }
 });
 
 const setData = (data) => {
-    state.data = data
+  state.data = data
 }
 
 //暴露给父组件的方法
 defineExpose({
-    setData
+  setData
 })
 </script>
 

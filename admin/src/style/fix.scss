@@ -1,31 +1,31 @@
 /* 覆盖element-plus样式 */
 
 :root {
-	--el-color-primary: #409EFF;
-	--el-color-primary-light-1: #53a7ff;
-	--el-color-primary-light-2: #66b1ff;
-	--el-color-primary-light-3: #79bbff;
-	--el-color-primary-light-4: #8cc4ff;
-	--el-color-primary-light-5: #9fceff;
-	--el-color-primary-light-6: #b2d8ff;
-	--el-color-primary-light-7: #c5e1ff;
-	--el-color-primary-light-8: #d8ebff;
-	--el-color-primary-light-9: #ebf5ff;
-	--el-color-primary-dark-1: #398ee5;
-	--el-color-primary-dark-2: #337ecc;
-	--el-color-primary-dark-3: #2c6eb2;
-	--el-color-primary-dark-4: #265e99;
-	--el-color-primary-dark-5: #204f7f;
-	--el-color-primary-dark-6: #193f66;
-	--el-color-primary-dark-7: #132f4c;
-	--el-color-primary-dark-8: #0c1f32;
-	--el-color-primary-dark-9: #060f19;
-	--el-border-radius-small: 5px;
+  --el-color-primary: #409EFF;
+  --el-color-primary-light-1: #53a7ff;
+  --el-color-primary-light-2: #66b1ff;
+  --el-color-primary-light-3: #79bbff;
+  --el-color-primary-light-4: #8cc4ff;
+  --el-color-primary-light-5: #9fceff;
+  --el-color-primary-light-6: #b2d8ff;
+  --el-color-primary-light-7: #c5e1ff;
+  --el-color-primary-light-8: #d8ebff;
+  --el-color-primary-light-9: #ebf5ff;
+  --el-color-primary-dark-1: #398ee5;
+  --el-color-primary-dark-2: #337ecc;
+  --el-color-primary-dark-3: #2c6eb2;
+  --el-color-primary-dark-4: #265e99;
+  --el-color-primary-dark-5: #204f7f;
+  --el-color-primary-dark-6: #193f66;
+  --el-color-primary-dark-7: #132f4c;
+  --el-color-primary-dark-8: #0c1f32;
+  --el-color-primary-dark-9: #060f19;
+  --el-border-radius-small: 5px;
 }
 
 .el-menu {
-	border: none !important;
-	background: transparent;
+  border: none !important;
+  background: transparent;
 }
 .el-menu .el-menu-item a {color: inherit;text-decoration: none;display: block;width:100%;height:100%;position: absolute;top:0px;left:0px;}
 .el-form-item-msg {font-size: 12px;color: #999;clear: both;width: 100%;}
@@ -34,12 +34,12 @@
 .el-container + .el-aside {border-right: 0;border-left: 1px solid var(--el-border-color-light);}
 
 .el-header {
-	//background: #fff;
-	border-bottom: 1px solid var(--el-border-color-light);
-	padding: 13px 15px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  //background: #fff;
+  border-bottom: 1px solid var(--el-border-color-light);
+  padding: 13px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .el-header .left-panel {display: flex;align-items: center;}
 .el-header .right-panel {display: flex;align-items: center;}
@@ -98,30 +98,30 @@ body .tox-tinymce-aux {z-index: 5700;}
 
 /* SwordAdmin样式 */
 .el-menu-item {
-	border-radius: 5px;
-	margin: 5px;
-	padding: 0 5px;
-	height: 40px !important;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 0 5px;
+  height: 40px !important;
 }
 .el-menu-item.is-active {
-	background: #eaeced !important;
+  background: #eaeced !important;
 }
 html.dark .el-menu-item.is-active {
-	background: #3c3c3c !important;
+  background: #3c3c3c !important;
 }
 /* 功能页面区域样式 */
 .adminui-main > .el-container {
-	background: #fff;
-	margin: 0 10px 10px 10px;
-	height: calc(100% - 20px);
-	border-radius: 10px;
-	// 外阴影
-	box-shadow: 0 0 5px 0 rgba(100, 100, 100, 0.2);
+  background: #fff;
+  margin: 0 10px 10px 10px;
+  height: calc(100% - 20px);
+  border-radius: 10px;
+  // 外阴影
+  box-shadow: 0 0 5px 0 rgba(100, 100, 100, 0.2);
 }
 .el-main {
-	padding: 10px;
+  padding: 10px;
 }
 
 .el-card {
-	border: none;
+  border: none;
 }
