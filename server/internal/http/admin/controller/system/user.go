@@ -27,8 +27,7 @@ func (c *User) List(w http.ResponseWriter, r *http.Request) {
 	if keyword != "" {
 		conditions = append(conditions, qu.Where(
 			qu.Where(qu.Username.Like("%"+keyword+"%")).
-				Or(qu.Nickname.Like("%"+keyword+"%")).
-				Or(qu.Mobile.Like("%"+keyword+"%")),
+				Or(qu.Nickname.Like("%"+keyword+"%")),
 		))
 	}
 
@@ -104,7 +103,7 @@ func (c *User) Edit(w http.ResponseWriter, r *http.Request) {
 	qu := query.User
 
 	fields := []field.Expr{
-		qu.Nickname, qu.Username, qu.Mobile, qu.Avatar, qu.Status,
+		qu.Nickname, qu.Username, qu.Avatar, qu.Status,
 	}
 
 	// 如果密码不为空，则加密后更新密码
