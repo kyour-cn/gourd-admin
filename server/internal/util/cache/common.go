@@ -7,23 +7,21 @@ import (
 )
 
 var (
-	commonCache *Cache
-	once        sync.Once
+	defaultCache *Cache
+	once         sync.Once
 )
 
-// InitCommonCache 初始化并定期执行 GC
-func InitCommonCache(ctx context.Context) {
+// InitDefaultCache 初始化并定期执行 GC
+func InitDefaultCache(ctx context.Context) {
 	once.Do(func() {
-		commonCache = NewCache()
-
+		defaultCache = NewCache()
 		go func() {
-			ticker := time.NewTicker(1 * time.Minute) // 可配置的 GC 间隔
+			ticker := time.NewTicker(1 * time.Minute)
 			defer ticker.Stop()
-
 			for {
 				select {
 				case <-ticker.C:
-					commonCache.GC()
+					defaultCache.GC()
 				case <-ctx.Done():
 					return
 				}
@@ -32,19 +30,19 @@ func InitCommonCache(ctx context.Context) {
 	})
 }
 
-func GetCommonCache() *Cache {
-	InitCommonCache(context.Background()) // 保证已初始化
-	return commonCache
+func GetDefaultCache() *Cache {
+	InitDefaultCache(context.Background()) // 保证已初始化
+	return defaultCache
 }
 
 func Set(key string, value any, duration time.Duration) {
-	GetCommonCache().Set(key, value, duration)
+	GetDefaultCache().Set(key, value, duration)
 }
 
 func Get(key string) (any, bool) {
-	return GetCommonCache().Get(key)
+	return GetDefaultCache().Get(key)
 }
 
 func Delete(key string) {
-	GetCommonCache().Delete(key)
+	GetDefaultCache().Delete(key)
 }

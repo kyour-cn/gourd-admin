@@ -26,7 +26,7 @@ func RegisterAppEvent(_ context.Context) {
 		}
 
 		// 初始化缓存
-		cache.InitCommonCache(ctx)
+		cache.InitDefaultCache(ctx)
 
 		// 初始化命令行
 		initialize.InitCmd()
