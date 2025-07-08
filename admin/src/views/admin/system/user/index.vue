@@ -31,7 +31,6 @@
                 </el-table-column>
                 <el-table-column label="登录账号" prop="username" width="150" column-key="filterUserName"/>
                 <el-table-column label="昵称" prop="nickname" width="150"/>
-                <el-table-column label="手机号" prop="mobile" width="150"/>
                 <el-table-column label="所属角色" prop="role_id" width="200"/>
                 <el-table-column label="注册时间" prop="create_time" width="170">
                     <template #default="{row}">

@@ -17,7 +17,6 @@ type User struct {
 	ID         int32                 `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Nickname   string                `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`                           // 昵称
 	Username   string                `gorm:"column:username;not null;comment:用户名(登录账号)" json:"username"`                    // 用户名(登录账号)
-	Mobile     string                `gorm:"column:mobile;not null;comment:手机号" json:"mobile"`                              // 手机号
 	Avatar     string                `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                               // 头像
 	Password   string                `gorm:"column:password;not null;comment:密码 md5" json:"password"`                       // 密码 md5
 	CreateTime int32                 `gorm:"column:create_time;not null;autoCreateTime;comment:创建|注册时间" json:"create_time"` // 创建|注册时间

@@ -3,3 +3,5 @@
 /logs/
 /go.sum
 *.exe
+
+/web/uploads/

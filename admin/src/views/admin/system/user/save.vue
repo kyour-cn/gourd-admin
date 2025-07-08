@@ -11,9 +11,6 @@
 			<el-form-item label="昵称" prop="nickname">
 				<el-input v-model="state.form.nickname" placeholder="请输入完整的真实姓名" clearable></el-input>
 			</el-form-item>
-			<el-form-item label="手机号" prop="mobile">
-				<el-input v-model="state.form.mobile" placeholder="请输入手机号" maxlength="11" clearable></el-input>
-			</el-form-item>
 			<el-form-item label="是否有效" prop="status">
 				<el-switch v-model="state.form.status" :active-value="true" :inactive-value="false"></el-switch>
 			</el-form-item>
@@ -82,7 +79,6 @@ const state = reactive({
 		nickname: "",
 		status: true,
 		password: '',
-		mobile: '',
 	},
 	rules: {
 		avatar: [
@@ -94,17 +90,17 @@ const state = reactive({
 		nickname: [
 			{ required: true, message: '请输入昵称' }
 		],
-		mobile: [
-			{
-				validator: (_, value, callback) => {
-					if (value === '') return callback()
-					const regMobile = /^1\d{10}$/
-					if (regMobile.test(value)) return callback()
-					callback(new Error('请输入合法的手机号'))
-				},
-				trigger: 'blur'
-			}
-		],
+		// mobile: [
+		// 	{
+		// 		validator: (_, value, callback) => {
+		// 			if (value === '') return callback()
+		// 			const regMobile = /^1\d{10}$/
+		// 			if (regMobile.test(value)) return callback()
+		// 			callback(new Error('请输入合法的手机号'))
+		// 		},
+		// 		trigger: 'blur'
+		// 	}
+		// ],
 		password: [
 			{ required: true, message: '请输入登录密码' },
 		],
@@ -129,7 +125,7 @@ const submit = async () => {
 	dialogForm.value.validate(async (valid) => {
 		if (valid) {
 			state.isSaveing = true
-			let { username, nickname, status, password, mobile, id } = state.form
+			let { username, nickname, status, password, id } = state.form
 
             let roles = state.roles.map(item => item.id)
 
@@ -141,7 +137,6 @@ const submit = async () => {
 					nickname,
 					status,
 					password,
-					mobile,
                     roles
 				})
 			} else {
@@ -151,7 +146,6 @@ const submit = async () => {
 					nickname,
 					status,
 					password,
-					mobile,
                     roles
 				})
 			}
@@ -181,7 +175,6 @@ const setData = (data) => {
 		avatar: data.avatar,
 		username: data.username,
 		status: data.status === 1,
-		mobile: data.mobile,
 	})
 }
 
