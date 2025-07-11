@@ -7,22 +7,10 @@ host = "ecs.kyour.cn"
 #端口
 port = 8306
 #用户
-user = "go-admin"
+user = "co-create-cloud"
 #密码
-pass = "admin123"
+pass = "ccc123."
 #数据库名
-database = "go-admin"
+database = "co-create-cloud"
 # 慢日志阈值（毫秒）0为不开启
 slow_log_time = 500
-
-[redis]
-#数据库类型
-type = "redis"
-# Redis 地址
-host = "127.0.0.1"
-#端口
-port = 6379
-#密码
-pass = ""
-#数据库名
-database = "6"

@@ -113,7 +113,6 @@ const state = reactive({
   },
   islogin: false,
   captchaShow: false,
-  captchaConfig: null,
   captchaData: null,
   dialogRoleVisible: false,
   appList: [],
