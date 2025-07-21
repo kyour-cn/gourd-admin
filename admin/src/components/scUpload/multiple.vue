@@ -182,15 +182,15 @@
 					message: err
 				})
 			},
-			beforeRemove(uploadFile){
-				return this.$confirm(`是否移除 ${uploadFile.name} ?`, '提示', {
-					type: 'warning',
-				}).then(() => {
-					return true
-				}).catch(() => {
-					return false
-				})
-			},
+			// beforeRemove(uploadFile){
+			// 	return this.$confirm(`是否移除 ${uploadFile.name} ?`, '提示', {
+			// 		type: 'warning',
+			// 	}).then(() => {
+			// 		return true
+			// 	}).catch(() => {
+			// 		return false
+			// 	})
+			// },
 			handleRemove(file){
 				this.$refs.uploader.handleRemove(file)
 				//this.defaultFileList.splice(this.defaultFileList.findIndex(item => item.uid===file.uid), 1)

@@ -218,4 +218,21 @@ tool.crypto = {
   }
 }
 
+// 资源路径处理
+tool.resUrl = function (path) {
+  if (!path) {
+    return path; // 如果没有路径，返回资源地址
+  }
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path; // 如果是完整的URL，直接返回
+  }
+  // 绝对路径
+  if (path.startsWith('/')) {
+    return sysConfig.RES_URL + path;
+  }
+  // 相对路径
+  return sysConfig.RES_URL + '/' + path;
+
+}
+
 export default tool

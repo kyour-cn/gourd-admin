@@ -58,8 +58,9 @@
 	import { genFileId } from 'element-plus'
 	const scCropper = defineAsyncComponent(() => import('@/components/scCropper'))
 	import config from "@/config/upload"
+  import tool from '@/utils/tool'
 
-	export default {
+  export default {
 		props: {
 			modelValue: { type: String, default: "" },
 			height: {type: Number, default: 148},
@@ -100,6 +101,7 @@
 		},
 		watch:{
 			modelValue(val){
+        val = tool.resUrl(val)
 				this.value = val
 				this.newFile(val)
 			},
@@ -195,22 +197,22 @@
 				file.uid = genFileId()
 				this.$refs.uploader.handleStart(file)
 			},
-			success(res, file){
-				//释放内存删除blob
-				URL.revokeObjectURL(file.tempFile)
-				delete file.tempFile
-                const os = this.onSuccess(res, file);
-                if(os!==undefined && os===false){
-					this.$nextTick(() => {
-						this.file = null
-						this.value = ""
-					})
-					return false
-				}
-                const response = config.parseData(res);
-                file.url = response.src
-				this.value = file.url
-			},
+      success(res, file) {
+        // 释放内存删除blob
+        URL.revokeObjectURL(file.tempFile)
+        delete file.tempFile
+        const os = this.onSuccess(res, file);
+        if (os !== undefined && os === false) {
+          this.$nextTick(() => {
+            this.file = null
+            this.value = ""
+          })
+          return false
+        }
+        const response = config.parseData(res);
+        file.url = response.src
+        this.value = file.url
+      },
 			error(err){
 				this.$nextTick(()=>{
 					this.clearFiles()
@@ -220,11 +222,11 @@
 					message: err
 				})
 			},
-			request(param){
-                let apiObj = config.apiObj;
-                if(this.apiObj){
-					apiObj = this.apiObj;
-				}
+      request(param) {
+        let apiObj = config.apiObj;
+        if (this.apiObj) {
+          apiObj = this.apiObj;
+        }
 				const data = new FormData();
 				data.append(param.filename, param.file);
 				for (const key in param.data) {
@@ -236,12 +238,12 @@
 						param.onProgress({percent: complete})
 					}
 				}).then(res => {
-                    const response = config.parseData(res);
-                    if(response.code === config.successCode){
-						param.onSuccess(res)
-					}else{
-						param.onError(response.msg || "未知错误")
-					}
+          const response = config.parseData(res);
+          if (response.code === config.successCode) {
+            param.onSuccess(res)
+          } else {
+            param.onError(response.msg || "未知错误")
+          }
 				}).catch(err => {
 					param.onError(err)
 				})

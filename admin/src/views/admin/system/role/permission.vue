@@ -18,7 +18,7 @@
     </div>
     <template #footer>
       <el-button @click="state.visible = false">取 消</el-button>
-      <el-button type="primary" :loading="state.isSaveing" @click="submit()">
+      <el-button type="primary" :loading="state.saveLoading" @click="submit()">
         保 存
       </el-button>
     </template>
@@ -35,7 +35,7 @@ const emit = defineEmits(["success", "closed", "getNewData"])
 const state = reactive({
   checkIds: [],
   visible: false,
-  isSaveing: false,
+  saveLoading: false,
   row: {
     id: 0,
     rules_checked: ''
@@ -60,7 +60,7 @@ const open = (row) => {
 }
 
 const submit = async () => {
-  state.isSaveing = true;
+  state.saveLoading = true;
   //选中的和半选的合并后传值接口
   const checkedKeys = rule.value.getCheckedKeys().concat(rule.value.getHalfCheckedKeys());
   const checked = rule.value.getCheckedKeys().join(',')
@@ -72,7 +72,7 @@ const submit = async () => {
   }
   const res = await systemApi.role.editPermission.post(data);
   if (res.code === 0) {
-    state.isSaveing = false;
+    state.saveLoading = false;
     state.visible = false;
     ElMessage.success("操作成功");
     emit('success')

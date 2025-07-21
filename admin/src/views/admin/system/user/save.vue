@@ -2,8 +2,7 @@
   <el-dialog :title="state.titleMap[state.mode]" v-model="state.visible" :width="500" destroy-on-close
              @closed="$emit('closed')">
     <el-form :model="state.form" :rules="state.rules" :disabled="state.mode==='show'" ref="dialogForm"
-             label-width="100px"
-             label-position="left">
+             label-width="100px" label-position="left">
       <el-form-item label="头像" prop="avatar">
         <sc-upload v-model="state.form.avatar" title="上传头像"></sc-upload>
       </el-form-item>
@@ -51,7 +50,7 @@
     </el-form>
     <template #footer>
       <el-button @click="state.visible=false">取 消</el-button>
-      <el-button v-if="state.mode!=='show'" type="primary" :loading="state.isSaveing" @click="submit()">保 存
+      <el-button v-if="state.mode!=='show'" type="primary" :loading="state.saveLoading" @click="submit()">保 存
       </el-button>
     </template>
   </el-dialog>
@@ -70,7 +69,7 @@ const dialogForm = ref()
 const state = reactive({
   mode: 'add',
   visible: false,
-  isSaveing: false,
+  saveLoading: false,
   titleMap: {
     add: '新增用户',
     edit: '编辑用户',
@@ -80,13 +79,14 @@ const state = reactive({
     id: "",
     username: "",
     nickname: "",
+    avatar: "",
     status: true,
     password: '',
   },
   rules: {
-    avatar: [
-      {required: true, message: '请上传头像'}
-    ],
+    // avatar: [
+    //   {required: true, message: '请上传头像'}
+    // ],
     username: [
       {required: true, message: '请输入登录账号'}
     ],
@@ -127,8 +127,8 @@ const open = (mode = 'add') => {
 const submit = async () => {
   dialogForm.value.validate(async (valid) => {
     if (valid) {
-      state.isSaveing = true
-      let {username, nickname, status, password, id} = state.form
+      state.saveLoading = true
+      let {username, nickname, status, password, id, avatar} = state.form
 
       let roles = state.roles.map(item => item.id)
 
@@ -138,6 +138,7 @@ const submit = async () => {
         res = await systemApi.user.add.post({
           username,
           nickname,
+          avatar,
           status,
           password,
           roles
@@ -147,12 +148,13 @@ const submit = async () => {
           id,
           username,
           nickname,
+          avatar,
           status,
           password,
           roles
         })
       }
-      state.isSaveing = false
+      state.saveLoading = false
       if (res.code === 0) {
         emit('success')
         state.visible = false

@@ -27,7 +27,7 @@
         <el-table-column label="ID" prop="id" width="80" sortable='custom'/>
         <el-table-column label="头像" width="80" column-key="filterAvatar">
           <template #default="scope">
-            <el-avatar :src="scope.row.avatar" size="small"></el-avatar>
+            <el-avatar :src="tool.resUrl(scope.row.avatar)" size="small"></el-avatar>
           </template>
         </el-table-column>
         <el-table-column label="登录账号" prop="username" width="150" column-key="filterUserName"/>
@@ -71,9 +71,10 @@ import SaveDialog from './save'
 import ScTable from "@/components/scTable/index.vue"
 import systemApi from "@/api/admin/system.js";
 import {ElMessage, ElMessageBox} from "element-plus";
+import tool from "@/utils/tool.js";
 
 defineOptions({
-  name: 'user',
+  name: 'product_list',
 })
 
 const saveDialogRef = ref(null)

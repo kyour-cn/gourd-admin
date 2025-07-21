@@ -15,6 +15,9 @@ const DEFAULT_CONFIG = {
   // API_URL: window.location.origin,
   API_URL: "//localhost:8080",
 
+  // 资源文件地址
+  RES_URL: "http://localhost:8080",
+
   //请求超时
   TIMEOUT: 10000,
 

@@ -138,46 +138,47 @@
 					message: err
 				})
 			},
-			beforeRemove(uploadFile){
-				return this.$confirm(`是否移除 ${uploadFile.name} ?`, '提示', {
-					type: 'warning',
-				}).then(() => {
-					return true
-				}).catch(() => {
-					return false
-				})
-			},
+			// beforeRemove(uploadFile){
+			// 	return this.$confirm(`是否移除 ${uploadFile.name} ?`, '提示', {
+			// 		type: 'warning',
+			// 	}).then(() => {
+			// 		return true
+			// 	}).catch(() => {
+			// 		return false
+			// 	})
+			// },
 			handleExceed(){
 				this.$message.warning(`当前设置最多上传 ${this.limit} 个文件，请移除后上传!`)
 			},
 			handlePreview(uploadFile){
 				window.open(uploadFile.url)
 			},
-			request(param){
-                let apiObj = config.apiObjFile;
-                if(this.apiObj){
-					apiObj = this.apiObj;
-				}
+      request(param) {
+        let apiObj = config.apiObjFile;
+        if (this.apiObj) {
+          apiObj = this.apiObj;
+        }
 				const data = new FormData();
 				data.append(param.filename, param.file);
 				for (const key in param.data) {
 					data.append(key, param.data[key]);
 				}
-				apiObj.post(data, {
-					onUploadProgress: e => {
-						const complete = parseInt(((e.loaded / e.total) * 100) | 0, 10)
-						param.onProgress({percent: complete})
-					}
-				}).then(res => {
-                    const response = config.parseData(res);
-                    if(response.code === config.successCode){
-						param.onSuccess(res)
-					}else{
-						param.onError(response.msg || "未知错误")
-					}
-				}).catch(err => {
-					param.onError(err)
-				})
+        apiObj.post(data, {
+          onUploadProgress: e => {
+            const complete = parseInt(((e.loaded / e.total) * 100) | 0, 10)
+            param.onProgress({percent: complete})
+          }
+        }).then(res => {
+          console.log("12121", res)
+          const response = config.parseData(res);
+          if (response.code === config.successCode) {
+            param.onSuccess(res)
+          } else {
+            param.onError(response.message || "未知错误")
+          }
+        }).catch(err => {
+          param.onError(err)
+        })
 			}
 		}
 	}
