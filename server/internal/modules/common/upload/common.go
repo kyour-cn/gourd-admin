@@ -5,8 +5,13 @@ import (
 	"app/internal/orm/query"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"gorm.io/gen"
 	"io"
+	"mime/multipart"
+	"net/http"
+	"path/filepath"
+	"time"
 )
 
 // Input 上传请求参数
@@ -29,7 +34,7 @@ type Output struct {
 // Uploader 接口定义了上传和删除文件的方法
 type Uploader interface {
 	Upload(ctx context.Context, input Input, savePath string) (*Output, error)
-	Delete(path string) error
+	Delete(ctx context.Context, path string) error
 	GetStorageModel() *model.FileStorage // 获取存储模型
 }
 
@@ -63,4 +68,32 @@ func GetUploader(key string) (Uploader, error) {
 	default:
 		return nil, fmt.Errorf("不支持的上传类型: %s", storage.Key)
 	}
+}
+
+// GenPath 生成存储路径
+func GenPath(group string, ext string) string {
+	root := "uploads" // 根目录
+	if group != "" {
+		root = filepath.Join(root, group)
+	}
+	t := time.Now()
+	// 保存路径 按日期分目录，避免单目录文件过多
+	dir := filepath.Join(root, t.Format("200601/02"))
+
+	fileName := t.Format("0405") + uuid.New().String() + ext
+	savePath := filepath.ToSlash(filepath.Join(dir, fileName))
+	return savePath
+}
+
+// GetFileMimeType 获取文件的MIME类型
+func GetFileMimeType(file multipart.File) (string, error) {
+	_, _ = file.Seek(0, 0)
+	// 读取前512字节来检测文件类型
+	buf := make([]byte, 512)
+	_, err := file.Read(buf)
+	if err != nil {
+		return "", fmt.Errorf("读取文件失败: %w", err)
+	}
+	_, _ = file.Seek(0, 0)
+	return http.DetectContentType(buf), nil
 }

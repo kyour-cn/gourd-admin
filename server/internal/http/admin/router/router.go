@@ -26,8 +26,9 @@ func Router(r chi.Router) {
 	r.Route("/upload", func(r chi.Router) {
 		c := common.Upload{}
 		r.Use(middleware.AuthJwtMiddleware)
-		r.Post("/image", c.Image) // 上传图片
-		r.Post("/file", c.File)   // 上传文件
+		r.Post("/image", c.Image)   // 上传图片
+		r.Post("/file", c.File)     // 上传文件
+		r.Post("/delete", c.Delete) // 上传文件
 	})
 
 	// 用户

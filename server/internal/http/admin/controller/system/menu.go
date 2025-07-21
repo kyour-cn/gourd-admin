@@ -80,6 +80,7 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 		Sort      int32         `json:"sort"`
 		Meta      auth.MenuMate `json:"meta"`
 		AppId     int32         `json:"appId"`
+		ParentId  int32         `json:"parentId"`
 		ApiList   []struct {
 			Path string `json:"path"`
 			Tag  string `json:"tag"`
@@ -101,6 +102,7 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 			"component": req.Component,
 			"sort":      req.Sort,
 			"meta":      mate,
+			"pid":       req.ParentId,
 		})
 	if err != nil {
 		_ = c.Fail(w, 1, "更新失败", err.Error())

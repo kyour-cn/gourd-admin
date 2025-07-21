@@ -33,6 +33,7 @@ func newFile(db *gorm.DB, opts ...gen.DOOption) file {
 	_file.FileType = field.NewString(tableName, "file_type")
 	_file.FileExt = field.NewString(tableName, "file_ext")
 	_file.FileSize = field.NewInt64(tableName, "file_size")
+	_file.URL = field.NewString(tableName, "url")
 	_file.FilePath = field.NewString(tableName, "file_path")
 	_file.StorageID = field.NewInt32(tableName, "storage_id")
 	_file.StorageKey = field.NewString(tableName, "storage_key")
@@ -46,6 +47,7 @@ func newFile(db *gorm.DB, opts ...gen.DOOption) file {
 	return _file
 }
 
+// file 文件
 type file struct {
 	fileDo
 
@@ -55,11 +57,12 @@ type file struct {
 	FileType   field.String // 文件类型（MIME类型，如 image/png）
 	FileExt    field.String // 文件后缀（如 .jpg/.pdf）文件后缀
 	FileSize   field.Int64  // 文件大小（字节）
-	FilePath   field.String // 存储路径（从/开始）
-	StorageID  field.Int32  // 存储方式ID
-	StorageKey field.String // 储存方式KEY
+	URL        field.String // 链接地址
+	FilePath   field.String // 存储路径
+	StorageID  field.Int32  // 存储方式id
+	StorageKey field.String // 储存方式key
 	HashMd5    field.String // 文件内容的MD5
-	UserID     field.Int32  // 上传用户ID
+	UserID     field.Int32  // 上传用户id
 	Status     field.Int32  // 状态 1=正常 0=停用
 	CreateTime field.Int32  // 上传时间
 
@@ -83,6 +86,7 @@ func (f *file) updateTableName(table string) *file {
 	f.FileType = field.NewString(table, "file_type")
 	f.FileExt = field.NewString(table, "file_ext")
 	f.FileSize = field.NewInt64(table, "file_size")
+	f.URL = field.NewString(table, "url")
 	f.FilePath = field.NewString(table, "file_path")
 	f.StorageID = field.NewInt32(table, "storage_id")
 	f.StorageKey = field.NewString(table, "storage_key")
@@ -106,12 +110,13 @@ func (f *file) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (f *file) fillFieldMap() {
-	f.fieldMap = make(map[string]field.Expr, 12)
+	f.fieldMap = make(map[string]field.Expr, 13)
 	f.fieldMap["id"] = f.ID
 	f.fieldMap["file_name"] = f.FileName
 	f.fieldMap["file_type"] = f.FileType
 	f.fieldMap["file_ext"] = f.FileExt
 	f.fieldMap["file_size"] = f.FileSize
+	f.fieldMap["url"] = f.URL
 	f.fieldMap["file_path"] = f.FilePath
 	f.fieldMap["storage_id"] = f.StorageID
 	f.fieldMap["storage_key"] = f.StorageKey

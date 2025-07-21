@@ -57,12 +57,12 @@ func (u LocalUploader) Upload(_ context.Context, input Input, savePath string) (
 		URL:      savePath,
 		Path:     savePath,
 		FileName: input.FileName,
-		Storage:  "local",
+		Storage:  u.StoreKey,
 		Hash:     hex.EncodeToString(hash.Sum(nil)),
 	}, nil
 }
 
-func (u LocalUploader) Delete(path string) error {
+func (u LocalUploader) Delete(_ context.Context, path string) error {
 	fullPath := u.BaseDir + path
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		return nil // 文件不存在，直接返回

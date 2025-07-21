@@ -42,10 +42,10 @@ func newLog(db *gorm.DB, opts ...gen.DOOption) log {
 	_log.CreateTime = field.NewInt32(tableName, "create_time")
 	_log.UpdateTime = field.NewInt32(tableName, "update_time")
 	_log.Status = field.NewInt32(tableName, "status")
-	_log.User = logHasOneUser{
+	_log.LogType = logHasOneLogType{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("User", "model.User"),
+		RelationField: field.NewRelation("LogType", "model.User"),
 		UserRole: struct {
 			field.RelationField
 			Role struct {
@@ -55,18 +55,18 @@ func newLog(db *gorm.DB, opts ...gen.DOOption) log {
 				}
 			}
 		}{
-			RelationField: field.NewRelation("User.UserRole", "model.UserRole"),
+			RelationField: field.NewRelation("LogType.UserRole", "model.UserRole"),
 			Role: struct {
 				field.RelationField
 				App struct {
 					field.RelationField
 				}
 			}{
-				RelationField: field.NewRelation("User.UserRole.Role", "model.Role"),
+				RelationField: field.NewRelation("LogType.UserRole.Role", "model.Role"),
 				App: struct {
 					field.RelationField
 				}{
-					RelationField: field.NewRelation("User.UserRole.Role.App", "model.App"),
+					RelationField: field.NewRelation("LogType.UserRole.Role.App", "model.App"),
 				},
 			},
 		},
@@ -96,7 +96,7 @@ type log struct {
 	CreateTime    field.Int32  // 记录时间
 	UpdateTime    field.Int32  // 更新时间
 	Status        field.Int32  // 状态 0=未处理 1=已查看 2=已处理
-	User          logHasOneUser
+	LogType       logHasOneLogType
 
 	fieldMap map[string]field.Expr
 }
@@ -163,18 +163,18 @@ func (l *log) fillFieldMap() {
 
 func (l log) clone(db *gorm.DB) log {
 	l.logDo.ReplaceConnPool(db.Statement.ConnPool)
-	l.User.db = db.Session(&gorm.Session{Initialized: true})
-	l.User.db.Statement.ConnPool = db.Statement.ConnPool
+	l.LogType.db = db.Session(&gorm.Session{Initialized: true})
+	l.LogType.db.Statement.ConnPool = db.Statement.ConnPool
 	return l
 }
 
 func (l log) replaceDB(db *gorm.DB) log {
 	l.logDo.ReplaceDB(db)
-	l.User.db = db.Session(&gorm.Session{})
+	l.LogType.db = db.Session(&gorm.Session{})
 	return l
 }
 
-type logHasOneUser struct {
+type logHasOneLogType struct {
 	db *gorm.DB
 
 	field.RelationField
@@ -190,7 +190,7 @@ type logHasOneUser struct {
 	}
 }
 
-func (a logHasOneUser) Where(conds ...field.Expr) *logHasOneUser {
+func (a logHasOneLogType) Where(conds ...field.Expr) *logHasOneLogType {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -203,32 +203,32 @@ func (a logHasOneUser) Where(conds ...field.Expr) *logHasOneUser {
 	return &a
 }
 
-func (a logHasOneUser) WithContext(ctx context.Context) *logHasOneUser {
+func (a logHasOneLogType) WithContext(ctx context.Context) *logHasOneLogType {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a logHasOneUser) Session(session *gorm.Session) *logHasOneUser {
+func (a logHasOneLogType) Session(session *gorm.Session) *logHasOneLogType {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a logHasOneUser) Model(m *model.Log) *logHasOneUserTx {
-	return &logHasOneUserTx{a.db.Model(m).Association(a.Name())}
+func (a logHasOneLogType) Model(m *model.Log) *logHasOneLogTypeTx {
+	return &logHasOneLogTypeTx{a.db.Model(m).Association(a.Name())}
 }
 
-func (a logHasOneUser) Unscoped() *logHasOneUser {
+func (a logHasOneLogType) Unscoped() *logHasOneLogType {
 	a.db = a.db.Unscoped()
 	return &a
 }
 
-type logHasOneUserTx struct{ tx *gorm.Association }
+type logHasOneLogTypeTx struct{ tx *gorm.Association }
 
-func (a logHasOneUserTx) Find() (result *model.User, err error) {
+func (a logHasOneLogTypeTx) Find() (result *model.User, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a logHasOneUserTx) Append(values ...*model.User) (err error) {
+func (a logHasOneLogTypeTx) Append(values ...*model.User) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -236,7 +236,7 @@ func (a logHasOneUserTx) Append(values ...*model.User) (err error) {
 	return a.tx.Append(targetValues...)
 }
 
-func (a logHasOneUserTx) Replace(values ...*model.User) (err error) {
+func (a logHasOneLogTypeTx) Replace(values ...*model.User) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -244,7 +244,7 @@ func (a logHasOneUserTx) Replace(values ...*model.User) (err error) {
 	return a.tx.Replace(targetValues...)
 }
 
-func (a logHasOneUserTx) Delete(values ...*model.User) (err error) {
+func (a logHasOneLogTypeTx) Delete(values ...*model.User) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -252,15 +252,15 @@ func (a logHasOneUserTx) Delete(values ...*model.User) (err error) {
 	return a.tx.Delete(targetValues...)
 }
 
-func (a logHasOneUserTx) Clear() error {
+func (a logHasOneLogTypeTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a logHasOneUserTx) Count() int64 {
+func (a logHasOneLogTypeTx) Count() int64 {
 	return a.tx.Count()
 }
 
-func (a logHasOneUserTx) Unscoped() *logHasOneUserTx {
+func (a logHasOneLogTypeTx) Unscoped() *logHasOneLogTypeTx {
 	a.tx = a.tx.Unscoped()
 	return &a
 }

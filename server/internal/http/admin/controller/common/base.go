@@ -4,7 +4,11 @@ import (
 	"app/internal/modules/common/auth"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/go-playground/locales/zh"
+	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
 	"net/http"
 	"strconv"
 )
@@ -61,8 +65,28 @@ func (*Base) JsonReqUnmarshal(r *http.Request, req any) error {
 		return err
 	}
 
+	// 创建验证器和翻译器
+	validate := validator.New()
+	zhCh := zh.New()
+	uni := ut.New(zhCh, zhCh)
+	trans, _ := uni.GetTranslator("zh")
+	// 注册中文翻译器到 validator
+	err = zhtranslations.RegisterDefaultTranslations(validate, trans)
+	if err != nil {
+		return err
+	}
+
 	// 校验参数
-	return validator.New().Struct(req)
+	if err := validate.Struct(req); err != nil {
+		var errs validator.ValidationErrors
+		errors.As(err, &errs)
+		for _, e := range errs {
+			// 输出中文错误提示 第一个
+			err := fmt.Errorf(e.Translate(trans))
+			return err
+		}
+	}
+	return nil
 }
 
 // PageParam 获取分页参数

@@ -10,7 +10,7 @@ import (
 
 const TableNameUserRole = "user_role"
 
-// UserRole mapped from table <user_role>
+// UserRole 用户角色
 type UserRole struct {
 	ID     int32 `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	UserID int32 `gorm:"column:user_id;not null;comment:用户ID" json:"user_id"` // 用户ID

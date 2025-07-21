@@ -40,6 +40,7 @@ func newFileStorage(db *gorm.DB, opts ...gen.DOOption) fileStorage {
 	return _fileStorage
 }
 
+// fileStorage 文件存储
 type fileStorage struct {
 	fileStorageDo
 

@@ -47,6 +47,7 @@ func newUserRole(db *gorm.DB, opts ...gen.DOOption) userRole {
 	return _userRole
 }
 
+// userRole 用户角色
 type userRole struct {
 	userRoleDo
 

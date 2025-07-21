@@ -91,34 +91,34 @@ func main() {
 	allTables = append(allTables, menuApiModel)
 
 	// Menu
-	tag = field.GormTag{}
-	tag.Set("foreignKey", "app_id")
-	tag.Set("references", "id")
-	tag2 := field.GormTag{}
-	tag2.Set("foreignKey", "menu_id")
-	tag2.Set("references", "id")
+	appTag := field.GormTag{}
+	appTag.Set("foreignKey", "app_id")
+	appTag.Set("references", "id")
+	menuTag := field.GormTag{}
+	menuTag.Set("foreignKey", "menu_id")
+	menuTag.Set("references", "id")
 	menuModel := g.GenerateModel("menu", append(comOpts,
 		gen.FieldRelate(field.HasOne, "App", appModel, &field.RelateConfig{
-			GORMTag: tag,
+			GORMTag: appTag,
 		}),
 		gen.FieldRelate(field.HasMany, "MenuApi", menuApiModel, &field.RelateConfig{
-			GORMTag: tag2,
+			GORMTag: menuTag,
 		}),
 	)...)
 	allTables = append(allTables, menuModel)
 
 	// Log/LogType
-	tag = field.GormTag{}
-	tag.Set("foreignKey", "type_id")
-	tag.Set("references", "id")
+	logTypeModel := g.GenerateModel("log_type", comOpts...)
+	allTables = append(allTables, logTypeModel)
+	ltTag := field.GormTag{}
+	ltTag.Set("foreignKey", "type_id")
+	ltTag.Set("references", "id")
 	logModel := g.GenerateModel("log", append(comOpts,
-		gen.FieldRelate(field.HasOne, "User", userModel, &field.RelateConfig{
-			GORMTag: tag,
+		gen.FieldRelate(field.HasOne, "LogType", userModel, &field.RelateConfig{
+			GORMTag: ltTag,
 		}),
 	)...)
 	allTables = append(allTables, logModel)
-	logTypeModel := g.GenerateModel("log_type", comOpts...)
-	allTables = append(allTables, logTypeModel)
 
 	// File/FileStorage
 	fileModel := g.GenerateModel("file", comOpts...)
