@@ -17,9 +17,7 @@
       </li>
       <li class="modItem-add" @click="addMods">
         <a href="javascript:void(0)">
-          <el-icon>
-            <el-icon-plus/>
-          </el-icon>
+          <el-icon><el-icon-plus/></el-icon>
         </a>
       </li>
     </ul>
@@ -61,6 +59,7 @@
 
 <script>
 import draggable from 'vuedraggable'
+import tool from '@/utils/tool'
 
 export default {
   title: "我的常用",
@@ -87,8 +86,8 @@ export default {
     },
     getMods() {
       //这里可用改为读取远程数据
-      this.myModsName = this.$TOOL.data.get("my-mods") || []
-      const menuTree = this.$TOOL.data.get("MENU");
+      this.myModsName = tool.data.get("my-mods") || []
+      const menuTree = tool.data.get("MENU");
       this.filterMenu(menuTree)
       this.myMods = this.mods.filter(item => {
         return this.myModsName.includes(item.name)
@@ -114,7 +113,7 @@ export default {
     },
     saveMods() {
       const myModsName = this.myMods.map(v => v.name)
-      this.$TOOL.data.set("my-mods", myModsName)
+      tool.data.set("my-mods", myModsName)
       this.$message.success("设置常用成功")
       this.modsDrawer = false
     }

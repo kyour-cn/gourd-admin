@@ -1,7 +1,7 @@
 package system
 
 import (
-	"app/internal/http/admin/controller/common"
+	"app/internal/http/common/controller"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"net/http"
@@ -9,7 +9,7 @@ import (
 
 // App 用户控制器
 type App struct {
-	common.Base //继承基础控制器
+	controller.Base //继承基础控制器
 }
 
 func (c *App) List(w http.ResponseWriter, r *http.Request) {

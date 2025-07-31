@@ -2,14 +2,11 @@ package initialize
 
 import (
 	"app/internal/config"
-	"app/internal/global"
-	"app/internal/modules/common/dblog"
 	"context"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"log/slog"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -86,11 +83,11 @@ func (h DefaultHandler) Handle(_ context.Context, r slog.Record) error {
 	})
 
 	// TODO: 记录日志到数据库，暂未确定这种做法
-	if global.GetDb("default") != nil {
-		typeLabel := strings.ToLower(r.Level.String())
-		_ = dblog.New(typeLabel).
-			Write(r.Level.String()+" "+msg[:min(30, len(msg))], msg)
-	}
+	//if global.GetDb("default") != nil {
+	//	typeLabel := strings.ToLower(r.Level.String())
+	//	_ = dblog.New(typeLabel).
+	//		Write(r.Level.String()+" "+msg[:min(30, len(msg))], msg)
+	//}
 
 	_, err := h.Writer.Write([]byte(dt + " " + r.Level.String() + " " + msg + "\n"))
 	return err

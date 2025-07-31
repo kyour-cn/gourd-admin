@@ -1,4 +1,4 @@
-package common
+package controller
 
 import (
 	"app/internal/orm/model"

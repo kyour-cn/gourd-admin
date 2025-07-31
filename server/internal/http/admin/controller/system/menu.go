@@ -1,10 +1,11 @@
 package system
 
 import (
-	"app/internal/http/admin/controller/common"
+	"app/internal/http/common/controller"
 	"app/internal/modules/admin/auth"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -12,7 +13,7 @@ import (
 
 // Menu 用户控制器
 type Menu struct {
-	common.Base //继承基础控制器
+	controller.Base //继承基础控制器
 }
 
 func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +37,7 @@ func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
 
 func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		ParentId  int32         `json:"parentId"`
+		Pid       int32         `json:"pid"`
 		Name      string        `json:"name"`
 		Path      string        `json:"path"`
 		Component string        `json:"component"`
@@ -51,7 +52,7 @@ func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 	mate, _ := json.Marshal(req.Meta)
 	data := &model.Menu{
 		AppID:     req.AppId,
-		Pid:       req.ParentId,
+		Pid:       req.Pid,
 		Name:      req.Name,
 		Title:     req.Meta.Title,
 		Type:      req.Meta.Type,
@@ -80,7 +81,7 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 		Sort      int32         `json:"sort"`
 		Meta      auth.MenuMate `json:"meta"`
 		AppId     int32         `json:"appId"`
-		ParentId  int32         `json:"parentId"`
+		Pid       int32         `json:"pid"`
 		ApiList   []struct {
 			Path string `json:"path"`
 			Tag  string `json:"tag"`
@@ -102,7 +103,7 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 			"component": req.Component,
 			"sort":      req.Sort,
 			"meta":      mate,
-			"pid":       req.ParentId,
+			"pid":       req.Pid,
 		})
 	if err != nil {
 		_ = c.Fail(w, 1, "更新失败", err.Error())
@@ -128,6 +129,29 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", nil)
 }
 
+// 递归获取所有子分类ID
+func (c *Menu) getAllSubMenuIDs(ctx context.Context, ids []int32) ([]int32, error) {
+	q := query.Menu
+	var allIDs = make([]int32, 0)
+	var stack = make([]int32, len(ids))
+	copy(stack, ids)
+	for len(stack) > 0 {
+		currentID := stack[0]
+		stack = stack[1:]
+		allIDs = append(allIDs, currentID)
+		// 查找当前ID的所有子分类
+		children, err := q.WithContext(ctx).Where(q.Pid.Eq(currentID)).Find()
+		if err != nil {
+			return nil, err
+		}
+		for _, child := range children {
+			stack = append(stack, child.ID)
+		}
+	}
+	return allIDs, nil
+}
+
+// Delete 删除分类
 func (c *Menu) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
 		Ids []int32 `json:"ids"`
@@ -136,10 +160,16 @@ func (c *Menu) Delete(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
+	q := query.Menu
 
-	_, err := query.Menu.WithContext(r.Context()).
-		Where(query.Menu.ID.In(req.Ids...)).
-		Or(query.Menu.Pid.In(req.Ids...)). //删除子菜单
+	// 递归查找所有需要删除的分类ID（包括子分类）
+	allIDs, err := c.getAllSubMenuIDs(r.Context(), req.Ids)
+	if err != nil {
+		_ = c.Fail(w, 1, "查找子分类失败", err.Error())
+		return
+	}
+	_, err = q.WithContext(r.Context()).
+		Where(q.ID.In(allIDs...)).
 		Delete()
 	if err != nil {
 		_ = c.Fail(w, 1, "删除失败", err.Error())

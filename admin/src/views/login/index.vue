@@ -63,6 +63,7 @@
 import passwordForm from './components/passwordForm'
 import phoneForm from './components/phoneForm'
 import ScQrCode from '@/components/scQrCode'
+import tool from '@/utils/tool'
 
 export default {
   components: {
@@ -73,8 +74,8 @@ export default {
   data() {
     return {
       config: {
-        lang: this.$TOOL.data.get('APP_LANG') || this.$CONFIG.LANG,
-        dark: this.$TOOL.data.get('APP_DARK') || false
+        lang: tool.data.get('APP_LANG') || this.$CONFIG.LANG,
+        dark: tool.data.get('APP_DARK') || false
       },
       lang: [
         {
@@ -95,23 +96,23 @@ export default {
     'config.dark'(val) {
       if (val) {
         document.documentElement.classList.add("dark")
-        this.$TOOL.data.set("APP_DARK", val)
+        tool.data.set("APP_DARK", val)
       } else {
         document.documentElement.classList.remove("dark")
-        this.$TOOL.data.remove("APP_DARK")
+        tool.data.remove("APP_DARK")
       }
     },
     'config.lang'(val) {
       this.$i18n.locale = val
-      this.$TOOL.data.set("APP_LANG", val)
+      tool.data.set("APP_LANG", val)
     }
   },
   created: function () {
-    this.$TOOL.cookie.remove("TOKEN")
-    this.$TOOL.data.remove("USER_INFO")
-    this.$TOOL.data.remove("MENU")
-    this.$TOOL.data.remove("PERMISSIONS")
-    this.$TOOL.data.remove("grid")
+    tool.cookie.remove("TOKEN")
+    tool.data.remove("USER_INFO")
+    tool.data.remove("MENU")
+    tool.data.remove("PERMISSIONS")
+    tool.data.remove("grid")
     this.$store.commit("clearViewTags")
     this.$store.commit("clearKeepLive")
     this.$store.commit("clearIframeList")

@@ -134,8 +134,8 @@ const getMenu = async () => {
 
 // 树点击
 const menuClick = (data, node) => {
-  const pid = node.level === 1 ? undefined : node.parent.data.id
-  saveDialogRef.value.setData(data, pid, state.selectedApp)
+  const pid = node.level === 1 ? 0 : node.parent.id
+  saveDialogRef.value.setData(data, pid)
   mainRef.value.$el.scrollTop = 0
 }
 
@@ -156,7 +156,7 @@ const nodeDrop = (draggingNode, dropNode, dropType) => {
 const add = async (node, data) => {
   const newMenuName = "未命名" + newMenuIndex++
   let newMenuData = {
-    parentId: data ? data.id : 0,
+    pid: data ? data.id : 0,
     name: newMenuName,
     path: "",
     component: "",

@@ -1,10 +1,12 @@
+import tool from '@/utils/tool'
+
 export default {
     render() {
 
     },
     data() {
         return {
-            logoutCount: this.$TOOL.data.get('AUTO_EXIT')
+            logoutCount: tool.data.get('AUTO_EXIT')
         }
     },
     mounted() {

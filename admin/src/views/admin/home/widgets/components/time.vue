@@ -8,29 +8,31 @@
 </template>
 
 <script>
-	export default {
-		title: "时钟",
-		icon: "el-icon-clock",
-		description: "演示部件效果",
-		data() {
-			return {
-				time: '',
-				day: ''
-			}
-		},
-		mounted() {
-			this.showTime()
-			setInterval(()=>{
-				this.showTime()
-			},1000)
-		},
-		methods: {
-			showTime(){
-				this.time = this.$TOOL.dateFormat(new Date(), 'hh:mm:ss')
-				this.day = this.$TOOL.dateFormat(new Date(), 'yyyy年MM月dd日')
-			}
-		}
-	}
+import tool from '@/utils/tool'
+
+export default {
+  title: "时钟",
+  icon: "el-icon-clock",
+  description: "演示部件效果",
+  data() {
+    return {
+      time: '',
+      day: ''
+    }
+  },
+  mounted() {
+    this.showTime()
+    setInterval(() => {
+      this.showTime()
+    }, 1000)
+  },
+  methods: {
+    showTime() {
+      this.time = tool.dateFormat(new Date(), 'hh:mm:ss')
+      this.day = tool.dateFormat(new Date(), 'yyyy年MM月dd日')
+    }
+  }
+}
 </script>
 
 <style scoped>

@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import tool from '@/utils/tool'
+
 	export default {
 		props: {
 			title: { type: String, required: true, default: "" },
@@ -51,7 +53,7 @@
 		},
 		computed: {
 			cmtValue(){
-				return this.groupSeparator ? this.$TOOL.groupSeparator(this.value) : this.value
+				return this.groupSeparator ? tool.groupSeparator(this.value) : this.value
 			}
 		}
 	}

@@ -130,6 +130,7 @@
 <script>
 import draggable from 'vuedraggable';
 import allComps from './components';
+import tool from '@/utils/tool'
 
 const gridKey = 'grid_system';
 
@@ -147,7 +148,7 @@ export default {
         };
     },
     created() {
-        this.grid = this.$TOOL.data.get(gridKey) || JSON.parse(JSON.stringify(this.defaultGrid));
+        this.grid = tool.data.get(gridKey) || JSON.parse(JSON.stringify(this.defaultGrid));
     },
     mounted() {
         this.$emit('on-mounted');
@@ -221,14 +222,14 @@ export default {
         save() {
             this.customizing = false;
             this.$refs.widgets.style.removeProperty('transform');
-            this.$TOOL.data.set(gridKey, this.grid);
+            tool.data.set(gridKey, this.grid);
         },
         //恢复默认
         backDefaul() {
             this.customizing = false;
             this.$refs.widgets.style.removeProperty('transform');
             this.grid = JSON.parse(JSON.stringify(this.defaultGrid));
-            this.$TOOL.data.remove(gridKey);
+            tool.data.remove(gridKey);
         },
         //关闭
         close() {

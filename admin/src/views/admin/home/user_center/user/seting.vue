@@ -44,16 +44,17 @@
 
 <script>
 	import colorTool from '@/utils/color'
+  import tool from '@/utils/tool'
 
 	export default {
 		data() {
 			return {
 				colorList: ['#409EFF', '#009688', '#536dfe', '#ff5c93', '#c62f2f', '#fd726d'],
 				config: {
-					lang: this.$TOOL.data.get('APP_LANG') || this.$CONFIG.LANG,
-					dark: this.$TOOL.data.get('APP_DARK') || false,
-					colorPrimary: this.$TOOL.data.get('APP_COLOR') || this.$CONFIG.COLOR || '#409EFF',
-					autoExit: this.$TOOL.data.get('AUTO_EXIT') || 0,
+					lang: tool.data.get('APP_LANG') || this.$CONFIG.LANG,
+					dark: tool.data.get('APP_DARK') || false,
+					colorPrimary: tool.data.get('APP_COLOR') || this.$CONFIG.COLOR || '#409EFF',
+					autoExit: tool.data.get('AUTO_EXIT') || 0,
 				}
 			}
 		},
@@ -61,15 +62,15 @@
 			'config.dark'(val){
 				if(val){
 					document.documentElement.classList.add("dark")
-					this.$TOOL.data.set("APP_DARK", val)
+					tool.data.set("APP_DARK", val)
 				}else{
 					document.documentElement.classList.remove("dark")
-					this.$TOOL.data.remove("APP_DARK")
+					tool.data.remove("APP_DARK")
 				}
 			},
 			'config.lang'(val){
 				this.$i18n.locale = val
-				this.$TOOL.data.set("APP_LANG", val);
+				tool.data.set("APP_LANG", val);
 			},
 			'config.colorPrimary'(val){
 				if(!val){
@@ -83,13 +84,13 @@
 				for (let i = 1; i <= 9; i++) {
 					document.documentElement.style.setProperty(`--el-color-primary-dark-${i}`, colorTool.darken(val,i/10));
 				}
-				this.$TOOL.data.set("APP_COLOR", val);
+				tool.data.set("APP_COLOR", val);
 			},
 			'config.autoExit'(val){
-				if(val == 0){
-					this.$TOOL.data.remove("AUTO_EXIT")
+				if(val === 0){
+					tool.data.remove("AUTO_EXIT")
 				}else{
-					this.$TOOL.data.set("AUTO_EXIT", val)
+					tool.data.set("AUTO_EXIT", val)
 				}
 			},
 		},

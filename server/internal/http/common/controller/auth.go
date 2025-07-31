@@ -1,4 +1,4 @@
-package common
+package controller
 
 import (
 	"app/internal/config"
@@ -122,6 +122,20 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 	}
 
 	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
+	appKey := r.URL.Query().Get("app_key")
+	if appId <= 0 && appKey == "" {
+		_ = c.Fail(w, 102, "app_id或app_key不能为空", "")
+		return
+	}
+
+	if appId == 0 {
+		first, err := query.App.Where(query.App.Key.Eq(appKey)).First()
+		if err != nil {
+			_ = c.Fail(w, 103, "获取应用信息失败", err.Error())
+			return
+		}
+		appId = int(first.ID)
+	}
 
 	uq := query.User
 

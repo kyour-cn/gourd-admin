@@ -74,6 +74,7 @@
 <script>
 	import search from './search.vue'
 	import tasks from './tasks.vue'
+  import tool from '@/utils/tool'
 
 	export default {
 		components: {
@@ -119,9 +120,9 @@
 			}
 		},
 		created() {
-            const userInfo = this.$TOOL.data.get("USER_INFO");
-            this.userName = userInfo.nickname;
-			this.userNameF = this.userName.substring(0,1);
+      const userInfo = tool.data.get("USER_INFO");
+      this.userName = userInfo.nickname;
+      this.userNameF = this.userName.substring(0, 1);
 		},
 		methods: {
 			//个人信息
@@ -134,7 +135,7 @@
 						type: 'info',
 					}).then(() => {
 						const loading = this.$loading()
-						this.$TOOL.data.clear()
+						tool.data.clear()
 						this.$router.replace({path: '/login'})
 						setTimeout(()=>{
 							loading.close()
@@ -159,7 +160,7 @@
 			//全屏
 			screen(){
         const element = document.documentElement;
-        this.$TOOL.screen(element)
+        tool.screen(element)
 			},
 			//显示短消息
 			showMsg(){

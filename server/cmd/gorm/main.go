@@ -54,34 +54,34 @@ func main() {
 	allTables = append(allTables, appModel)
 
 	// Role
-	tag := field.GormTag{}
-	tag.Set("foreignKey", "app_id")
-	tag.Set("references", "id")
 	roleModel := g.GenerateModel("role", append(comOpts,
 		gen.FieldRelate(field.HasOne, "App", appModel, &field.RelateConfig{
-			GORMTag: tag,
+			GORMTag: field.GormTag{
+				"foreignKey": {"app_id"},
+				"references": {"id"},
+			},
 		}),
 	)...)
 	allTables = append(allTables, roleModel)
 
 	// UserRole
-	tag = field.GormTag{}
-	tag.Set("foreignKey", "role_id")
-	tag.Set("references", "id")
 	userRoleModel := g.GenerateModel("user_role", append(comOpts,
 		gen.FieldRelate(field.HasOne, "Role", roleModel, &field.RelateConfig{
-			GORMTag: tag,
+			GORMTag: field.GormTag{
+				"foreignKey": {"role_id"},
+				"references": {"id"},
+			},
 		}),
 	)...)
 	allTables = append(allTables, userRoleModel)
 
 	// User
-	tag = field.GormTag{}
-	tag.Set("foreignKey", "user_id")
-	tag.Set("references", "id")
 	userModel := g.GenerateModel("user", append(comOpts,
 		gen.FieldRelate(field.HasMany, "UserRole", userRoleModel, &field.RelateConfig{
-			GORMTag: tag,
+			GORMTag: field.GormTag{
+				"foreignKey": {"user_id"},
+				"references": {"id"},
+			},
 		}),
 	)...)
 	allTables = append(allTables, userModel)
@@ -91,18 +91,18 @@ func main() {
 	allTables = append(allTables, menuApiModel)
 
 	// Menu
-	appTag := field.GormTag{}
-	appTag.Set("foreignKey", "app_id")
-	appTag.Set("references", "id")
-	menuTag := field.GormTag{}
-	menuTag.Set("foreignKey", "menu_id")
-	menuTag.Set("references", "id")
 	menuModel := g.GenerateModel("menu", append(comOpts,
 		gen.FieldRelate(field.HasOne, "App", appModel, &field.RelateConfig{
-			GORMTag: appTag,
+			GORMTag: field.GormTag{
+				"foreignKey": {"app_id"},
+				"references": {"id"},
+			},
 		}),
 		gen.FieldRelate(field.HasMany, "MenuApi", menuApiModel, &field.RelateConfig{
-			GORMTag: menuTag,
+			GORMTag: field.GormTag{
+				"foreignKey": {"menu_id"},
+				"references": {"id"},
+			},
 		}),
 	)...)
 	allTables = append(allTables, menuModel)
@@ -110,12 +110,12 @@ func main() {
 	// Log/LogType
 	logTypeModel := g.GenerateModel("log_type", comOpts...)
 	allTables = append(allTables, logTypeModel)
-	ltTag := field.GormTag{}
-	ltTag.Set("foreignKey", "type_id")
-	ltTag.Set("references", "id")
 	logModel := g.GenerateModel("log", append(comOpts,
 		gen.FieldRelate(field.HasOne, "LogType", userModel, &field.RelateConfig{
-			GORMTag: ltTag,
+			GORMTag: field.GormTag{
+				"foreignKey": {"type_id"},
+				"references": {"id"},
+			},
 		}),
 	)...)
 	allTables = append(allTables, logModel)

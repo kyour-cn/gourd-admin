@@ -36,6 +36,7 @@
 
 <script>
 	import colorTool from '@/utils/color'
+  import tool from '@/utils/tool'
 
 	export default {
 		data(){
@@ -43,10 +44,10 @@
 				layout: this.$store.state.global.layout,
 				menuIsCollapse: this.$store.state.global.menuIsCollapse,
 				layoutTags: this.$store.state.global.layoutTags,
-				lang: this.$TOOL.data.get('APP_LANG') || this.$CONFIG.LANG,
-				dark: this.$TOOL.data.get('APP_DARK') || false,
+				lang: tool.data.get('APP_LANG') || this.$CONFIG.LANG,
+				dark: tool.data.get('APP_DARK') || false,
 				colorList: ['#409EFF', '#009688', '#536dfe', '#ff5c93', '#c62f2f', '#fd726d'],
-				colorPrimary: this.$TOOL.data.get('APP_COLOR') || this.$CONFIG.COLOR || '#409EFF'
+				colorPrimary: tool.data.get('APP_COLOR') || this.$CONFIG.COLOR || '#409EFF'
 			}
 		},
 		watch: {
@@ -62,15 +63,15 @@
 			dark(val){
 				if(val){
 					document.documentElement.classList.add("dark")
-					this.$TOOL.data.set("APP_DARK", val)
+					tool.data.set("APP_DARK", val)
 				}else{
 					document.documentElement.classList.remove("dark")
-					this.$TOOL.data.remove("APP_DARK")
+					tool.data.remove("APP_DARK")
 				}
 			},
 			lang(val){
 				this.$i18n.locale = val
-				this.$TOOL.data.set("APP_LANG", val);
+				tool.data.set("APP_LANG", val);
 			},
 			colorPrimary(val){
                 if(!val){
@@ -84,7 +85,7 @@
 				for (let i = 1; i <= 9; i++) {
 					document.documentElement.style.setProperty(`--el-color-primary-dark-${i}`, colorTool.darken(val,i/10));
 				}
-				this.$TOOL.data.set("APP_COLOR", val);
+				tool.data.set("APP_COLOR", val);
 			}
 		}
 	}

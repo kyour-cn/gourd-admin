@@ -106,8 +106,10 @@ const open = (mode = 'add') => {
 };
 
 const setData = (data) => {
-  Object.assign(state.form, data);
-  state.form.status = data.status === 1;
+  // 拷贝表单数据，避免引用问题
+  const formData = JSON.parse(JSON.stringify(data))
+  formData.status = formData.status === 1;
+  Object.assign(state.form, formData);
 };
 
 //暴露给父组件的方法

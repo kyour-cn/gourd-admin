@@ -10,9 +10,9 @@
           <el-form-item label="显示名称" prop="meta.title">
             <el-input v-model="state.form.meta.title" clearable placeholder="菜单显示名字"/>
           </el-form-item>
-          <el-form-item label="上级菜单" prop="parentId">
+          <el-form-item label="上级菜单" prop="pid">
             <el-cascader
-              v-model="state.form.parentId"
+              v-model="state.form.pid"
               :options="state.menuOptions"
               :props="menuProps"
               :show-all-levels="false"
@@ -63,7 +63,7 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :lg="12" class="apilist">
+      <el-col :lg="12" class="api-list">
         <h2>接口权限</h2>
         <sc-form-table v-model="state.form.apiList" :addTemplate="apiListAddTemplate" placeholder="暂无匹配接口权限">
           <el-table-column prop="tag" label="标识" width="150">
@@ -83,8 +83,8 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from "vue"
-import { ElMessage } from "element-plus"
+import {reactive, ref, watch} from "vue"
+import {ElMessage} from "element-plus"
 import ScIconSelect from '@/components/scIconSelect'
 import ScFormTable from '@/components/scFormTable'
 import systemApi from "@/api/admin/system.js"
@@ -104,7 +104,7 @@ const state = reactive({
   form: {
     id: "",
     app_id: 0,
-    parentId: "",
+    pid: 0,
     name: "",
     path: "",
     component: "",
@@ -146,7 +146,7 @@ const apiListAddTemplate = {
 // 监听props.menu的变化
 watch(() => props.menu, () => {
   state.menuOptions = treeToMap(props.menu)
-}, { deep: true })
+}, {deep: true})
 
 // 简单化菜单
 const treeToMap = (tree) => {
@@ -154,7 +154,7 @@ const treeToMap = (tree) => {
   tree.forEach(item => {
     const obj = {
       id: item.id,
-      parentId: item.parentId,
+      pid: item.pid,
       title: item.meta.title,
       children: item.children && item.children.length > 0 ? treeToMap(item.children) : null
     }
@@ -170,15 +170,16 @@ const save = async () => {
   // 拷贝表单数据，避免引用问题
   const formData = JSON.parse(JSON.stringify(state.form))
   // 格式转换
-  formData.parentId = formData.parentId ? formData.parentId.at(-1) : 0
+  formData.pid = Array.isArray(formData.pid) ? formData.pid.at(-1) : formData.pid
+  formData.sort = parseInt(formData.sort)
 
   const res = await systemApi.menu.edit.post(formData)
   state.loading = false
   if (res.code === 0) {
     ElMessage.success("保存成功")
-    if (state.checkPid !== state.form.parentId) {
+    if (state.checkPid !== state.form.pid) {
       emits('refreshMenu')
-      state.checkPid = state.form.parentId
+      state.checkPid = state.form.pid
     }
   } else {
     ElMessage.warning(res.message)
@@ -189,7 +190,6 @@ const save = async () => {
 const setData = (data, pid) => {
   state.form = data
   state.form.apiList = data.apiList || []
-  state.form.parentId = pid
   state.checkPid = pid
 }
 
@@ -211,7 +211,7 @@ h2 {
   padding: 0 0 30px 0;
 }
 
-.apilist {
+.api-list {
   border-left: 1px solid #eee;
 }
 
@@ -219,7 +219,7 @@ h2 {
   color: #fff;
 }
 
-[data-theme="dark"] .apilist {
+[data-theme="dark"] .api-list {
   border-color: #434343;
 }
 </style>

@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import tool from '@/utils/tool'
+
 	export default {
 		data() {
 			return {
@@ -29,9 +31,9 @@
 			}
 		},
 		mounted() {
-			var searchHistory = this.$TOOL.data.get("SEARCH_HISTORY") || []
+			var searchHistory = tool.data.get("SEARCH_HISTORY") || []
 			this.history = searchHistory
-			var menuTree = this.$TOOL.data.get("MENU")
+			var menuTree = tool.data.get("MENU")
 			this.filterMenu(menuTree)
 			this.$refs.input.focus()
 		},
@@ -94,7 +96,7 @@
 			to(item){
 				if(!this.history.includes(this.input)){
 					this.history.push(this.input)
-					this.$TOOL.data.set("SEARCH_HISTORY", this.history)
+					tool.data.set("SEARCH_HISTORY", this.history)
 				}
 				if(item.type=="link"){
 					setTimeout(()=>{
@@ -118,9 +120,9 @@
 			historyClose(index){
 				this.history.splice(index, 1);
 				if(this.history.length <= 0){
-					this.$TOOL.data.remove("SEARCH_HISTORY")
+					tool.data.remove("SEARCH_HISTORY")
 				}else{
-					this.$TOOL.data.set("SEARCH_HISTORY", this.history)
+					tool.data.set("SEARCH_HISTORY", this.history)
 				}
 			}
 		}

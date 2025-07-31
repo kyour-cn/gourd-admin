@@ -1,7 +1,7 @@
 package system
 
 import (
-	"app/internal/http/admin/controller/common"
+	"app/internal/http/common/controller"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"crypto/md5"
@@ -13,7 +13,7 @@ import (
 
 // User 用户控制器
 type User struct {
-	common.Base //继承基础控制器
+	controller.Base //继承基础控制器
 }
 
 func (c *User) List(w http.ResponseWriter, r *http.Request) {

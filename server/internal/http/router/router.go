@@ -49,6 +49,8 @@ func InitRouter() {
 	})
 
 	// 注册admin相关路由
-	r.Mount("/admin", r.Group(adminRouter.Router))
+	adminSubRouter := chi.NewRouter()
+	adminRouter.Router(adminSubRouter)
+	r.Mount("/admin", adminSubRouter)
 
 }

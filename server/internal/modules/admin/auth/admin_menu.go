@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"gorm.io/gen"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -22,9 +23,10 @@ type MenuMate struct {
 	HiddenBreadcrumb bool   `json:"hiddenBreadcrumb"`
 }
 type menuTree struct {
-	ParentId  int32           `json:"parentId"`
+	ParentId  int32           `json:"pid"`
 	Id        int32           `json:"id"`
 	Name      string          `json:"name"`
+	Title     string          `json:"title"`
 	Path      string          `json:"path"`
 	Component string          `json:"component"`
 	Sort      int32           `json:"sort"`
@@ -83,7 +85,7 @@ func GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, error) {
 	}
 
 	// 构建菜单树
-	return recursionMenu(menu, 0), nil
+	return RecursionMenu(menu, 0), nil
 }
 
 func GetPermission(userInfo *model.User, appId int32) ([]string, error) {
@@ -156,15 +158,15 @@ func GetMenuFormApp(appId int32) (any, error) {
 		return nil, err
 	}
 	// 构建菜单树
-	return recursionMenu(menu, 0), nil
+	return RecursionMenu(menu, 0), nil
 }
 
-// 递归菜单
-func recursionMenu(menus []*model.Menu, parentId int32) MenuTreeArr {
+// RecursionMenu 递归菜单
+func RecursionMenu(menus []*model.Menu, parentId int32) MenuTreeArr {
 	var arr MenuTreeArr
 	for _, menu := range menus {
 		if menu.Pid == parentId {
-			children := recursionMenu(menus, menu.ID)
+			children := RecursionMenu(menus, menu.ID)
 
 			mate := &MenuMate{}
 			if menu.Meta != "" {
@@ -175,6 +177,7 @@ func recursionMenu(menus []*model.Menu, parentId int32) MenuTreeArr {
 				ParentId:  menu.Pid,
 				Id:        menu.ID,
 				Name:      menu.Name,
+				Title:     menu.Title,
 				Path:      menu.Path,
 				Component: menu.Component,
 				Sort:      menu.Sort,
@@ -186,5 +189,11 @@ func recursionMenu(menus []*model.Menu, parentId int32) MenuTreeArr {
 			arr = append(arr, menuTree)
 		}
 	}
+
+	// 按Sort字段从小到大排序
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[i].Sort < arr[j].Sort
+	})
+
 	return arr
 }
