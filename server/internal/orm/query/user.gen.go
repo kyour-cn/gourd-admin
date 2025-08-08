@@ -28,15 +28,14 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 
 	tableName := _user.userDo.TableName()
 	_user.ALL = field.NewAsterisk(tableName)
-	_user.ID = field.NewInt32(tableName, "id")
+	_user.ID = field.NewInt64(tableName, "id")
 	_user.Nickname = field.NewString(tableName, "nickname")
 	_user.Username = field.NewString(tableName, "username")
 	_user.Avatar = field.NewString(tableName, "avatar")
 	_user.Password = field.NewString(tableName, "password")
-	_user.CreateTime = field.NewInt32(tableName, "create_time")
-	_user.LoginTime = field.NewInt32(tableName, "login_time")
+	_user.CreateTime = field.NewInt64(tableName, "create_time")
+	_user.LoginTime = field.NewInt64(tableName, "login_time")
 	_user.Status = field.NewInt32(tableName, "status")
-	_user.Profile = field.NewString(tableName, "profile")
 	_user.DeleteTime = field.NewField(tableName, "delete_time")
 	_user.UserRole = userHasManyUserRole{
 		db: db.Session(&gorm.Session{}),
@@ -67,15 +66,14 @@ type user struct {
 	userDo
 
 	ALL        field.Asterisk
-	ID         field.Int32
+	ID         field.Int64
 	Nickname   field.String // 昵称
 	Username   field.String // 用户名(登录账号)
 	Avatar     field.String // 头像
 	Password   field.String // 密码 md5
-	CreateTime field.Int32  // 创建|注册时间
-	LoginTime  field.Int32  // 登录时间
+	CreateTime field.Int64  // 创建|注册时间
+	LoginTime  field.Int64  // 登录时间
 	Status     field.Int32  // 状态
-	Profile    field.String // 用户个性化配置
 	DeleteTime field.Field  // 删除时间
 	UserRole   userHasManyUserRole
 
@@ -94,15 +92,14 @@ func (u user) As(alias string) *user {
 
 func (u *user) updateTableName(table string) *user {
 	u.ALL = field.NewAsterisk(table)
-	u.ID = field.NewInt32(table, "id")
+	u.ID = field.NewInt64(table, "id")
 	u.Nickname = field.NewString(table, "nickname")
 	u.Username = field.NewString(table, "username")
 	u.Avatar = field.NewString(table, "avatar")
 	u.Password = field.NewString(table, "password")
-	u.CreateTime = field.NewInt32(table, "create_time")
-	u.LoginTime = field.NewInt32(table, "login_time")
+	u.CreateTime = field.NewInt64(table, "create_time")
+	u.LoginTime = field.NewInt64(table, "login_time")
 	u.Status = field.NewInt32(table, "status")
-	u.Profile = field.NewString(table, "profile")
 	u.DeleteTime = field.NewField(table, "delete_time")
 
 	u.fillFieldMap()
@@ -120,7 +117,7 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 11)
+	u.fieldMap = make(map[string]field.Expr, 10)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["nickname"] = u.Nickname
 	u.fieldMap["username"] = u.Username
@@ -129,7 +126,6 @@ func (u *user) fillFieldMap() {
 	u.fieldMap["create_time"] = u.CreateTime
 	u.fieldMap["login_time"] = u.LoginTime
 	u.fieldMap["status"] = u.Status
-	u.fieldMap["profile"] = u.Profile
 	u.fieldMap["delete_time"] = u.DeleteTime
 
 }

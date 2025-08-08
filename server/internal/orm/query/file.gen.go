@@ -28,19 +28,19 @@ func newFile(db *gorm.DB, opts ...gen.DOOption) file {
 
 	tableName := _file.fileDo.TableName()
 	_file.ALL = field.NewAsterisk(tableName)
-	_file.ID = field.NewInt32(tableName, "id")
+	_file.ID = field.NewInt64(tableName, "id")
 	_file.FileName = field.NewString(tableName, "file_name")
 	_file.FileType = field.NewString(tableName, "file_type")
 	_file.FileExt = field.NewString(tableName, "file_ext")
 	_file.FileSize = field.NewInt64(tableName, "file_size")
 	_file.URL = field.NewString(tableName, "url")
 	_file.FilePath = field.NewString(tableName, "file_path")
-	_file.StorageID = field.NewInt32(tableName, "storage_id")
+	_file.StorageID = field.NewInt64(tableName, "storage_id")
 	_file.StorageKey = field.NewString(tableName, "storage_key")
 	_file.HashMd5 = field.NewString(tableName, "hash_md5")
-	_file.UserID = field.NewInt32(tableName, "user_id")
+	_file.UserID = field.NewInt64(tableName, "user_id")
 	_file.Status = field.NewInt32(tableName, "status")
-	_file.CreateTime = field.NewInt32(tableName, "create_time")
+	_file.CreateTime = field.NewInt64(tableName, "create_time")
 
 	_file.fillFieldMap()
 
@@ -52,19 +52,19 @@ type file struct {
 	fileDo
 
 	ALL        field.Asterisk
-	ID         field.Int32
+	ID         field.Int64
 	FileName   field.String // 文件名
 	FileType   field.String // 文件类型（MIME类型，如 image/png）
 	FileExt    field.String // 文件后缀（如 .jpg/.pdf）文件后缀
 	FileSize   field.Int64  // 文件大小（字节）
 	URL        field.String // 链接地址
 	FilePath   field.String // 存储路径
-	StorageID  field.Int32  // 存储方式id
+	StorageID  field.Int64  // 存储方式id
 	StorageKey field.String // 储存方式key
 	HashMd5    field.String // 文件内容的MD5
-	UserID     field.Int32  // 上传用户id
+	UserID     field.Int64  // 上传用户id
 	Status     field.Int32  // 状态 1=正常 0=停用
-	CreateTime field.Int32  // 上传时间
+	CreateTime field.Int64  // 上传时间
 
 	fieldMap map[string]field.Expr
 }
@@ -81,19 +81,19 @@ func (f file) As(alias string) *file {
 
 func (f *file) updateTableName(table string) *file {
 	f.ALL = field.NewAsterisk(table)
-	f.ID = field.NewInt32(table, "id")
+	f.ID = field.NewInt64(table, "id")
 	f.FileName = field.NewString(table, "file_name")
 	f.FileType = field.NewString(table, "file_type")
 	f.FileExt = field.NewString(table, "file_ext")
 	f.FileSize = field.NewInt64(table, "file_size")
 	f.URL = field.NewString(table, "url")
 	f.FilePath = field.NewString(table, "file_path")
-	f.StorageID = field.NewInt32(table, "storage_id")
+	f.StorageID = field.NewInt64(table, "storage_id")
 	f.StorageKey = field.NewString(table, "storage_key")
 	f.HashMd5 = field.NewString(table, "hash_md5")
-	f.UserID = field.NewInt32(table, "user_id")
+	f.UserID = field.NewInt64(table, "user_id")
 	f.Status = field.NewInt32(table, "status")
-	f.CreateTime = field.NewInt32(table, "create_time")
+	f.CreateTime = field.NewInt64(table, "create_time")
 
 	f.fillFieldMap()
 

@@ -6,9 +6,10 @@ import (
 	"app/internal/orm/query"
 	"crypto/md5"
 	"encoding/hex"
+	"net/http"
+
 	"gorm.io/gen"
 	"gorm.io/gen/field"
-	"net/http"
 )
 
 // User 用户控制器
@@ -61,7 +62,7 @@ func (c *User) List(w http.ResponseWriter, r *http.Request) {
 func (c *User) Add(w http.ResponseWriter, r *http.Request) {
 	req := struct {
 		model.User
-		Roles []int32 `json:"roles"`
+		Roles []int64 `json:"roles"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -93,7 +94,7 @@ func (c *User) Add(w http.ResponseWriter, r *http.Request) {
 func (c *User) Edit(w http.ResponseWriter, r *http.Request) {
 	req := struct {
 		model.User
-		Roles []int32 `json:"roles"`
+		Roles []int64 `json:"roles"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -132,7 +133,7 @@ func (c *User) Edit(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "success", req)
 }
 
-func (c *User) UpdateRole(userID int32, roleIDs []int32) error {
+func (c *User) UpdateRole(userID int64, roleIDs []int64) error {
 	// 查出原本的角色
 	oldRoles, err := query.UserRole.
 		Where(query.UserRole.UserID.Eq(userID)).
@@ -142,12 +143,12 @@ func (c *User) UpdateRole(userID int32, roleIDs []int32) error {
 	}
 
 	// 构建新旧角色对比映射
-	oldRoleMap := make(map[int32]bool)
+	oldRoleMap := make(map[int64]bool)
 	for _, role := range oldRoles {
 		oldRoleMap[role.RoleID] = true
 	}
 
-	newRoleMap := make(map[int32]bool)
+	newRoleMap := make(map[int64]bool)
 	for _, roleID := range roleIDs {
 		newRoleMap[roleID] = true
 	}
@@ -181,7 +182,7 @@ func (c *User) UpdateRole(userID int32, roleIDs []int32) error {
 
 func (c *User) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Ids []int32 `json:"ids"`
+		Ids []int64 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())

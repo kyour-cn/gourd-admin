@@ -73,7 +73,7 @@ func (c *App) Edit(w http.ResponseWriter, r *http.Request) {
 
 func (c *App) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Ids []int32 `json:"ids"`
+		Ids []int64 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())

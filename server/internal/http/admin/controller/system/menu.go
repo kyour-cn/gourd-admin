@@ -18,13 +18,13 @@ type Menu struct {
 
 func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		AppId int32 `json:"app_id"`
+		AppId int64 `json:"app_id"`
 	}{
 		AppId: 1,
 	}
 	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
 	if appId != 0 {
-		req.AppId = int32(appId)
+		req.AppId = int64(appId)
 	}
 
 	menus, err := auth.GetMenuFormApp(req.AppId)
@@ -37,12 +37,12 @@ func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
 
 func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Pid       int32         `json:"pid"`
+		Pid       int64         `json:"pid"`
 		Name      string        `json:"name"`
 		Path      string        `json:"path"`
 		Component string        `json:"component"`
 		Meta      auth.MenuMate `json:"meta"`
-		AppId     int32         `json:"app_id"`
+		AppId     int64         `json:"app_id"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -74,14 +74,14 @@ func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 
 func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Id        int32         `json:"id"`
+		Id        int64         `json:"id"`
 		Name      string        `json:"name"`
 		Path      string        `json:"path"`
 		Component string        `json:"component"`
 		Sort      int32         `json:"sort"`
 		Meta      auth.MenuMate `json:"meta"`
-		AppId     int32         `json:"appId"`
-		Pid       int32         `json:"pid"`
+		AppId     int64         `json:"appId"`
+		Pid       int64         `json:"pid"`
 		ApiList   []struct {
 			Path string `json:"path"`
 			Tag  string `json:"tag"`
@@ -130,10 +130,10 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 }
 
 // 递归获取所有子分类ID
-func (c *Menu) getAllSubMenuIDs(ctx context.Context, ids []int32) ([]int32, error) {
+func (c *Menu) getAllSubMenuIDs(ctx context.Context, ids []int64) ([]int64, error) {
 	q := query.Menu
-	var allIDs = make([]int32, 0)
-	var stack = make([]int32, len(ids))
+	var allIDs = make([]int64, 0)
+	var stack = make([]int64, len(ids))
 	copy(stack, ids)
 	for len(stack) > 0 {
 		currentID := stack[0]
@@ -154,7 +154,7 @@ func (c *Menu) getAllSubMenuIDs(ctx context.Context, ids []int32) ([]int32, erro
 // Delete 删除分类
 func (c *Menu) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Ids []int32 `json:"ids"`
+		Ids []int64 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())

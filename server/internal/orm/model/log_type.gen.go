@@ -12,8 +12,8 @@ const TableNameLogType = "log_type"
 
 // LogType 日志级别
 type LogType struct {
-	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true;comment:<10为系统日志" json:"id"` // <10为系统日志
-	AppID  int32  `gorm:"column:app_id;not null;comment:应用ID 0为通用" json:"app_id"`             // 应用ID 0为通用
+	ID     int64  `gorm:"column:id;primaryKey;autoIncrement:true;comment:<10为系统日志" json:"id"` // <10为系统日志
+	AppID  int64  `gorm:"column:app_id;not null;comment:应用ID 0为通用" json:"app_id"`             // 应用ID 0为通用
 	Name   string `gorm:"column:name;not null;comment:中文名称" json:"name"`                      // 中文名称
 	Label  string `gorm:"column:label;not null;comment:英文别名" json:"label"`                    // 英文别名
 	Remark string `gorm:"column:remark;not null;comment:备注" json:"remark"`                    // 备注

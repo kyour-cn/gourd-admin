@@ -4,11 +4,12 @@ import (
 	"app/internal/http/common/controller"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
-	"gorm.io/gen"
-	"gorm.io/gen/field"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"gorm.io/gen"
+	"gorm.io/gen/field"
 )
 
 // Role 用户控制器
@@ -25,16 +26,16 @@ func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 	// 筛选指定应用
 	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
 	if appId > 0 {
-		conditions = append(conditions, query.Role.AppID.Eq(int32(appId)))
+		conditions = append(conditions, query.Role.AppID.Eq(int64(appId)))
 	}
 
 	// 筛选指定id列表
 	ids := r.URL.Query().Get("ids")
 	if ids != "" {
-		idSlice := make([]int32, 0)
+		idSlice := make([]int64, 0)
 		for _, v := range strings.Split(ids, ",") {
 			num, _ := strconv.Atoi(v)
-			idSlice = append(idSlice, int32(num))
+			idSlice = append(idSlice, int64(num))
 		}
 		conditions = append(conditions, query.Role.ID.In(idSlice...))
 	}
@@ -111,7 +112,7 @@ func (c *Role) Edit(w http.ResponseWriter, r *http.Request) {
 
 func (c *Role) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Ids []int32 `json:"ids"`
+		Ids []int64 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())

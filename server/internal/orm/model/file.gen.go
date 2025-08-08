@@ -12,19 +12,19 @@ const TableNameFile = "file"
 
 // File 文件
 type File struct {
-	ID         int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	ID         int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	FileName   string `gorm:"column:file_name;not null;comment:文件名" json:"file_name"`                      // 文件名
 	FileType   string `gorm:"column:file_type;not null;comment:文件类型（MIME类型，如 image/png）" json:"file_type"` // 文件类型（MIME类型，如 image/png）
 	FileExt    string `gorm:"column:file_ext;not null;comment:文件后缀（如 .jpg/.pdf）文件后缀" json:"file_ext"`      // 文件后缀（如 .jpg/.pdf）文件后缀
 	FileSize   int64  `gorm:"column:file_size;not null;comment:文件大小（字节）" json:"file_size"`                 // 文件大小（字节）
 	URL        string `gorm:"column:url;not null;comment:链接地址" json:"url"`                                 // 链接地址
 	FilePath   string `gorm:"column:file_path;not null;comment:存储路径" json:"file_path"`                     // 存储路径
-	StorageID  int32  `gorm:"column:storage_id;not null;comment:存储方式id" json:"storage_id"`                 // 存储方式id
+	StorageID  int64  `gorm:"column:storage_id;not null;comment:存储方式id" json:"storage_id"`                 // 存储方式id
 	StorageKey string `gorm:"column:storage_key;not null;comment:储存方式key" json:"storage_key"`              // 储存方式key
 	HashMd5    string `gorm:"column:hash_md5;not null;comment:文件内容的MD5" json:"hash_md5"`                   // 文件内容的MD5
-	UserID     int32  `gorm:"column:user_id;comment:上传用户id" json:"user_id"`                                // 上传用户id
+	UserID     int64  `gorm:"column:user_id;comment:上传用户id" json:"user_id"`                                // 上传用户id
 	Status     int32  `gorm:"column:status;not null;default:1;comment:状态 1=正常 0=停用" json:"status"`         // 状态 1=正常 0=停用
-	CreateTime int32  `gorm:"column:create_time;not null;autoCreateTime;comment:上传时间" json:"create_time"`  // 上传时间
+	CreateTime int64  `gorm:"column:create_time;not null;autoCreateTime;comment:上传时间" json:"create_time"`  // 上传时间
 }
 
 // MarshalBinary 支持json序列化

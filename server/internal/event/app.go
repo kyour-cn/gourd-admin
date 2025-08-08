@@ -4,8 +4,9 @@ import (
 	"app/internal/initialize"
 	"app/internal/util/cache"
 	"context"
-	"github.com/go-gourd/gourd/event"
 	"log/slog"
+
+	"github.com/go-gourd/gourd/event"
 )
 
 // RegisterAppEvent 事件注册

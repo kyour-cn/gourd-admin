@@ -3,6 +3,7 @@ package main
 import (
 	"app/internal/event"
 	"context"
+
 	"github.com/go-gourd/gourd"
 )
 

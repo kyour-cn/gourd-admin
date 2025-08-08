@@ -28,13 +28,13 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 
 	tableName := _role.roleDo.TableName()
 	_role.ALL = field.NewAsterisk(tableName)
-	_role.ID = field.NewInt32(tableName, "id")
-	_role.AppID = field.NewInt32(tableName, "app_id")
+	_role.ID = field.NewInt64(tableName, "id")
+	_role.AppID = field.NewInt64(tableName, "app_id")
 	_role.Name = field.NewString(tableName, "name")
 	_role.Rules = field.NewString(tableName, "rules")
 	_role.RulesCheckd = field.NewString(tableName, "rules_checkd")
-	_role.CreateTime = field.NewInt32(tableName, "create_time")
-	_role.UpdateTime = field.NewInt32(tableName, "update_time")
+	_role.CreateTime = field.NewInt64(tableName, "create_time")
+	_role.UpdateTime = field.NewInt64(tableName, "update_time")
 	_role.Remark = field.NewString(tableName, "remark")
 	_role.Status = field.NewInt32(tableName, "status")
 	_role.Sort = field.NewInt32(tableName, "sort")
@@ -55,13 +55,13 @@ type role struct {
 	roleDo
 
 	ALL         field.Asterisk
-	ID          field.Int32
-	AppID       field.Int32  // 应用ID
+	ID          field.Int64
+	AppID       field.Int64  // 应用ID
 	Name        field.String // 角色名称
 	Rules       field.String // 权限ID ,分割a
 	RulesCheckd field.String // 权限树选中的字节点ID
-	CreateTime  field.Int32  // 创建时间
-	UpdateTime  field.Int32  // 更新时间
+	CreateTime  field.Int64  // 创建时间
+	UpdateTime  field.Int64  // 更新时间
 	Remark      field.String // 简介
 	Status      field.Int32  // 状态
 	Sort        field.Int32  // 排序
@@ -83,13 +83,13 @@ func (r role) As(alias string) *role {
 
 func (r *role) updateTableName(table string) *role {
 	r.ALL = field.NewAsterisk(table)
-	r.ID = field.NewInt32(table, "id")
-	r.AppID = field.NewInt32(table, "app_id")
+	r.ID = field.NewInt64(table, "id")
+	r.AppID = field.NewInt64(table, "app_id")
 	r.Name = field.NewString(table, "name")
 	r.Rules = field.NewString(table, "rules")
 	r.RulesCheckd = field.NewString(table, "rules_checkd")
-	r.CreateTime = field.NewInt32(table, "create_time")
-	r.UpdateTime = field.NewInt32(table, "update_time")
+	r.CreateTime = field.NewInt64(table, "create_time")
+	r.UpdateTime = field.NewInt64(table, "update_time")
 	r.Remark = field.NewString(table, "remark")
 	r.Status = field.NewInt32(table, "status")
 	r.Sort = field.NewInt32(table, "sort")

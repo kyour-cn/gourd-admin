@@ -5,10 +5,11 @@ import (
 	"app/internal/orm/query"
 	"encoding/json"
 	"errors"
-	"gorm.io/gen"
 	"sort"
 	"strconv"
 	"strings"
+
+	"gorm.io/gen"
 )
 
 type MenuMate struct {
@@ -23,22 +24,22 @@ type MenuMate struct {
 	HiddenBreadcrumb bool   `json:"hiddenBreadcrumb"`
 }
 type menuTree struct {
-	ParentId  int32           `json:"pid"`
-	Id        int32           `json:"id"`
+	ParentId  int64           `json:"pid"`
+	Id        int64           `json:"id"`
 	Name      string          `json:"name"`
 	Title     string          `json:"title"`
 	Path      string          `json:"path"`
 	Component string          `json:"component"`
-	Sort      int32           `json:"sort"`
+	Sort      int64           `json:"sort"`
 	Meta      *MenuMate       `json:"meta"`
-	AppId     int32           `json:"appId"`
+	AppId     int64           `json:"appId"`
 	Children  []menuTree      `json:"children"`
 	ApiList   []model.MenuAPI `json:"apiList"`
 }
 type MenuTreeArr []menuTree
 
 // GetMenu 获取用户菜单
-func GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, error) {
+func GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, error) {
 	if len(userInfo.UserRole) == 0 {
 		return nil, errors.New("用户角色不存在")
 	}
@@ -46,7 +47,7 @@ func GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, error) {
 	isAdmin := false
 
 	// 筛选指定appid的菜单列表
-	mIds := make([]int32, 0)
+	mIds := make([]int64, 0)
 	for _, v := range userInfo.UserRole {
 		if v.Role.AppID != appId {
 			continue
@@ -57,7 +58,7 @@ func GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, error) {
 		}
 		for _, v := range strings.Split(v.Role.Rules, ",") {
 			i, _ := strconv.Atoi(v)
-			mIds = append(mIds, int32(i))
+			mIds = append(mIds, int64(i))
 		}
 	}
 
@@ -88,7 +89,7 @@ func GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, error) {
 	return RecursionMenu(menu, 0), nil
 }
 
-func GetPermission(userInfo *model.User, appId int32) ([]string, error) {
+func GetPermission(userInfo *model.User, appId int64) ([]string, error) {
 	if len(userInfo.UserRole) == 0 {
 		return nil, errors.New("用户角色不存在")
 	}
@@ -96,7 +97,7 @@ func GetPermission(userInfo *model.User, appId int32) ([]string, error) {
 	isAdmin := false
 
 	// 筛选指定appid的菜单列表
-	mIds := make([]int32, 0)
+	mIds := make([]int64, 0)
 	for _, v := range userInfo.UserRole {
 		if v.Role.AppID != appId {
 			continue
@@ -107,7 +108,7 @@ func GetPermission(userInfo *model.User, appId int32) ([]string, error) {
 		}
 		for _, v := range strings.Split(v.Role.Rules, ",") {
 			i, _ := strconv.Atoi(v)
-			mIds = append(mIds, int32(i))
+			mIds = append(mIds, int64(i))
 		}
 	}
 
@@ -142,7 +143,7 @@ func GetPermission(userInfo *model.User, appId int32) ([]string, error) {
 }
 
 // GetMenuFormApp 获取指定应用的菜单
-func GetMenuFormApp(appId int32) (any, error) {
+func GetMenuFormApp(appId int64) (any, error) {
 
 	qm := query.Menu
 	conditions := []gen.Condition{
@@ -162,7 +163,7 @@ func GetMenuFormApp(appId int32) (any, error) {
 }
 
 // RecursionMenu 递归菜单
-func RecursionMenu(menus []*model.Menu, parentId int32) MenuTreeArr {
+func RecursionMenu(menus []*model.Menu, parentId int64) MenuTreeArr {
 	var arr MenuTreeArr
 	for _, menu := range menus {
 		if menu.Pid == parentId {

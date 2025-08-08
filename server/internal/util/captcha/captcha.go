@@ -4,12 +4,13 @@ import (
 	"app/internal/util/cache"
 	"encoding/json"
 	"errors"
+	"log/slog"
+	"time"
+
 	"github.com/wenlng/go-captcha-assets/helper"
 	"github.com/wenlng/go-captcha-assets/resources/images"
 	"github.com/wenlng/go-captcha-assets/resources/tiles"
 	"github.com/wenlng/go-captcha/v2/slide"
-	"log/slog"
-	"time"
 )
 
 var (

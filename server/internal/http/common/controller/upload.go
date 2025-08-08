@@ -183,7 +183,7 @@ func (c *Upload) File(w http.ResponseWriter, r *http.Request) {
 // Delete 删除文件
 func (c *Upload) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		ID int32 `json:"id"` // 文件存储路径
+		ID int64 `json:"id"` // 文件存储路径
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())

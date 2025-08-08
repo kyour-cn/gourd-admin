@@ -4,8 +4,9 @@ import (
 	"app/internal/config"
 	auth2 "app/internal/modules/common/auth"
 	"context"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // AuthJwtMiddleware JWT鉴权中间件

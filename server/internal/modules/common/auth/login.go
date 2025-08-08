@@ -7,13 +7,14 @@ import (
 	"app/internal/util/cache"
 	"context"
 	"errors"
-	"github.com/golang-jwt/jwt/v5"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserClaims struct {
 	jwt.RegisteredClaims
-	Sub  int32  `json:"sub"`
+	Sub  int64  `json:"sub"`
 	Name string `json:"name"`
 }
 

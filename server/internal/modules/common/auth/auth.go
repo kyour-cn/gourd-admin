@@ -37,7 +37,7 @@ func CheckPath(claims UserClaims, r *http.Request) bool {
 	}
 
 	// 权限匹配
-	ruleSet := make(map[int32]bool)
+	ruleSet := make(map[int64]bool)
 	for _, v := range userInfo.UserRole {
 		// 管理员角色拥有所有权限
 		if v.Role.IsAdmin == 1 {
@@ -45,7 +45,7 @@ func CheckPath(claims UserClaims, r *http.Request) bool {
 		}
 		for _, ruleIDStr := range strings.Split(v.Role.Rules, ",") {
 			ruleID, _ := strconv.Atoi(ruleIDStr)
-			ruleSet[int32(ruleID)] = true
+			ruleSet[int64(ruleID)] = true
 		}
 	}
 

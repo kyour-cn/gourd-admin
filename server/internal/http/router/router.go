@@ -3,9 +3,10 @@ package router
 import (
 	"app/internal/config"
 	adminRouter "app/internal/http/admin/router"
-	"github.com/go-chi/chi/v5"
 	"net/http"
 	"os"
+
+	"github.com/go-chi/chi/v5"
 )
 
 var router *chi.Mux

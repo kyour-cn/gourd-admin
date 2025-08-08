@@ -28,9 +28,9 @@ func newMenuAPI(db *gorm.DB, opts ...gen.DOOption) menuAPI {
 
 	tableName := _menuAPI.menuAPIDo.TableName()
 	_menuAPI.ALL = field.NewAsterisk(tableName)
-	_menuAPI.ID = field.NewInt32(tableName, "id")
-	_menuAPI.AppID = field.NewInt32(tableName, "app_id")
-	_menuAPI.MenuID = field.NewInt32(tableName, "menu_id")
+	_menuAPI.ID = field.NewInt64(tableName, "id")
+	_menuAPI.AppID = field.NewInt64(tableName, "app_id")
+	_menuAPI.MenuID = field.NewInt64(tableName, "menu_id")
 	_menuAPI.Path = field.NewString(tableName, "path")
 	_menuAPI.Tag = field.NewString(tableName, "tag")
 
@@ -44,9 +44,9 @@ type menuAPI struct {
 	menuAPIDo
 
 	ALL    field.Asterisk
-	ID     field.Int32
-	AppID  field.Int32  // 应用ID
-	MenuID field.Int32  // 菜单ID
+	ID     field.Int64
+	AppID  field.Int64  // 应用ID
+	MenuID field.Int64  // 菜单ID
 	Path   field.String // API路由地址
 	Tag    field.String // 标识
 
@@ -65,9 +65,9 @@ func (m menuAPI) As(alias string) *menuAPI {
 
 func (m *menuAPI) updateTableName(table string) *menuAPI {
 	m.ALL = field.NewAsterisk(table)
-	m.ID = field.NewInt32(table, "id")
-	m.AppID = field.NewInt32(table, "app_id")
-	m.MenuID = field.NewInt32(table, "menu_id")
+	m.ID = field.NewInt64(table, "id")
+	m.AppID = field.NewInt64(table, "app_id")
+	m.MenuID = field.NewInt64(table, "menu_id")
 	m.Path = field.NewString(table, "path")
 	m.Tag = field.NewString(table, "tag")
 

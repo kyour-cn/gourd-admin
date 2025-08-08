@@ -4,10 +4,11 @@ import (
 	"app/internal/http/common/controller"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
-	"gorm.io/gen"
 	"net/http"
 	"strconv"
 	"time"
+
+	"gorm.io/gen"
 )
 
 // Log 用户控制器
@@ -58,13 +59,13 @@ func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 101, "时间格式异常", nil)
 		return
 	}
-	condition = append(condition, query.Log.CreateTime.Between(int32(startTime.Unix()), int32(entTime.Unix())))
+	condition = append(condition, query.Log.CreateTime.Between(startTime.Unix(), entTime.Unix()))
 
 	// 类型筛选
 	logType := params.Get("type_id")
 	if logType != "" {
 		typeId, _ := strconv.Atoi(logType)
-		condition = append(condition, query.Log.TypeID.Eq(int32(typeId)))
+		condition = append(condition, query.Log.TypeID.Eq(int64(typeId)))
 	}
 
 	// 查询列表

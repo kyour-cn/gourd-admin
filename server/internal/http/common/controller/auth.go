@@ -69,7 +69,7 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apps := make(map[int32]model.App)
+	apps := make(map[int64]model.App)
 	for _, ur := range userData.UserRole {
 		apps[ur.Role.App.ID] = ur.Role.App
 	}
@@ -151,13 +151,13 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menus, err := auth.GetMenu(userInfo, int32(appId))
+	menus, err := auth.GetMenu(userInfo, int64(appId))
 	if err != nil {
 		_ = c.Fail(w, 102, "获取菜单失败", err.Error())
 		return
 	}
 
-	permissions, err := auth.GetPermission(userInfo, int32(appId))
+	permissions, err := auth.GetPermission(userInfo, int64(appId))
 	if err != nil {
 		_ = c.Fail(w, 102, "获取权限失败", err.Error())
 		return
