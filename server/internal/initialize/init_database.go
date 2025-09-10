@@ -2,7 +2,6 @@ package initialize
 
 import (
 	"app/internal/config"
-	"app/internal/global"
 	"app/internal/orm/query"
 	"errors"
 	"fmt"
@@ -53,9 +52,6 @@ func InitDatabase() error {
 	} else {
 		return errors.New("database type is not supported")
 	}
-
-	// 设置全局数据库连接
-	global.SetDb("default", mainDb)
 
 	// 设置默认查询器
 	query.SetDefault(mainDb)

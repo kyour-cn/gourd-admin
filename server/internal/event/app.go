@@ -9,8 +9,8 @@ import (
 	"github.com/go-gourd/gourd/event"
 )
 
-// RegisterAppEvent 事件注册
-func RegisterAppEvent(_ context.Context) {
+// AppEvent 事件注册
+func AppEvent(ctx context.Context) {
 
 	// Boot事件(应用) -初始化应用时执行
 	event.Listen("app.boot", func(ctx context.Context) {

@@ -22,7 +22,7 @@ type Menu struct {
 	Component string    `gorm:"column:component;not null;comment:组件地址" json:"component"`     // 组件地址
 	Status    int32     `gorm:"column:status;not null;default:1;comment:是否启用" json:"status"` // 是否启用
 	Sort      int64     `gorm:"column:sort;not null;comment:排序" json:"sort"`                 // 排序
-	Meta      string    `gorm:"column:meta;not null;comment:meta路由参数" json:"meta"`           // meta路由参数
+	Meta      string    `gorm:"column:meta;comment:meta路由参数" json:"meta"`                    // meta路由参数
 	App       App       `gorm:"foreignKey:app_id;references:id" json:"app"`
 	MenuApi   []MenuAPI `gorm:"foreignKey:menu_id;references:id" json:"menu_api"`
 }
