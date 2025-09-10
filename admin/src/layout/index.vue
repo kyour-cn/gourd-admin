@@ -5,7 +5,7 @@
 			<div class="adminui-header-left">
 				<div class="logo-bar">
 					<img class="logo" src="/admin/img/logo.png">
-					<span>{{ $CONFIG.APP_NAME }}</span>
+					<span>{{ config.APP_NAME }}</span>
 				</div>
 				<ul v-if="!ismobile" class="nav">
 					<li v-for="item in menu" :key="item" :class="pmenu.path===item.path?'active':''" @click="showMenu(item)">
@@ -25,12 +25,12 @@
 				</div>
 				<div class="adminui-side-scroll">
 					<el-scrollbar>
-						<el-menu :default-active="active" router :collapse="menuIsCollapse" :unique-opened="$CONFIG.MENU_UNIQUE_OPENED">
+						<el-menu :default-active="active" router :collapse="menuIsCollapse" :unique-opened="config.MENU_UNIQUE_OPENED">
 							<NavMenu :navMenus="nextMenu"></NavMenu>
 						</el-menu>
 					</el-scrollbar>
 				</div>
-				<div class="adminui-side-bottom" @click="$store.commit('TOGGLE_menuIsCollapse')">
+				<div class="adminui-side-bottom" @click="store.commit('TOGGLE_menuIsCollapse')">
 					<el-icon><el-icon-expand v-if="menuIsCollapse"/><el-icon-fold v-else /></el-icon>
 				</div>
 			</div>
@@ -40,8 +40,8 @@
 				<Tags v-if="!ismobile && layoutTags"></Tags>
 				<div class="adminui-main" id="adminui-main">
 					<router-view v-slot="{ Component }">
-					    <keep-alive :include="this.$store.state.keepAlive.keepLiveRoute">
-					        <component :is="Component" :key="$route.fullPath" v-if="$store.state.keepAlive.routeShow"/>
+					    <keep-alive :include="store.state.keepAlive.keepLiveRoute">
+					        <component :is="Component" :key="route.fullPath" v-if="store.state.keepAlive.routeShow"/>
 					    </keep-alive>
 					</router-view>
 					<iframe-view></iframe-view>
@@ -56,7 +56,7 @@
 			<div class="adminui-header-left">
 				<div class="logo-bar">
 					<img class="logo" src="/admin/img/logo.png">
-					<span>{{ $CONFIG.APP_NAME }}</span>
+					<span>{{ config.APP_NAME }}</span>
 				</div>
 			</div>
 			<div class="adminui-header-right">
@@ -67,12 +67,12 @@
 			<div v-if="!ismobile" :class="menuIsCollapse?'aminui-side isCollapse':'aminui-side'">
 				<div class="adminui-side-scroll">
 					<el-scrollbar>
-						<el-menu :default-active="active" router :collapse="menuIsCollapse" :unique-opened="$CONFIG.MENU_UNIQUE_OPENED">
+						<el-menu :default-active="active" router :collapse="menuIsCollapse" :unique-opened="config.MENU_UNIQUE_OPENED">
 							<NavMenu :navMenus="menu"></NavMenu>
 						</el-menu>
 					</el-scrollbar>
 				</div>
-				<div class="adminui-side-bottom" @click="$store.commit('TOGGLE_menuIsCollapse')">
+				<div class="adminui-side-bottom" @click="store.commit('TOGGLE_menuIsCollapse')">
 					<el-icon><el-icon-expand v-if="menuIsCollapse"/><el-icon-fold v-else /></el-icon>
 				</div>
 			</div>
@@ -82,8 +82,8 @@
 				<Tags v-if="!ismobile && layoutTags"></Tags>
 				<div class="adminui-main" id="adminui-main">
 					<router-view v-slot="{ Component }">
-					    <keep-alive :include="this.$store.state.keepAlive.keepLiveRoute">
-					        <component :is="Component" :key="$route.fullPath" v-if="$store.state.keepAlive.routeShow"/>
+					    <keep-alive :include="store.state.keepAlive.keepLiveRoute">
+					        <component :is="Component" :key="route.fullPath" v-if="store.state.keepAlive.routeShow"/>
 					    </keep-alive>
 					</router-view>
 					<iframe-view></iframe-view>
@@ -98,7 +98,7 @@
 			<div class="adminui-header-left">
 				<div class="logo-bar">
 					<img class="logo" src="/admin/img/logo.png">
-					<span>{{ $CONFIG.APP_NAME }}</span>
+					<span>{{ config.APP_NAME }}</span>
 				</div>
 			</div>
 			<div class="adminui-header-right">
@@ -116,8 +116,8 @@
 				<Tags v-if="!ismobile && layoutTags"></Tags>
 				<div class="adminui-main" id="adminui-main">
 					<router-view v-slot="{ Component }">
-					    <keep-alive :include="this.$store.state.keepAlive.keepLiveRoute">
-					        <component :is="Component" :key="$route.fullPath" v-if="$store.state.keepAlive.routeShow"/>
+					    <keep-alive :include="store.state.keepAlive.keepLiveRoute">
+					        <component :is="Component" :key="route.fullPath" v-if="store.state.keepAlive.routeShow"/>
 					    </keep-alive>
 					</router-view>
 					<iframe-view></iframe-view>
@@ -131,8 +131,8 @@
 		<section class="aminui-wrapper">
 			<div v-if="!ismobile" class="aminui-side-split">
 				<div class="aminui-side-split-top">
-					<router-link :to="$CONFIG.DASHBOARD_URL">
-						<img class="logo" :title="$CONFIG.APP_NAME" src="/admin/img/logo.png" alt="">
+					<router-link :to="config.DASHBOARD_URL">
+						<img class="logo" :title="config.APP_NAME" src="/admin/img/logo.png" alt="">
 					</router-link>
 				</div>
 				<div class="adminui-side-split-scroll">
@@ -153,12 +153,12 @@
 				</div>
 				<div class="adminui-side-scroll">
 					<el-scrollbar>
-						<el-menu :default-active="active" router :collapse="menuIsCollapse" :unique-opened="$CONFIG.MENU_UNIQUE_OPENED">
+						<el-menu :default-active="active" router :collapse="menuIsCollapse" :unique-opened="config.MENU_UNIQUE_OPENED">
 							<NavMenu :navMenus="nextMenu"></NavMenu>
 						</el-menu>
 					</el-scrollbar>
 				</div>
-				<div class="adminui-side-bottom" @click="$store.commit('TOGGLE_menuIsCollapse')">
+				<div class="adminui-side-bottom" @click="store.commit('TOGGLE_menuIsCollapse')">
 					<el-icon><el-icon-expand v-if="menuIsCollapse"/><el-icon-fold v-else /></el-icon>
 				</div>
 			</div>
@@ -170,8 +170,8 @@
 				<Tags v-if="!ismobile && layoutTags"></Tags>
 				<div class="adminui-main" id="adminui-main">
 					<router-view v-slot="{ Component }">
-					    <keep-alive :include="this.$store.state.keepAlive.keepLiveRoute">
-					        <component :is="Component" :key="$route.fullPath" v-if="$store.state.keepAlive.routeShow"/>
+					    <keep-alive :include="store.state.keepAlive.keepLiveRoute">
+					        <component :is="Component" :key="route.fullPath" v-if="store.state.keepAlive.routeShow"/>
 					    </keep-alive>
 					</router-view>
 					<iframe-view></iframe-view>
@@ -191,117 +191,112 @@
 	<auto-exit></auto-exit>
 </template>
 
-<script>
-	import SideM from './components/sideM.vue';
-	import Topbar from './components/topbar.vue';
-	import Tags from './components/tags.vue';
-	import NavMenu from './components/NavMenu.vue';
-	import UserBar from './components/userbar.vue';
-	import setting from './components/setting.vue';
-	import iframeView from './components/iframeView.vue';
-	import autoExit from './other/autoExit.js';
+<script setup>
+import config from "@/config";
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import SideM from './components/sideM.vue'
+import Topbar from './components/topbar.vue'
+import Tags from './components/tags.vue'
+import NavMenu from './components/NavMenu.vue'
+import UserBar from './components/userbar.vue'
+import setting from './components/setting.vue'
+import iframeView from './components/iframeView.vue'
+import autoExit from './other/autoExit.js'
 
-	export default {
-		name: 'index',
-		components: {
-			SideM,
-			Topbar,
-			Tags,
-			NavMenu,
-			UserBar,
-			setting,
-			iframeView,
-			autoExit
-		},
-		data() {
-			return {
-				settingDialog: false,
-				menu: [],
-				nextMenu: [],
-				pmenu: {},
-				active: ''
-			}
-		},
-		computed:{
-			ismobile(){
-				return this.$store.state.global.ismobile
-			},
-			layout(){
-				return this.$store.state.global.layout
-			},
-			layoutTags(){
-				return this.$store.state.global.layoutTags
-			},
-			menuIsCollapse(){
-				return this.$store.state.global.menuIsCollapse
-			}
-		},
-		created() {
-			this.onLayoutResize();
-			window.addEventListener('resize', this.onLayoutResize);
-			var menu = this.$router.sc_getMenu();
-			this.menu = this.filterUrl(menu);
-			this.showThis()
-		},
-		watch: {
-			$route() {
-				this.showThis()
-			},
-			layout: {
-				handler(val){
-					document.body.setAttribute('data-layout', val)
-				},
-				immediate: true,
-			}
-		},
-		methods: {
-			openSetting(){
-				this.settingDialog = true;
-			},
-			onLayoutResize(){
-				this.$store.commit("SET_ismobile", document.body.clientWidth < 992)
-			},
-			//路由监听高亮
-			showThis(){
-				this.pmenu = this.$route.meta.breadcrumb ? this.$route.meta.breadcrumb[0] : {}
-				this.nextMenu = this.filterUrl(this.pmenu.children);
-				this.$nextTick(()=>{
-					this.active = this.$route.meta.active || this.$route.fullPath;
-				})
-			},
-			//点击显示
-			showMenu(route) {
-				this.pmenu = route;
-				this.nextMenu = this.filterUrl(route.children);
-				if((!route.children || route.children.length == 0) && route.component){
-					this.$router.push({path: route.path})
-				}
-			},
-			//转换外部链接的路由
-			filterUrl(map){
-				var newMap = []
-				map && map.forEach(item => {
-					item.meta = item.meta?item.meta:{};
-					//处理隐藏
-					if(item.meta.hidden || item.meta.type=="button"){
-						return false
-					}
-					//处理http
-					if(item.meta.type=='iframe'){
-						item.path = `/i/${item.name}`;
-					}
-					//递归循环
-					if(item.children&&item.children.length > 0){
-						item.children = this.filterUrl(item.children)
-					}
-					newMap.push(item)
-				})
-				return newMap;
-			},
-			//退出最大化
-			exitMaximize(){
-				document.getElementById('app').classList.remove('main-maximize')
-			}
-		}
-	}
+// 获取store、route、router实例
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
+
+// 响应式数据
+const settingDialog = ref(false)
+const menu = ref([])
+const nextMenu = ref([])
+const pmenu = ref({})
+const active = ref('')
+
+// 计算属性
+const ismobile = computed(() => store.state.global.ismobile)
+const layout = computed(() => store.state.global.layout)
+const layoutTags = computed(() => store.state.global.layoutTags)
+const menuIsCollapse = computed(() => store.state.global.menuIsCollapse)
+
+// 方法
+const openSetting = () => {
+  settingDialog.value = true
+}
+
+const onLayoutResize = () => {
+  store.commit("SET_ismobile", document.body.clientWidth < 992)
+}
+
+// 路由监听高亮
+const showThis = () => {
+  pmenu.value = route.meta.breadcrumb ? route.meta.breadcrumb[0] : {}
+  nextMenu.value = filterUrl(pmenu.value.children)
+  nextTick(() => {
+    active.value = route.meta.active || route.fullPath
+  })
+}
+
+// 点击显示
+const showMenu = (routeItem) => {
+  pmenu.value = routeItem
+  nextMenu.value = filterUrl(routeItem.children)
+  if((!routeItem.children || routeItem.children.length === 0) && routeItem.component){
+    router.push({path: routeItem.path})
+  }
+}
+
+// 转换外部链接的路由
+const filterUrl = (map) => {
+  const newMap = []
+  map && map.forEach(item => {
+    item.meta = item.meta ? item.meta : {}
+    // 处理隐藏
+    if(item.meta.hidden || item.meta.type === "button"){
+      return false
+    }
+    // 处理http
+    if(item.meta.type === 'iframe'){
+      item.path = `/i/${item.name}`
+    }
+    // 递归循环
+    if(item.children && item.children.length > 0){
+      item.children = filterUrl(item.children)
+    }
+    newMap.push(item)
+  })
+  return newMap
+}
+
+// 退出最大化
+const exitMaximize = () => {
+  store.commit("SET_isMaximize", false)
+}
+
+// 监听路由变化
+watch(route, () => {
+  showThis()
+})
+
+// 监听布局变化
+watch(layout, (val) => {
+  document.body.setAttribute('data-layout', val)
+}, { immediate: true })
+
+// 生命周期
+onMounted(() => {
+  onLayoutResize()
+  window.addEventListener('resize', onLayoutResize)
+  const menuData = router.sc_getMenu()
+  menu.value = filterUrl(menuData)
+  showThis()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', onLayoutResize)
+})
 </script>

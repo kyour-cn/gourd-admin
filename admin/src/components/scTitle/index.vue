@@ -4,17 +4,11 @@
 	</div>
 </template>
 
-<script>
-	export default {
-		props: {
-			title: { type: String, required: true, default: "" },
-		},
-		data() {
-			return {
-
-			}
-		}
-	}
+<script setup>
+// Props定义
+defineProps({
+	title: { type: String, required: true, default: "" },
+})
 </script>
 
 <style scoped>

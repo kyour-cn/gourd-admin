@@ -34,43 +34,52 @@
 	</div>
 </template>
 
-<script>
-	export default {
-		props: {
-			modelValue: { type: Boolean, default: false },
-			title: { type: String, default: "" },
-			showClose: { type: Boolean, default: true },
-			showFullscreen: { type: Boolean, default: true },
-			loading: { type: Boolean, default: false }
-		},
-		data() {
-			return {
-				dialogVisible: false,
-				isFullscreen: false
-			}
-		},
-		watch:{
-			modelValue(){
-				this.dialogVisible = this.modelValue
-				if(this.dialogVisible){
-					this.isFullscreen = false
-				}
-			}
-		},
-		mounted() {
-			this.dialogVisible = this.modelValue
-		},
-		methods: {
-			//关闭
-			closeDialog(){
-				this.dialogVisible = false
-			},
-			//最大化
-			setFullscreen(){
-				this.isFullscreen = !this.isFullscreen
-			}
-		}
+<script setup>
+import { ref, watch, onMounted } from 'vue'
+
+// Props定义
+const props = defineProps({
+	modelValue: { type: Boolean, default: false },
+	title: { type: String, default: "" },
+	showClose: { type: Boolean, default: true },
+	showFullscreen: { type: Boolean, default: true },
+	loading: { type: Boolean, default: false }
+})
+
+// Emits定义
+const emit = defineEmits(['update:modelValue'])
+
+// 响应式数据
+const scDialog = ref(null)
+const dialog = ref(null)
+const dialogVisible = ref(false)
+const isFullscreen = ref(false)
+
+// 监听器
+watch(() => props.modelValue, (newVal) => {
+	dialogVisible.value = newVal
+	if (dialogVisible.value) {
+		isFullscreen.value = false
 	}
+})
+
+watch(dialogVisible, (newVal) => {
+	emit('update:modelValue', newVal)
+})
+
+// 生命周期
+onMounted(() => {
+	dialogVisible.value = props.modelValue
+})
+
+// 方法
+const closeDialog = () => {
+	dialogVisible.value = false
+}
+
+const setFullscreen = () => {
+	isFullscreen.value = !isFullscreen.value
+}
 </script>
 
 <style scoped>

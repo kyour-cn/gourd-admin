@@ -28,14 +28,13 @@
 	</div>
 </template>
 
-<script>
-	export default {
-		props: {
-			title: { type: String, required: true, default: "" },
-			description: { type: String, default: "" },
-			icon: { type: String, default: "" },
-		}
-	}
+<script setup>
+// Props定义
+defineProps({
+	title: { type: String, required: true, default: "" },
+	description: { type: String, default: "" },
+	icon: { type: String, default: "" },
+})
 </script>
 
 <style scoped>

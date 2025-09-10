@@ -8,59 +8,56 @@
 -->
 
 <template>
-	<div v-show="$route.meta.type=='iframe'" class="iframe-pages">
-		<iframe v-for="item in iframeList" :key="item.meta.url" v-show="$route.meta.url==item.meta.url" :src="item.meta.url" frameborder='0'></iframe>
+	<div v-show="$route.meta.type === 'iframe'" class="iframe-pages">
+		<iframe v-for="item in iframeList" :key="item.meta.url" v-show="$route.meta.url === item.meta.url" :src="item.meta.url" frameborder='0'></iframe>
 	</div>
 </template>
 
-<script>
-	export default {
-		data() {
-			return {
+<script setup>
+import { computed, watch, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
 
-			}
-		},
-		watch: {
-			$route(e) {
-				this.push(e)
-			},
-		},
-		created() {
-			this.push(this.$route);
-		},
-		computed:{
-			iframeList(){
-				return this.$store.state.iframe.iframeList
-			},
-			ismobile(){
-				return this.$store.state.global.ismobile
-			},
-			layoutTags(){
-				return this.$store.state.global.layoutTags
-			}
-		},
-		mounted() {
+const store = useStore()
+const route = useRoute()
 
-		},
-		methods: {
-			push(route){
-				if(route.meta.type == 'iframe'){
-					if(this.ismobile || !this.layoutTags){
-						this.$store.commit("setIframeList", route)
-					}else{
-						this.$store.commit("pushIframeList", route)
-					}
-				}else{
-					if(this.ismobile || !this.layoutTags){
-						this.$store.commit("clearIframeList")
-					}
-				}
-			}
+// 计算属性
+const iframeList = computed(() => store.state.iframe.iframeList)
+const ismobile = computed(() => store.state.global.ismobile)
+const layoutTags = computed(() => store.state.global.layoutTags)
+
+// 方法
+const push = (routeItem) => {
+	if(routeItem.meta.type === 'iframe'){
+		if(ismobile.value || !layoutTags.value){
+			store.commit("setIframeList", routeItem)
+		}else{
+			store.commit("pushIframeList", routeItem)
 		}
 	}
+}
+
+// 监听器
+watch(route, (newRoute) => {
+	push(newRoute)
+})
+
+// 生命周期
+onMounted(() => {
+	push(route)
+})
 </script>
 
 <style scoped>
-	.iframe-pages {width:100%;height:100%;background: #fff;}
-	iframe {border:0;width:100%;height:100%;display: block;}
+.iframe-pages {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.iframe-pages iframe {
+	width: 100%;
+	height: 100%;
+	border: none;
+}
 </style>

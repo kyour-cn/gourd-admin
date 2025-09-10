@@ -37,38 +37,39 @@
 	</el-container>
 </template>
 
-<script>
-	export default {
-		data() {
-			return {
-				loading: false,
-				tasks: []
-			}
-		},
-		mounted() {
-			this.getData()
-		},
-		methods: {
-			async getData(){
-				this.loading = true
-				// var res = await this.$API.system.tasks.list.get()
-				// this.tasks = res.data
-				this.loading = false
-			},
-			refresh(){
-				this.getData()
-			},
-			download(row){
-				let a = document.createElement("a")
-				a.style = "display: none"
-				a.target = "_blank"
-				a.href = row.result
-				document.body.appendChild(a)
-				a.click()
-				document.body.removeChild(a)
-			}
-		}
-	}
+<script setup>
+import { ref, onMounted } from 'vue'
+
+// 响应式数据
+const loading = ref(false)
+const tasks = ref([])
+
+// 方法
+const getData = async () => {
+	loading.value = true
+	// var res = await this.$API.system.tasks.list.get()
+	// tasks.value = res.data
+	loading.value = false
+}
+
+const refresh = () => {
+	getData()
+}
+
+const download = (row) => {
+	const a = document.createElement("a")
+	a.style = "display: none"
+	a.target = "_blank"
+	a.href = row.result
+	document.body.appendChild(a)
+	a.click()
+	document.body.removeChild(a)
+}
+
+// 生命周期
+onMounted(() => {
+	getData()
+})
 </script>
 
 <style scoped>

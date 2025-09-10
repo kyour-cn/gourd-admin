@@ -62,14 +62,12 @@
 <script>
 import passwordForm from './components/passwordForm'
 import phoneForm from './components/phoneForm'
-import ScQrCode from '@/components/scQrCode'
 import tool from '@/utils/tool'
 
 export default {
   components: {
     passwordForm,
     phoneForm,
-    ScQrCode
   },
   data() {
     return {

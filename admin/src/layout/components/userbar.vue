@@ -1,6 +1,6 @@
 <template>
 	<div class="user-bar">
-		<div class="panel-item hidden-sm-and-down" @click="search">
+		<div class="panel-item hidden-sm-and-down" @click="openSearch">
 			<el-icon><el-icon-search /></el-icon>
 		</div>
 		<div class="screen panel-item hidden-sm-and-down" @click="screen">
@@ -62,124 +62,108 @@
 	</div>
 
 	<el-dialog v-model="searchVisible" :width="700"  title="搜索" center destroy-on-close>
-		<search @success="searchVisible=false"></search>
+		<SearchComponent @success="searchVisible=false"></SearchComponent>
 	</el-dialog>
 
 	<el-drawer v-model="tasksVisible" :size="450"  title="任务中心" destroy-on-close>
-		<tasks></tasks>
+		<TasksComponent></TasksComponent>
 	</el-drawer>
-
 </template>
 
-<script>
-	import search from './search.vue'
-	import tasks from './tasks.vue'
-  import tool from '@/utils/tool'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessageBox, ElLoading } from 'element-plus'
+import SearchComponent from './search.vue'
+import TasksComponent from './tasks.vue'
+import tool from '@/utils/tool'
 
-	export default {
-		components: {
-			search,
-			tasks
-		},
-		data(){
-			return {
-				userName: "",
-				userNameF: "",
-				searchVisible: false,
-				tasksVisible: false,
-				msg: false,
-				msgList: [
-					// {
-					// 	id: 1,
-					// 	type: 'user',
-					// 	avatar: "img/avatar.jpg",
-					// 	title: "Skuya",
-					// 	describe: "如果喜欢就点个星星支持一下哦",
-					// 	link: "https://gitee.com/lolicode/scui",
-					// 	time: "5分钟前"
-					// },
-					// {
-					// 	id: 2,
-					// 	type: 'user',
-					// 	avatar: "img/avatar2.gif",
-					// 	title: "Lolowan",
-					// 	describe: "点进去Gitee获取最新开源版本",
-					// 	link: "https://gitee.com/lolicode/scui",
-					// 	time: "14分钟前"
-					// },
-					// {
-					// 	id: 3,
-					// 	type: 'admin',
-					// 	avatar: "img/logo.png",
-					// 	title: "感谢登录SCUI Admin",
-					// 	describe: "Vue 3.0 + Vue-Router 4.0 + ElementPlus + Axios 后台管理系统。",
-					// 	link: "https://gitee.com/lolicode/scui",
-					// 	time: "2020年7月24日"
-					// }
-				]
-			}
-		},
-		created() {
-      const userInfo = tool.data.get("USER_INFO");
-      this.userName = userInfo.nickname;
-      this.userNameF = this.userName.substring(0, 1);
-		},
-		methods: {
-			//个人信息
-			handleUser(command) {
-				if(command === "uc"){
-					this.$router.push({path: '/admin/home/user_center'});
-				}
-				if(command === "clearCache"){
-					this.$confirm('清除缓存会将系统初始化，包括登录状态、主题、语言设置等，是否继续？','提示', {
-						type: 'info',
-					}).then(() => {
-						const loading = this.$loading()
-						tool.data.clear()
-						this.$router.replace({path: '/login'})
-						setTimeout(()=>{
-							loading.close()
-							location.reload()
-						},1000)
-					}).catch(() => {
-						//取消
-					})
-				}
-				if(command === "outLogin"){
-					this.$confirm('确认是否退出当前用户？','提示', {
-						type: 'warning',
-						confirmButtonText: '退出',
-						confirmButtonClass: 'el-button--danger'
-					}).then(() => {
-						this.$router.replace({path: '/login'});
-					}).catch(() => {
-						//取消退出
-					})
-				}
-			},
-			//全屏
-			screen(){
-        const element = document.documentElement;
-        tool.screen(element)
-			},
-			//显示短消息
-			showMsg(){
-				this.msg = true
-			},
-			//标记已读
-			markRead(){
-				this.msgList = []
-			},
-			//搜索
-			search(){
-				this.searchVisible = true
-			},
-			//任务
-			tasks(){
-				this.tasksVisible = true
-			}
-		}
+const router = useRouter()
+
+// 响应式数据
+const userName = ref("")
+const userNameF = ref("")
+const searchVisible = ref(false)
+const tasksVisible = ref(false)
+const msg = ref(false)
+const msgList = ref([])
+
+// 方法
+const openSearch = () => {
+	searchVisible.value = true
+}
+
+const screen = () => {
+	const element = document.documentElement
+	if (document.fullscreenElement) {
+		document.exitFullscreen()
+	} else {
+		element.requestFullscreen()
 	}
+}
+
+const tasks = () => {
+	tasksVisible.value = true
+}
+
+const showMsg = () => {
+	msg.value = true
+}
+
+const markRead = () => {
+	msgList.value = []
+}
+
+// 个人信息处理
+const handleUser = (command) => {
+	if(command === "uc"){
+		router.push({path: '/admin/home/user_center'})
+	}
+	if(command === "clearCache"){
+		ElMessageBox.confirm('清除缓存会将系统初始化，包括登录状态、主题、语言设置等，是否继续？','提示', {
+			type: 'info',
+		}).then(() => {
+			const loading = ElLoading.service()
+			tool.data.clear()
+			router.replace({path: '/login'})
+			setTimeout(()=>{
+				loading.close()
+				location.reload()
+			},1000)
+		}).catch(() => {
+			// 取消
+		})
+	}
+	if(command === "outLogin"){
+		ElMessageBox.confirm('确认是否退出当前用户？','提示', {
+			type: 'warning',
+			confirmButtonText: '退出',
+			cancelButtonText: '取消'
+		}).then(() => {
+			const loading = ElLoading.service({
+				lock: true,
+				text: '正在注销...'
+			})
+			tool.data.remove("TOKEN")
+			tool.data.remove("USER_INFO")
+			setTimeout(()=>{
+				loading.close()
+				router.replace({path: '/login'})
+			}, 500)
+		}).catch(() => {
+			// 取消
+		})
+	}
+}
+
+// 生命周期
+onMounted(() => {
+	const userInfo = tool.data.get("USER_INFO")
+	if(userInfo) {
+		userName.value = userInfo.nickname || ""
+		userNameF.value = userName.value.substring(0, 1)
+	}
+})
 </script>
 
 <style scoped>

@@ -1,7 +1,7 @@
 <template>
-	<div ref="" class="mobile-nav-button" @click="showMobileNav($event)" v-drag draggable="false"><el-icon><el-icon-menu /></el-icon></div>
+	<div ref="dragRef" class="mobile-nav-button" @click="showMobileNav($event)" v-drag draggable="false"><el-icon><el-icon-menu /></el-icon></div>
 
-	<el-drawer ref="mobileNavBox" title="移动端菜单" :size="240" v-model="nav" direction="ltr" :with-header="false" destroy-on-close>
+	<el-drawer ref="mobileNavBoxRef" title="移动端菜单" :size="240" v-model="nav" direction="ltr" :with-header="false" destroy-on-close>
 		<el-container class="mobile-nav">
 			<el-header>
 				<div class="logo-bar"><img class="logo" src="/admin/img/logo.png"><span>{{ $CONFIG.APP_NAME }}</span></div>
@@ -18,109 +18,106 @@
 
 </template>
 
-<script>
-	import NavMenu from './NavMenu.vue';
+<script setup>
+import { ref, onMounted, getCurrentInstance } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import NavMenu from './NavMenu.vue'
 
-	export default {
-		components: {
-			NavMenu
-		},
-		data() {
-			return {
-				nav: false,
-				menu: []
-			}
-		},
-		computed:{
+const route = useRoute()
+const router = useRouter()
+const { proxy } = getCurrentInstance()
+const dragRef = ref()
+const mobileNavBoxRef = ref()
 
-		},
-		created() {
-			var menu = this.$router.sc_getMenu()
-			this.menu = this.filterUrl(menu)
-		},
+// 响应式数据
+const nav = ref(false)
+const menu = ref([])
 
-		watch: {
-
-		},
-		methods: {
-			showMobileNav(e){
-				var isdrag = e.currentTarget.getAttribute('drag-flag')
-				if (isdrag == 'true') {
-					return false;
-				}else{
-					this.nav = true;
-				}
-
-			},
-			select(){
-				this.$refs.mobileNavBox.handleClose()
-			},
-			//转换外部链接的路由
-			filterUrl(map){
-				var newMap = []
-				map && map.forEach(item => {
-					item.meta = item.meta?item.meta:{};
-					//处理隐藏
-					if(item.meta.hidden || item.meta.type=="button"){
-						return false
-					}
-					//处理http
-					if(item.meta.type=='iframe'){
-						item.path = `/i/${item.name}`;
-					}
-					//递归循环
-					if(item.children&&item.children.length > 0){
-						item.children = this.filterUrl(item.children);
-					}
-					newMap.push(item)
-				})
-				return newMap;
-			}
-		},
-		directives: {
-			drag(el){
-				let oDiv = el; //当前元素
-				let firstTime='',lastTime='';
-				//禁止选择网页上的文字
-				// document.onselectstart = function() {
-				// 	return false;
-				// };
-				oDiv.onmousedown = function(e){
-					//鼠标按下，计算当前元素距离可视区的距离
-					let disX = e.clientX - oDiv.offsetLeft;
-					let disY = e.clientY - oDiv.offsetTop;
-					document.onmousemove = function(e){
-						oDiv.setAttribute('drag-flag', true);
-						firstTime = new Date().getTime();
-						//通过事件委托，计算移动的距离
-						let l = e.clientX - disX;
-						let t = e.clientY - disY;
-
-						//移动当前元素
-
-						if(t > 0 && t < document.body.clientHeight - 50){
-							oDiv.style.top = t + "px";
-						}
-						if(l > 0 && l < document.body.clientWidth - 50){
-							oDiv.style.left = l + "px";
-						}
-
-
-					}
-					document.onmouseup = function(){
-						lastTime = new Date().getTime();
-						if( (lastTime - firstTime)>200 ){
-							oDiv.setAttribute('drag-flag', false);
-						}
-						document.onmousemove = null;
-						document.onmouseup = null;
-					};
-					//return false不加的话可能导致黏连，就是拖到一个地方时div粘在鼠标上不下来，相当于onmouseup失效
-					return false;
-				};
-			}
-		}
+// 方法
+const showMobileNav = (e) => {
+	const isdrag = e.currentTarget.getAttribute('drag-flag')
+	if (isdrag === 'true') {
+		return false
+	} else {
+		nav.value = true
 	}
+}
+
+const select = () => {
+	mobileNavBoxRef.value.handleClose()
+}
+
+// 转换外部链接的路由
+const filterUrl = (map) => {
+	const newMap = []
+	map && map.forEach(item => {
+		item.meta = item.meta ? item.meta : {}
+		// 处理隐藏
+		if(item.meta.hidden || item.meta.type === "button"){
+			return false
+		}
+		// 处理http
+		if(item.meta.type === 'iframe'){
+			item.path = `/i/${item.name}`
+		}
+		// 递归循环
+		if(item.children && item.children.length > 0){
+			item.children = filterUrl(item.children)
+		}
+		newMap.push(item)
+	})
+	return newMap
+}
+
+// 自定义指令
+const vDrag = {
+	mounted(el) {
+		let isDragging = false
+		let startX = 0
+		let startY = 0
+		let initialX = 0
+		let initialY = 0
+
+		el.addEventListener('mousedown', (e) => {
+			isDragging = true
+			startX = e.clientX
+			startY = e.clientY
+			const rect = el.getBoundingClientRect()
+			initialX = rect.left
+			initialY = rect.top
+			el.setAttribute('drag-flag', 'false')
+		})
+
+		document.addEventListener('mousemove', (e) => {
+			if (!isDragging) return
+
+			const deltaX = e.clientX - startX
+			const deltaY = e.clientY - startY
+
+			if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+				el.setAttribute('drag-flag', 'true')
+				el.style.left = (initialX + deltaX) + 'px'
+				el.style.top = (initialY + deltaY) + 'px'
+				el.style.position = 'fixed'
+			}
+		})
+
+		document.addEventListener('mouseup', () => {
+			if (isDragging) {
+				isDragging = false
+				setTimeout(() => {
+					el.setAttribute('drag-flag', 'false')
+				}, 100)
+			}
+		})
+	}
+}
+
+// 生命周期
+onMounted(() => {
+	const menuData = router.sc_getMenu()
+	menu.value = filterUrl(menuData)
+})
 </script>
 
 <style scoped>

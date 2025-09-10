@@ -13,73 +13,81 @@
 			<el-icon class="is-loading"><el-icon-loading /></el-icon>
 		</div>
 		<el-select v-bind="$attrs" :loading="loading" @visible-change="visibleChange">
-			<el-option v-for="item in options" :key="item[props.value]" :label="item[props.label]" :value="objValueType ? item : item[props.value]">
+			<el-option v-for="item in options" :key="item[selectProps.value]" :label="item[selectProps.label]" :value="objValueType ? item : item[selectProps.value]">
 				<slot name="option" :data="item"></slot>
 			</el-option>
 		</el-select>
 	</div>
 </template>
 
-<script>
-	import config from "@/config/select";
+<script setup>
+import { ref, reactive, onMounted, useAttrs } from 'vue'
+import config from "@/config/select"
 
-	export default {
-		props: {
-			apiObj: { type: Object, default: () => {} },
-			dic: { type: String, default: "" },
-			objValueType: { type: Boolean, default: false },
-			params: { type: Object, default: () => ({}) }
-		},
-		data() {
-			return {
-				dicParams: this.params,
-				loading: false,
-				options: [],
-				props: config.props,
-				initloading: false
-			}
-		},
-		created() {
-			//如果有默认值就去请求接口获取options
-			if(this.hasValue()){
-				this.initloading = true
-				this.getRemoteData()
-			}
-		},
-		methods: {
-			//选项显示隐藏事件
-			visibleChange(ispoen){
-				if(ispoen && this.options.length==0 && (this.dic || this.apiObj)){
-					this.getRemoteData()
-				}
-			},
-			//获取数据
-			async getRemoteData(){
-				this.loading = true
-				this.dicParams[config.request.name] = this.dic
-				var res = {}
-				if(this.apiObj){
-					res = await this.apiObj.get(this.params)
-				}else if(this.dic){
-					res = await config.dicApiObj.get(this.params)
-				}
-				var response = config.parseData(res)
-				this.options = response.data
-				this.loading = false
-				this.initloading = false
-			},
-			//判断是否有回显默认值
-			hasValue(){
-				if(Array.isArray(this.$attrs.modelValue) && this.$attrs.modelValue.length <= 0){
-					return false
-				}else if(this.$attrs.modelValue){
-					return true
-				}else{
-					return false
-				}
-			}
-		}
+// Props定义
+const props = defineProps({
+	apiObj: { type: Object, default: () => ({}) },
+	dic: { type: String, default: "" },
+	objValueType: { type: Boolean, default: false },
+	params: { type: Object, default: () => ({}) }
+})
+
+// 获取attrs
+const attrs = useAttrs()
+
+// 响应式数据
+const dicParams = reactive({ ...props.params })
+const loading = ref(false)
+const options = ref([])
+const selectProps = reactive(config.props)
+const initloading = ref(false)
+
+// 生命周期
+onMounted(() => {
+	// 如果有默认值就去请求接口获取options
+	if (hasValue()) {
+		initloading.value = true
+		getRemoteData()
 	}
+})
+
+// 方法
+const visibleChange = (isOpen) => {
+	if (isOpen && options.value.length === 0 && (props.dic || props.apiObj)) {
+		getRemoteData()
+	}
+}
+
+const getRemoteData = async () => {
+	loading.value = true
+	dicParams[config.request.name] = props.dic
+	let res = {}
+	if (props.apiObj) {
+		res = await props.apiObj.get(props.params)
+	} else if (props.dic) {
+		res = await config.dicApiObj.get(props.params)
+	}
+	const response = config.parseData(res)
+	options.value = response.data
+	loading.value = false
+	initloading.value = false
+}
+
+const hasValue = () => {
+	if (Array.isArray(attrs.modelValue) && attrs.modelValue.length <= 0) {
+		return false
+	} else if (attrs.modelValue) {
+		return true
+	} else {
+		return false
+	}
+}
+
+// 暴露方法给父组件
+defineExpose({
+	getRemoteData,
+	options
+})
 </script>
 
 <style scoped>

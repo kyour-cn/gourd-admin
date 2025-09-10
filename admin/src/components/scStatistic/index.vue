@@ -33,30 +33,25 @@
 	</div>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue'
 import tool from '@/utils/tool'
 
-	export default {
-		props: {
-			title: { type: String, required: true, default: "" },
-			value: { type: String, required: true, default: "" },
-			prefix: { type: String, default: "" },
-			suffix: { type: String, default: "" },
-			description: { type: String, default: "" },
-			tips: { type: String, default: "" },
-			groupSeparator: { type: Boolean, default: false }
-		},
-		data() {
-			return {
+// Props定义
+const props = defineProps({
+	title: { type: String, required: true, default: "" },
+	value: { type: String, required: true, default: "" },
+	prefix: { type: String, default: "" },
+	suffix: { type: String, default: "" },
+	description: { type: String, default: "" },
+	tips: { type: String, default: "" },
+	groupSeparator: { type: Boolean, default: false }
+})
 
-			}
-		},
-		computed: {
-			cmtValue(){
-				return this.groupSeparator ? tool.groupSeparator(this.value) : this.value
-			}
-		}
-	}
+// 计算属性
+const cmtValue = computed(() => {
+	return props.groupSeparator ? tool.groupSeparator(props.value) : props.value
+})
 </script>
 
 <style scoped>

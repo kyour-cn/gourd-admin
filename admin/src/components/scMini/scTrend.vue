@@ -18,40 +18,41 @@
 	</span>
 </template>
 
-<script>
-	export default {
-		props: {
-			modelValue: { type: Number, default: 0 },
-			prefix: { type: String, default: "" },
-			suffix: { type: String, default: "" },
-			reverse: { type: Boolean, default: false }
-		},
-		computed: {
-			absValue(){
-				return Math.abs(this.modelValue);
-			},
-			iconType(v){
-				if(this.modelValue == 0){
-					v = 'Z'
-				}else if(this.modelValue < 0){
-					v = 'N'
-				}else if(this.modelValue > 0){
-					v = 'P'
-				}
-				return v
-			},
-			type(v){
-				if(this.modelValue == 0){
-					v = 'Z'
-				}else if(this.modelValue < 0){
-					v =  this.reverse?'P':'N'
-				}else if(this.modelValue > 0){
-					v =   this.reverse?'N':'P'
-				}
-				return v
-			}
-		}
+<script setup>
+import { computed } from 'vue'
+
+// Props定义
+const props = defineProps({
+	modelValue: { type: Number, default: 0 },
+	prefix: { type: String, default: "" },
+	suffix: { type: String, default: "" },
+	reverse: { type: Boolean, default: false }
+})
+
+// 计算属性
+// const absValue = computed(() => {
+// 	return Math.abs(props.modelValue)
+// })
+
+const iconType = computed(() => {
+	if (props.modelValue === 0) {
+		return 'Z'
+	} else if (props.modelValue < 0) {
+		return 'N'
+	} else if (props.modelValue > 0) {
+		return 'P'
 	}
+})
+
+const type = computed(() => {
+	if (props.modelValue === 0) {
+		return 'Z'
+	} else if (props.modelValue < 0) {
+		return props.reverse ? 'P' : 'N'
+	} else if (props.modelValue > 0) {
+		return props.reverse ? 'N' : 'P'
+	}
+})
 </script>
 
 <style scoped>

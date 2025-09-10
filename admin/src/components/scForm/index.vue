@@ -10,11 +10,11 @@
 <template>
 	<el-skeleton v-if="renderLoading || Object.keys(form).length === 0" animated />
 
-	<el-form v-else ref="form" :model="form" :label-width="config.labelWidth" :label-position="config.labelPosition" v-loading="loading" element-loading-text="Loading...">
+	<el-form v-else ref="formRef" :model="form" :label-width="config.labelWidth" :label-position="config.labelPosition" v-loading="loading" element-loading-text="Loading...">
 		<el-row :gutter="15">
 			<template v-for="(item, index) in config.formItems" :key="index">
 				<el-col :span="item.span || 24" v-if="!hideHandle(item)">
-					<sc-title  v-if="item.component === 'title'"  :title="item.label"></sc-title>
+					<sc-title  v-if="item.component === 'title'" :title="item.label"></sc-title>
 					<el-form-item v-else :prop="item.name" :rules="rulesHandle(item)">
 						<template #label>
 							{{item.label}}
@@ -116,185 +116,180 @@
 	</el-form>
 </template>
 
-<script>
-	import http from "@/utils/request"
-	import ScTitle from "@/components/scTitle"
-	import ScUpload from "@/components/scUpload"
+<script setup>
+import { ref, reactive, watch, computed, onMounted, defineAsyncComponent } from 'vue'
+import http from "@/utils/request"
+import ScTitle from "@/components/scTitle"
+import ScUpload from "@/components/scUpload"
 
-	import { defineAsyncComponent } from 'vue'
-	const TableSelectRender = defineAsyncComponent(() => import('./items/tableSelect'))
+const TableSelectRender = defineAsyncComponent(() => import('./items/tableSelect'))
 
-	export default {
-		props: {
-			modelValue: { type: Object, default: () => {} },
-			config: { type: Object, default: () => {} },
-			loading: { type: Boolean, default: false },
-		},
-		components: {
-			TableSelectRender,
-            ScTitle,
-            ScUpload
-		},
-		data() {
-			return {
-				form: {},
-				renderLoading: false
-			}
-		},
-		watch:{
-			modelValue(){
-				if(this.hasConfig){
-					this.deepMerge(this.form, this.modelValue)
-				}
-			},
-			config(){
-				this.render()
-			},
-			form:{
-				handler(val){
-					this.$emit("update:modelValue", val)
-				},
-				deep: true
-			}
-		},
-		computed: {
-			hasConfig(){
-				return Object.keys(this.config).length>0
-			},
-			hasValue(){
-				return Object.keys(this.modelValue).length>0
-			}
-		},
-		created() {
+// Props定义
+const props = defineProps({
+	modelValue: { type: Object, default: () => ({}) },
+	config: { type: Object, default: () => ({}) },
+	loading: { type: Boolean, default: false },
+})
 
-		},
-		mounted() {
-			if(this.hasConfig){
-				this.render()
+// Emits定义
+const emit = defineEmits(['update:modelValue', 'submit'])
+
+// 响应式数据
+const formRef = ref(null)
+const form = reactive({})
+const renderLoading = ref(false)
+
+// 计算属性
+const hasConfig = computed(() => {
+	return Object.keys(props.config).length > 0
+})
+
+const hasValue = computed(() => {
+	return Object.keys(props.modelValue).length > 0
+})
+
+// 监听器
+watch(() => props.modelValue, () => {
+	if (hasConfig.value) {
+		deepMerge(form, props.modelValue)
+	}
+}, { deep: true })
+
+watch(() => props.config, () => {
+	render()
+}, { deep: true })
+
+watch(form, (val) => {
+	emit("update:modelValue", val)
+}, { deep: true })
+
+// 生命周期
+onMounted(() => {
+	if (hasConfig.value) {
+		render()
+	}
+})
+
+// 方法
+const render = () => {
+	// 清空原有form数据
+	Object.keys(form).forEach(key => {
+		delete form[key]
+	})
+
+	props.config.formItems?.forEach((item) => {
+		if (item.component === 'checkbox') {
+			if (item.name) {
+				const value = {}
+				item.options.items.forEach((option) => {
+					value[option.name] = option.value
+				})
+				form[item.name] = value
+			} else {
+				item.options.items.forEach((option) => {
+					form[option.name] = option.value
+				})
 			}
-		},
-		methods: {
-			//构建form对象
-			render() {
-				this.config.formItems.forEach((item) => {
-					if(item.component === 'checkbox'){
-						if(item.name){
-							const value = {}
-							item.options.items.forEach((option) => {
-								 value[option.name] = option.value
-							})
-							this.form[item.name] = value
-						}else{
-							item.options.items.forEach((option) => {
-								 this.form[option.name] = option.value
-							})
-						}
-					}else if(item.component === 'upload'){
-						if(item.name){
-							const value = {}
-							item.options.items.forEach((option) => {
-								 value[option.name] = option.value
-							})
-							this.form[item.name] = value
-						}else{
-							item.options.items.forEach((option) => {
-								 this.form[option.name] = option.value
-							})
-						}
-					}else{
-						this.form[item.name] = item.value
-					}
+		} else if (item.component === 'upload') {
+			if (item.name) {
+				const value = {}
+				item.options.items.forEach((option) => {
+					value[option.name] = option.value
 				})
-				if(this.hasValue){
-					this.form = this.deepMerge(this.form, this.modelValue)
-				}
-				this.getData()
-			},
-			//处理远程选项数据
-			getData() {
-				this.renderLoading = true
-                const remoteData = [];
-                this.config.formItems.forEach((item) => {
-					if(item.options && item.options.remote){
-						var req = http.get(item.options.remote.api, item.options.remote.data).then(res=>{
-							item.options.items = res.data
-						})
-						remoteData.push(req)
-					}
+				form[item.name] = value
+			} else {
+				item.options.items.forEach((option) => {
+					form[option.name] = option.value
 				})
-				Promise.all(remoteData).then(()=>{
-					this.renderLoading = false
-				})
-			},
-			//合并深结构对象
-			deepMerge(obj1, obj2) {
-				let key;
-				for (key in obj2) {
-					obj1[key] = obj1[key] && obj1[key].toString() === "[object Object]" && (obj2[key] && obj2[key].toString() === "[object Object]") ? this.deepMerge(obj1[key], obj2[key]) : (obj1[key] = obj2[key])
-				}
-				return obj1
-				//return JSON.parse(JSON.stringify(obj1))
-			},
-            // 工具函数：安全地解析表达式
-            evaluateExpression(expression, scope = {}) {
-                try {
-                    // 创建一个只接受特定变量的函数
-                    const fn = new Function('form', 'return (' + expression.replace(/\$/g, 'form') + ')');
-                    return fn(scope);
-                } catch (e) {
-                    console.warn(`Expression error: ${expression}`, e);
-                    return false;
-                }
-            },
-			//处理动态隐藏
-			// hideHandle(item){
-			// 	if(item.hideHandle){
-			// 		const exp = eval(item.hideHandle.replace(/\$/g,"this.form"))
-			// 		return exp
-			// 	}
-			// 	return false
-			// },
-            hideHandle(item) {
-                if (item.hideHandle) {
-                    return this.evaluateExpression(item.hideHandle, this.form);
-                }
-                return false;
-            },
-			//处理动态必填
-			// rulesHandle(item){
-			// 	if(item.requiredHandle){
-			// 		const exp = eval(item.requiredHandle.replace(/\$/g,"this.form"))
-			// 		var requiredRule = item.rules.find(t => 'required' in t)
-			// 		requiredRule.required = exp
-			// 	}
-			// 	return item.rules
-			// },
-            rulesHandle(item) {
-                if (item.requiredHandle) {
-                    const exp = this.evaluateExpression(item.requiredHandle, this.form);
-                    const requiredRule = item.rules.find(t => 'required' in t);
-                    if (requiredRule) {
-                        requiredRule.required = exp;
-                    }
-                }
-                return item.rules;
-            },
-			//数据验证
-			validate(valid, obj){
-				return this.$refs.form.validate(valid, obj)
-			},
-			scrollToField(prop){
-				return this.$refs.form.scrollToField(prop)
-			},
-			resetFields(){
-				return this.$refs.form.resetFields()
-			},
-			//提交
-			submit(){
-				this.$emit("submit", this.form)
 			}
+		} else {
+			form[item.name] = item.value
+		}
+	})
+
+	if (hasValue.value) {
+		deepMerge(form, props.modelValue)
+	}
+	getData()
+}
+
+const getData = () => {
+	renderLoading.value = true
+	const remoteData = []
+	props.config.formItems?.forEach((item) => {
+		if (item.options && item.options.remote) {
+			const req = http.get(item.options.remote.api, item.options.remote.data).then(res => {
+				item.options.items = res.data
+			})
+			remoteData.push(req)
+		}
+	})
+	Promise.all(remoteData).then(() => {
+		renderLoading.value = false
+	})
+}
+
+const deepMerge = (obj1, obj2) => {
+	let key
+	for (key in obj2) {
+		obj1[key] = obj1[key] && obj1[key].toString() === "[object Object]" && (obj2[key] && obj2[key].toString() === "[object Object]")
+			? deepMerge(obj1[key], obj2[key])
+			: (obj1[key] = obj2[key])
+	}
+	return obj1
+}
+
+const evaluateExpression = (expression, scope = {}) => {
+	try {
+		const fn = new Function('form', 'return (' + expression.replace(/\$/g, 'form') + ')')
+		return fn(scope)
+	} catch (e) {
+		console.warn(`Expression error: ${expression}`, e)
+		return false
+	}
+}
+
+const hideHandle = (item) => {
+	if (item.hideHandle) {
+		return evaluateExpression(item.hideHandle, form)
+	}
+	return false
+}
+
+const rulesHandle = (item) => {
+	if (item.requiredHandle) {
+		const exp = evaluateExpression(item.requiredHandle, form)
+		const requiredRule = item.rules?.find(t => 'required' in t)
+		if (requiredRule) {
+			requiredRule.required = exp
 		}
 	}
+	return item.rules
+}
+
+const validate = (valid, obj) => {
+	return formRef.value.validate(valid, obj)
+}
+
+const scrollToField = (prop) => {
+	return formRef.value.scrollToField(prop)
+}
+
+const resetFields = () => {
+	return formRef.value.resetFields()
+}
+
+const submit = () => {
+	emit("submit", form)
+}
+
+// 暴露方法给父组件
+defineExpose({
+	validate,
+	scrollToField,
+	resetFields,
+	submit
+})
 </script>
 
 <style>

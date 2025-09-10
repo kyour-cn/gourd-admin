@@ -11,13 +11,12 @@
 	<span class="sc-state" :class="[{'sc-status-processing':pulse}, 'sc-state-bg--'+type]"></span>
 </template>
 
-<script>
-	export default {
-		props: {
-			type: { type: String, default: "primary" },
-			pulse: { type: Boolean, default: false }
-		}
-	}
+<script setup>
+// Props定义
+defineProps({
+	type: { type: String, default: "primary" },
+	pulse: { type: Boolean, default: false }
+})
 </script>
 
 <style scoped>

@@ -18,7 +18,7 @@
 				<span class="del" @click="handleRemove()"><el-icon><el-icon-delete /></el-icon></span>
 			</div>
 		</div>
-		<el-upload v-if="!file" class="uploader" ref="uploader"
+		<el-upload v-if="!file" class="uploader" ref="uploaderRef"
 			:auto-upload="cropper?false:autoUpload"
 			:disabled="disabled"
 			:show-file-list="showFileList"
@@ -44,7 +44,7 @@
 		</el-upload>
 		<span style="display:none!important"><el-input v-model="value"></el-input></span>
 		<el-dialog title="剪裁" draggable v-model="cropperDialogVisible" :width="580" @closed="cropperClosed" destroy-on-close>
-			<sc-cropper :src="cropperFile.tempCropperFile" :compress="compress" :aspectRatio="aspectRatio" ref="cropper"></sc-cropper>
+			<sc-cropper :src="cropperFile?.tempCropperFile" :compress="compress" :aspectRatio="aspectRatio" ref="cropperRef"></sc-cropper>
 			<template #footer>
 				<el-button @click="cropperDialogVisible=false" >取 消</el-button>
 				<el-button type="primary" @click="cropperSave">确 定</el-button>
@@ -53,203 +53,227 @@
 	</div>
 </template>
 
-<script>
-	import { defineAsyncComponent } from 'vue'
-	import { genFileId } from 'element-plus'
-	const scCropper = defineAsyncComponent(() => import('@/components/scCropper'))
-	import config from "@/config/upload"
-  import tool from '@/utils/tool'
+<script setup>
+import {ref, reactive, watch, onMounted, nextTick, defineAsyncComponent} from 'vue'
+import {ElNotification, ElMessage, genFileId} from 'element-plus';
+import config from "@/config/upload"
+import tool from '@/utils/tool'
 
-  export default {
-		props: {
-			modelValue: { type: String, default: "" },
-			height: {type: Number, default: 148},
-			width: {type: Number, default: 148},
-			title: { type: String, default: "" },
-			icon: { type: String, default: "el-icon-plus" },
-			action: { type: String, default: "" },
-			apiObj: { type: Object, default: () => {} },
-			name: { type: String, default: config.filename },
-			data: { type: Object, default: () => {} },
-			accept: { type: String, default: "image/gif, image/jpeg, image/png" },
-			maxSize: { type: Number, default: config.maxSizeFile },
-			limit: { type: Number, default: 1 },
-			autoUpload: { type: Boolean, default: true },
-			showFileList: { type: Boolean, default: false },
-			disabled: { type: Boolean, default: false },
-			round: { type: Boolean, default: false },
-			onSuccess: { type: Function, default: () => { return true } },
+const scCropper = defineAsyncComponent(() => import('@/components/scCropper'))
 
-			cropper: { type: Boolean, default: false },
-			compress: {type: Number, default: 1},
-			aspectRatio:  {type: Number, default: NaN}
-		},
-		components: {
-			scCropper
-		},
-		data() {
-			return {
-				value: "",
-				file: null,
-				style: {
-					width: this.width + "px",
-					height: this.height + "px"
-				},
-				cropperDialogVisible: false,
-				cropperFile: null
-			}
-		},
-		watch:{
-			modelValue(val){
-        val = tool.resUrl(val)
-				this.value = val
-				this.newFile(val)
-			},
-			value(val){
-				this.$emit('update:modelValue', val)
-			}
-		},
-		mounted() {
-			this.value = this.modelValue
-			this.newFile(this.modelValue)
-		},
-		methods: {
-			newFile(url){
-				if(url){
-					this.file = {
-						status: "success",
-						url: url
-					}
-				}else{
-					this.file = null
-				}
-			},
-			cropperSave(){
-				this.$refs.cropper.getCropFile(file => {
+// Props定义
+const props = defineProps({
+  modelValue: {type: String, default: ""},
+  height: {type: Number, default: 148},
+  width: {type: Number, default: 148},
+  title: {type: String, default: ""},
+  icon: {type: String, default: "el-icon-plus"},
+  action: {type: String, default: ""},
+  apiObj: {type: Object, default: () => {}},
+  name: {type: String, default: config.filename},
+  data: {type: Object, default: () => {}},
+  accept: {type: String, default: "image/gif, image/jpeg, image/png"},
+  maxSize: {type: Number, default: config.maxSizeFile},
+  limit: {type: Number, default: 1},
+  autoUpload: {type: Boolean, default: true},
+  showFileList: {type: Boolean, default: false},
+  disabled: {type: Boolean, default: false},
+  round: {type: Boolean, default: false},
+  onSuccess: {type: Function, default: () => {return true}},
+  cropper: {type: Boolean, default: false},
+  compress: {type: Number, default: 1},
+  aspectRatio: {type: Number, default: NaN}
+})
 
-					file.uid = this.cropperFile.uid
-					this.cropperFile.raw = file
+// Emits定义
+const emit = defineEmits(['update:modelValue'])
 
-					this.file = this.cropperFile
-					this.file.tempFile = URL.createObjectURL(this.file.raw)
-					this.$refs.uploader.submit()
+// 响应式数据
+const uploaderRef = ref(null)
+const cropperRef = ref(null)
+const value = ref("")
+const file = ref(null)
+const cropperDialogVisible = ref(false)
+const cropperFile = ref(null)
 
-				}, this.cropperFile.name, this.cropperFile.type)
-				this.cropperDialogVisible = false
-			},
-			cropperClosed(){
-				URL.revokeObjectURL(this.cropperFile.tempCropperFile)
-				delete this.cropperFile.tempCropperFile
-			},
-			handleRemove(){
-				this.clearFiles()
-			},
-			clearFiles(){
-				URL.revokeObjectURL(this.file.tempFile)
-				this.value = ""
-				this.file = null
-				this.$nextTick(()=>{
-					this.$refs.uploader.clearFiles()
-				})
-			},
-			change(file,files){
-				if(files.length > 1){
-					files.splice(0, 1)
-				}
-				if(this.cropper && file.status==='ready'){
-					const acceptIncludes = ["image/gif", "image/jpeg", "image/png"].includes(file.raw.type)
-					if(!acceptIncludes){
-						this.$notify.warning({
-							title: '上传文件警告',
-							message: '选择的文件非图像类文件'
-						})
-						return false
-					}
-					this.cropperFile = file
-					this.cropperFile.tempCropperFile = URL.createObjectURL(file.raw)
-					this.cropperDialogVisible = true
-					return false
-				}
-				this.file = file
-				if(file.status==='ready'){
-					file.tempFile = URL.createObjectURL(file.raw)
-				}
-			},
-			before(file){
-				const acceptIncludes = this.accept.replace(/\s/g,"").split(",").includes(file.type)
-				if(!acceptIncludes){
-					this.$notify.warning({
-						title: '上传文件警告',
-						message: '选择的文件非图像类文件'
-					})
-					this.clearFiles()
-					return false
-				}
-				const maxSize = file.size / 1024 / 1024 < this.maxSize;
-				if (!maxSize) {
-					this.$message.warning(`上传文件大小不能超过 ${this.maxSize}MB!`);
-					this.clearFiles()
-					return false
-				}
-			},
-			handleExceed(files){
-				const file = files[0]
-				file.uid = genFileId()
-				this.$refs.uploader.handleStart(file)
-			},
-      success(res, file) {
-        // 释放内存删除blob
-        URL.revokeObjectURL(file.tempFile)
-        delete file.tempFile
-        const os = this.onSuccess(res, file);
-        if (os !== undefined && os === false) {
-          this.$nextTick(() => {
-            this.file = null
-            this.value = ""
-          })
-          return false
-        }
-        const response = config.parseData(res);
-        file.url = response.src
-        this.value = file.url
-      },
-			error(err){
-				this.$nextTick(()=>{
-					this.clearFiles()
-				})
-				this.$notify.error({
-					title: '上传文件未成功',
-					message: err
-				})
-			},
-      request(param) {
-        let apiObj = config.apiObj;
-        if (this.apiObj) {
-          apiObj = this.apiObj;
-        }
-				const data = new FormData();
-				data.append(param.filename, param.file);
-				for (const key in param.data) {
-					data.append(key, param.data[key]);
-				}
-				apiObj.post(data, {
-					onUploadProgress: e => {
-						const complete = parseInt(((e.loaded / e.total) * 100) | 0, 10)
-						param.onProgress({percent: complete})
-					}
-				}).then(res => {
-          const response = config.parseData(res);
-          if (response.code === config.successCode) {
-            param.onSuccess(res)
-          } else {
-            param.onError(response.msg || "未知错误")
-          }
-				}).catch(err => {
-					param.onError(err)
-				})
-			}
+const style = reactive({
+	width: props.width + "px",
+	height: props.height + "px"
+})
+
+// 监听器
+watch(() => props.modelValue, (val) => {
+	val = tool.resUrl(val)
+	value.value = val
+	newFile(val)
+})
+
+watch(value, (val) => {
+	emit('update:modelValue', val)
+})
+
+// 生命周期
+onMounted(() => {
+	value.value = props.modelValue
+	newFile(props.modelValue)
+})
+
+// 方法
+const newFile = (url) => {
+	if (url) {
+		file.value = {
+			status: "success",
+			url: url
 		}
+	} else {
+		file.value = null
 	}
+}
+
+const cropperSave = () => {
+	cropperRef.value.getCropFile(cropFile => {
+		cropFile.uid = cropperFile.value.uid
+		cropperFile.value.raw = cropFile
+
+		file.value = cropperFile.value
+		file.value.tempFile = URL.createObjectURL(file.value.raw)
+		uploaderRef.value.submit()
+	}, cropperFile.value.name, cropperFile.value.type)
+	cropperDialogVisible.value = false
+}
+
+const cropperClosed = () => {
+	if (cropperFile.value?.tempCropperFile) {
+		URL.revokeObjectURL(cropperFile.value.tempCropperFile)
+		delete cropperFile.value.tempCropperFile
+	}
+}
+
+const handleRemove = () => {
+	clearFiles()
+}
+
+const clearFiles = () => {
+	if (file.value?.tempFile) {
+		URL.revokeObjectURL(file.value.tempFile)
+	}
+	value.value = ""
+	file.value = null
+	nextTick(() => {
+		uploaderRef.value?.clearFiles()
+	})
+}
+
+const change = (uploadFile, files) => {
+	if (files.length > 1) {
+		files.splice(0, 1)
+	}
+	if (props.cropper && uploadFile.status === 'ready') {
+		const acceptIncludes = ["image/gif", "image/jpeg", "image/png"].includes(uploadFile.raw.type)
+		if (!acceptIncludes) {
+      ElNotification.warning({
+				title: '上传文件警告',
+				message: '选择的文件非图像类文件'
+			})
+			return false
+		}
+		cropperFile.value = uploadFile
+		cropperFile.value.tempCropperFile = URL.createObjectURL(uploadFile.raw)
+		cropperDialogVisible.value = true
+		return false
+	}
+	file.value = uploadFile
+	if (uploadFile.status === 'ready') {
+		uploadFile.tempFile = URL.createObjectURL(uploadFile.raw)
+	}
+}
+
+const before = (uploadFile) => {
+	const acceptIncludes = props.accept.replace(/\s/g, "").split(",").includes(uploadFile.type)
+	if (!acceptIncludes) {
+		ElNotification.warning({
+			title: '上传文件警告',
+			message: '选择的文件非图像类文件'
+		})
+		clearFiles()
+		return false
+	}
+	const maxSize = uploadFile.size / 1024 / 1024 < props.maxSize
+	if (!maxSize) {
+		ElMessage.warning(`上传文件大小不能超过 ${props.maxSize}MB!`)
+		clearFiles()
+		return false
+	}
+}
+
+const handleExceed = (files) => {
+	const uploadFile = files[0]
+	uploadFile.uid = genFileId()
+	uploaderRef.value.handleStart(uploadFile)
+}
+
+const success = (res, uploadFile) => {
+	// 释放内存删除blob
+	if (uploadFile.tempFile) {
+		URL.revokeObjectURL(uploadFile.tempFile)
+		delete uploadFile.tempFile
+	}
+	const os = props.onSuccess(res, uploadFile)
+	if (os !== undefined && os === false) {
+		nextTick(() => {
+			file.value = null
+			value.value = ""
+		})
+		return false
+	}
+	const response = config.parseData(res)
+	uploadFile.url = response.src
+	value.value = uploadFile.url
+}
+
+const error = (err) => {
+	nextTick(() => {
+		clearFiles()
+	})
+	ElNotification.error({
+		title: '上传文件未成功',
+		message: err
+	})
+}
+
+const request = (param) => {
+	let apiObj = config.apiObj
+	if (props.apiObj) {
+		apiObj = props.apiObj
+	}
+	const data = new FormData()
+	data.append(param.filename, param.file)
+	for (const key in param.data) {
+		data.append(key, param.data[key])
+	}
+	apiObj.post(data, {
+		onUploadProgress: e => {
+			const complete = parseInt(((e.loaded / e.total) * 100) | 0, 10)
+			param.onProgress({ percent: complete })
+		}
+	}).then(res => {
+		const response = config.parseData(res)
+		if (response.code === config.successCode) {
+			param.onSuccess(res)
+		} else {
+			param.onError(response.msg || "未知错误")
+		}
+	}).catch(err => {
+		param.onError(err)
+	})
+}
+
+// 暴露方法给父组件
+defineExpose({
+	clearFiles,
+	file,
+	value
+})
 </script>
 
 <style scoped>

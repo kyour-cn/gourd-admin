@@ -31,7 +31,7 @@ const props = defineProps({
 
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .common-header-left {display: flex;align-items: center;}
 .common-header-logo {display: flex;align-items: center;}

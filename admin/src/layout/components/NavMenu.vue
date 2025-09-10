@@ -4,7 +4,7 @@
 	</div>
 	<template v-for="navMenu in navMenus" v-bind:key="navMenu">
 		<el-menu-item v-if="!hasChildren(navMenu)" :index="navMenu.path">
-			<a v-if="navMenu.meta&&navMenu.meta.type=='link'" :href="navMenu.path" target="_blank" @click.stop='()=>{}'></a>
+			<a v-if="navMenu.meta&&navMenu.meta.type === 'link'" :href="navMenu.path" target="_blank" @click.stop='()=>{}'></a>
 			<el-icon v-if="navMenu.meta&&navMenu.meta.icon"><component :is="navMenu.meta.icon || 'el-icon-menu'"/></el-icon>
 			<template #title>
 				<span>{{navMenu.meta.title}}</span>
@@ -22,17 +22,11 @@
 	</template>
 </template>
 
-<script>
-	export default {
-		name: 'NavMenu',
-		props: ['navMenus'],
-		data() {
-			return {}
-		},
-		methods: {
-			hasChildren(item) {
-				return item.children && !item.children.every(item => item.meta.hidden)
-			}
-		}
-	}
+<script setup>
+defineProps(['navMenus'])
+
+// 方法
+const hasChildren = (item) => {
+	return item.children && !item.children.every(item => item.meta.hidden)
+}
 </script>

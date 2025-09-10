@@ -13,69 +13,76 @@
 	</div>
 </template>
 
-<script>
-	export default {
-		props: {
-			modelValue: { type: String, default: "" },
-		},
-		data() {
-			return {
-				level: 0
-			}
-		},
-		watch: {
-			modelValue() {
-				this.strength(this.modelValue)
-			}
-		},
-		mounted() {
-			this.strength(this.modelValue)
-		},
-		methods: {
-			strength(v){
-				var _level = 0
-				//长度
-				var has_length = v.length >= 6
-				//包含数字
-				var has_number = /\d/.test(v)
-				//包含小写英文
-				var has_lovercase = /[a-z]/.test(v)
-				//包含大写英文
-				var has_uppercase = /[A-Z]/.test(v)
-				//没有连续的字符3位
-				var no_continuity = !/(\w)\1{2}/.test(v)
-				//包含特殊字符
-				var has_special = /[`~!@#$%^&*()_+<>?:"{},./;'[\]]/.test(v)
+<script setup>
+import { ref, watch, onMounted } from 'vue'
 
-				if(v.length <= 0){
-					_level = 0
-					this.level = _level
-					return false
-				}
-				if(!has_length){
-					_level = 1
-					this.level = _level
-					return false
-				}
-				if(has_number){
-					_level += 1
-				}
-				if(has_lovercase){
-					_level += 1
-				}
-				if(has_uppercase){
-					_level += 1
-				}
-				if(no_continuity){
-					_level += 1
-				}
-				if(has_special){
-					_level += 1
-				}
-				this.level = _level
-			}
-		}
+// Props定义
+const props = defineProps({
+	modelValue: { type: String, default: "" },
+})
+
+// 响应式数据
+const level = ref(0)
+
+// 监听器
+watch(() => props.modelValue, (newVal) => {
+	strength(newVal)
+})
+
+// 生命周期
+onMounted(() => {
+	strength(props.modelValue)
+})
+
+// 方法
+const strength = (v) => {
+	let _level = 0
+	// 长度
+	const has_length = v.length >= 6
+	// 包含数字
+	const has_number = /\d/.test(v)
+	// 包含小写英文
+	const has_lovercase = /[a-z]/.test(v)
+	// 包含大写英文
+	const has_uppercase = /[A-Z]/.test(v)
+	// 没有连续的字符3位
+	const no_continuity = !/(\w)\1{2}/.test(v)
+	// 包含特殊字符
+	const has_special = /[`~!@#$%^&*()_+<>?:"{},./;'[\]]/.test(v)
+
+	if (v.length <= 0) {
+		_level = 0
+		level.value = _level
+		return false
 	}
+	if (!has_length) {
+		_level = 1
+		level.value = _level
+		return false
+	}
+	if (has_number) {
+		_level += 1
+	}
+	if (has_lovercase) {
+		_level += 1
+	}
+	if (has_uppercase) {
+		_level += 1
+	}
+	if (no_continuity) {
+		_level += 1
+	}
+	if (has_special) {
+		_level += 1
+	}
+	level.value = _level
+}
+
+// 暴露数据和方法给父组件
+defineExpose({
+	level,
+	strength
+})
 </script>
 
 <style scoped>

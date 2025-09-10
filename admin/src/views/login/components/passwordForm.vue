@@ -1,6 +1,6 @@
 <template>
   <el-form ref="loginForm" :model="state.form" :rules="state.rules" label-width="0" size="large"
-           @keyup.enter="onVerify">
+           @keyup.enter="refreshCaptcha">
     <el-form-item prop="user">
       <el-input v-model="state.form.user" prefix-icon="el-icon-user" clearable
                 :placeholder="$t('login.userPlaceholder')">
@@ -38,7 +38,7 @@
           }"
         />
         <template #reference>
-          <el-button type="primary" style="width: 100%;" :loading="state.islogin" round @click="onVerify">
+          <el-button type="primary" style="width: 100%;" :loading="state.isLogin" round @click="refreshCaptcha">
             {{ $t('login.signIn') }}
           </el-button>
         </template>
@@ -94,7 +94,6 @@ import {ElMessage, ElMessageBox} from "element-plus";
 import router from "@/router/index.js";
 
 const proxy = getCurrentInstance().proxy
-
 const loginForm = ref(null)
 
 const state = reactive({
@@ -111,7 +110,7 @@ const state = reactive({
       {required: true, message: proxy.$t('login.PWError'), trigger: 'blur'}
     ]
   },
-  islogin: false,
+  isLogin: false,
   captchaShow: false,
   captchaData: null,
   dialogRoleVisible: false,
@@ -120,7 +119,7 @@ const state = reactive({
 
 const selectedApp = ref(null)
 
-const onVerify = () => {
+const refreshCaptcha = () => {
   state.captchaShow = false
   authApi.captcha.get().then(res => {
     if (res.code === 0) {
@@ -141,12 +140,11 @@ const onVerify = () => {
     }
   })
 }
-const refreshCaptcha = () => {
-  onVerify()
-}
+
 const closeCaptcha = () => {
   state.captchaShow = false
 }
+
 const confirmEvent = async (point) => {
   closeCaptcha()
 
@@ -155,7 +153,7 @@ const confirmEvent = async (point) => {
     return false
   }
 
-  state.islogin = true
+  state.isLogin = true
   const data = {
     username: state.form.user,
     password: tool.crypto.MD5(state.form.password),
@@ -174,7 +172,7 @@ const confirmEvent = async (point) => {
     if (user.code === 102) {
       refreshCaptcha()
     }
-    state.islogin = false
+    state.isLogin = false
     ElMessage.warning(user.message)
     return false
   }
@@ -195,7 +193,7 @@ const confirmEvent = async (point) => {
     selectApp(state.appList[0])
   }
 
-  state.islogin = false
+  state.isLogin = false
 }
 
 // 点击选中
@@ -225,7 +223,7 @@ const getMenu = async (appId) => {
   });
   if (res.code === 0) {
     if (res.data.menu.length === 0) {
-      state.islogin = false
+      state.isLogin = false
       await ElMessageBox.alert("当前用户无任何菜单权限，请联系系统管理员", "无权限访问", {
         type: 'error',
         center: true
@@ -235,7 +233,7 @@ const getMenu = async (appId) => {
     tool.data.set("MENU", res.data.menu)
     tool.data.set("PERMISSIONS", res.data.permissions)
   } else {
-    state.islogin = false
+    state.isLogin = false
     ElMessage.warning(res.message)
     return false
   }
@@ -275,7 +273,7 @@ const getMenu = async (appId) => {
 
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .app-list {
   margin-top: 20px;
 }

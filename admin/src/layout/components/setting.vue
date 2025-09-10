@@ -1,5 +1,5 @@
 <template>
-	<el-form ref="form" label-width="120px" label-position="left" style="padding:0 20px;">
+	<el-form ref="formRef" label-width="120px" label-position="left" style="padding:0 20px;">
 		<el-alert title="以下配置可实时预览，开发者可在 config/category.js 中配置默认值，非常不建议在生产环境下开放布局设置" type="error" :closable="false"></el-alert>
 		<el-divider></el-divider>
 		<el-form-item :label="$t('user.nightmode')">
@@ -34,61 +34,69 @@
 	</el-form>
 </template>
 
-<script>
-	import colorTool from '@/utils/color'
-  import tool from '@/utils/tool'
+<script setup>
+import { ref, watch, getCurrentInstance } from 'vue'
+import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
+import colorTool from '@/utils/color'
+import tool from '@/utils/tool'
 
-	export default {
-		data(){
-			return {
-				layout: this.$store.state.global.layout,
-				menuIsCollapse: this.$store.state.global.menuIsCollapse,
-				layoutTags: this.$store.state.global.layoutTags,
-				lang: tool.data.get('APP_LANG') || this.$CONFIG.LANG,
-				dark: tool.data.get('APP_DARK') || false,
-				colorList: ['#409EFF', '#009688', '#536dfe', '#ff5c93', '#c62f2f', '#fd726d'],
-				colorPrimary: tool.data.get('APP_COLOR') || this.$CONFIG.COLOR || '#409EFF'
-			}
-		},
-		watch: {
-			layout(val) {
-				this.$store.commit("SET_layout", val)
-			},
-			menuIsCollapse(){
-				this.$store.commit("TOGGLE_menuIsCollapse")
-			},
-			layoutTags(){
-				this.$store.commit("TOGGLE_layoutTags")
-			},
-			dark(val){
-				if(val){
-					document.documentElement.classList.add("dark")
-					tool.data.set("APP_DARK", val)
-				}else{
-					document.documentElement.classList.remove("dark")
-					tool.data.remove("APP_DARK")
-				}
-			},
-			lang(val){
-				this.$i18n.locale = val
-				tool.data.set("APP_LANG", val);
-			},
-			colorPrimary(val){
-                if(!val){
-                    val = '#409EFF'
-                    this.colorPrimary = '#409EFF'
-                }
-				document.documentElement.style.setProperty('--el-color-primary', val);
-				for (let i = 1; i <= 9; i++) {
-					document.documentElement.style.setProperty(`--el-color-primary-light-${i}`, colorTool.lighten(val,i/10));
-				}
-				for (let i = 1; i <= 9; i++) {
-					document.documentElement.style.setProperty(`--el-color-primary-dark-${i}`, colorTool.darken(val,i/10));
-				}
-				tool.data.set("APP_COLOR", val);
-			}
-		}
+const store = useStore()
+const { t } = useI18n()
+const { proxy } = getCurrentInstance()
+const formRef = ref()
+
+// 响应式数据
+const layout = ref(store.state.global.layout)
+const menuIsCollapse = ref(store.state.global.menuIsCollapse)
+const layoutTags = ref(store.state.global.layoutTags)
+const lang = ref(tool.data.get('APP_LANG') || proxy.$CONFIG.LANG)
+const dark = ref(tool.data.get('APP_DARK') || false)
+const colorList = ref(['#409EFF', '#009688', '#536dfe', '#ff5c93', '#c62f2f', '#fd726d'])
+const colorPrimary = ref(tool.data.get('APP_COLOR') || proxy.$CONFIG.COLOR || '#409EFF')
+
+// 监听器
+watch(layout, (val) => {
+	store.commit("SET_layout", val)
+})
+
+watch(menuIsCollapse, () => {
+	store.commit("TOGGLE_menuIsCollapse")
+})
+
+watch(layoutTags, () => {
+	store.commit("TOGGLE_layoutTags")
+})
+
+watch(dark, (val) => {
+	if(val){
+		document.documentElement.classList.add("dark")
+		tool.data.set("APP_DARK", val)
+	}else{
+		document.documentElement.classList.remove("dark")
+		tool.data.remove("APP_DARK")
 	}
+})
+
+watch(lang, (val) => {
+	proxy.$i18n.locale = val
+	tool.data.set("APP_LANG", val)
+})
+
+watch(colorPrimary, (val) => {
+	if(!val){
+		val = '#409EFF'
+		colorPrimary.value = '#409EFF'
+	}
+	document.documentElement.style.setProperty('--el-color-primary', val)
+	for (let i = 1; i <= 9; i++) {
+		document.documentElement.style.setProperty(`--el-color-primary-light-${i}`, colorTool.lighten(val,i/10))
+	}
+	for (let i = 1; i <= 9; i++) {
+		document.documentElement.style.setProperty(`--el-color-primary-dark-${i}`, colorTool.darken(val,i/10))
+	}
+	tool.data.set("APP_COLOR", val)
+})
 </script>
 
 <style>

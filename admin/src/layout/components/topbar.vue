@@ -21,35 +21,39 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      breadList: []
-    }
-  },
-  created() {
-    this.getBreadcrumb();
-  },
-  watch: {
-    $route() {
-      this.getBreadcrumb();
-    }
-  },
-  computed: {
-    show() {
-      // 不显示面包屑的布局类型
-      const layouts = ['menu', 'header'];
-      const layout = this.$store.state.global.layout
-      return !layouts.includes(layout);
-    }
-  },
-  methods: {
-    getBreadcrumb() {
-      this.breadList = this.$route.meta.breadcrumb;
-    }
-  }
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+
+const store = useStore()
+const route = useRoute()
+
+// 响应式数据
+const breadList = ref([])
+
+// 计算属性
+const show = computed(() => {
+  // 不显示面包屑的布局类型
+  const layouts = ['menu', 'header']
+  const layout = store.state.global.layout
+  return !layouts.includes(layout)
+})
+
+// 方法
+const getBreadcrumb = () => {
+  breadList.value = route.meta.breadcrumb || []
 }
+
+// 监听器
+watch(route, () => {
+  getBreadcrumb()
+})
+
+// 生命周期
+onMounted(() => {
+  getBreadcrumb()
+})
 </script>
 
 <style scoped>
