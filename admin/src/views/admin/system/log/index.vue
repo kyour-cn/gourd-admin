@@ -61,11 +61,7 @@
                                width="250"/>
               <el-table-column label="请求ip" prop="request_ip" width="150"/>
               <el-table-column label="用户" prop="request_user" width="100"/>
-              <el-table-column label="请求时间" prop="create_time" width="170">
-                <template #default="{row}">
-                  {{ tool.dateFormat(row.create_time * 1000) }}
-                </template>
-              </el-table-column>
+              <el-table-column label="请求时间" prop="created_at" width="170"/>
             </scTable>
           </el-main>
         </el-container>

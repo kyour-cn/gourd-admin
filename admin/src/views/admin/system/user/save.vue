@@ -128,31 +128,19 @@ const submit = async () => {
   dialogForm.value.validate(async (valid) => {
     if (valid) {
       state.saveLoading = true
-      let {username, nickname, status, password, id, avatar} = state.form
 
-      let roles = state.roles.map(item => item.id)
+      const formData = JSON.parse(JSON.stringify(state.form))
 
-      status = status ? 1 : 0
+      // 格式转换
+      formData.status = formData.status ? 1 : 0
+      formData.roles = state.roles.map(item => item.id)
+
       let res
       if (state.mode === 'add') {
-        res = await systemApi.user.add.post({
-          username,
-          nickname,
-          avatar,
-          status,
-          password,
-          roles
-        })
+        delete formData.id
+        res = await systemApi.user.add.post(formData)
       } else {
-        res = await systemApi.user.edit.post({
-          id,
-          username,
-          nickname,
-          avatar,
-          status,
-          password,
-          roles
-        })
+        res = await systemApi.user.edit.post(formData)
       }
       state.saveLoading = false
       if (res.code === 0) {

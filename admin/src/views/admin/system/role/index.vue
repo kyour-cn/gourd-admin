@@ -48,13 +48,9 @@
 						/>
 					</template>
 				</el-table-column>
-                <el-table-column label="排序" prop="sort" width="80"/>
-				<el-table-column label="创建时间" prop="create_time" width="170">
-					<template #default="{row}">
-						{{ tool.dateFormat(row.create_time * 1000) }}
-					</template>
-				</el-table-column>
-                <el-table-column label="备注" prop="remark" min-width="150"/>
+        <el-table-column label="排序" prop="sort" width="80"/>
+				<el-table-column label="创建时间" prop="created_at" width="170"/>
+        <el-table-column label="备注" prop="remark" min-width="150"/>
 				<el-table-column label="操作" fixed="right" align="right" width="160">
 					<template #default="scope">
 						<el-button-group>
@@ -102,7 +98,6 @@ import scSelectFilter from "@/components/scSelectFilter"
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
 import ScTable from "@/components/scTable/index.vue"
 import systemApi from "@/api/admin/system.js";
-import tool from '@/utils/tool'
 import {ElMessage, ElMessageBox} from "element-plus";
 
 defineOptions({

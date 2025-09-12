@@ -7,7 +7,7 @@
 			<el-descriptions-item label="请求来源">{{ state.data.request_source }}</el-descriptions-item>
 			<el-descriptions-item label="操作人">{{ state.data.request_user }} （{{ state.data.request_user_id }}）</el-descriptions-item>
 			<el-descriptions-item label="请求ip">{{ state.data.request_ip }}</el-descriptions-item>
-			<el-descriptions-item label="请求时间">{{ tool.dateFormat(state.data.create_time * 1000) }}</el-descriptions-item>
+			<el-descriptions-item label="请求时间">{{ state.data.created_at }}</el-descriptions-item>
 		</el-descriptions>
 		<el-collapse v-model="state.activeNames" style="margin-top: 20px;">
 			<el-collapse-item title="记录内容" name="1">
@@ -32,7 +32,7 @@ const state = reactive({
     request_user: '',
     request_user_id: '',
     request_ip: '',
-    create_time: '',
+    created_at: '',
     value: ''
   },
   activeNames: ['1'],
