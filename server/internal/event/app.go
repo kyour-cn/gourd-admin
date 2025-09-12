@@ -16,11 +16,16 @@ func AppEvent(ctx context.Context) {
 	event.Listen("app.boot", func(ctx context.Context) {
 		slog.Debug("boot event.")
 
+		// 初始化一些全局配置、工具等
+		initialize.InitCommon()
+
+		// 初始化日志
 		err := initialize.InitLog()
 		if err != nil {
 			panic(err)
 		}
 
+		// 初始化数据库
 		err = initialize.InitDatabase()
 		if err != nil {
 			panic(err)

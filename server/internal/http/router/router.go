@@ -49,7 +49,7 @@ func InitRouter() {
 		_, _ = w.Write([]byte("hello gourd!"))
 	})
 
-	// 注册admin相关路由
+	// 注册admin子路由
 	adminSubRouter := chi.NewRouter()
 	adminRouter.Router(adminSubRouter)
 	r.Mount("/admin", adminSubRouter)

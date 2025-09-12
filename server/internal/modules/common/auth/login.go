@@ -41,7 +41,7 @@ func LoginUser(_ context.Context, username string, password string) (*model.User
 			uq.Username.Eq(username),
 			uq.Password.Eq(password),
 		).
-		Select(uq.ID, uq.Nickname, uq.Username, uq.Avatar, uq.CreateTime, uq.Status).
+		Select(uq.ID, uq.Nickname, uq.Username, uq.Avatar, uq.CreatedAt, uq.Status).
 		First()
 	if err != nil {
 		// 登录失败次数+1

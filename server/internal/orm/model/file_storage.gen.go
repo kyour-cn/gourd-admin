@@ -4,9 +4,7 @@
 
 package model
 
-import (
-	"encoding/json"
-)
+import jsoniter "github.com/json-iterator/go"
 
 const TableNameFileStorage = "file_storage"
 
@@ -22,12 +20,12 @@ type FileStorage struct {
 
 // MarshalBinary 支持json序列化
 func (m *FileStorage) MarshalBinary() (data []byte, err error) {
-	return json.Marshal(m)
+	return jsoniter.Marshal(m)
 }
 
 // UnmarshalBinary 支持json反序列化
 func (m *FileStorage) UnmarshalBinary(data []byte) error {
-	return json.Unmarshal(data, m)
+	return jsoniter.Unmarshal(data, m)
 }
 
 // TableName FileStorage's table name

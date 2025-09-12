@@ -5,35 +5,37 @@
 package model
 
 import (
-	"encoding/json"
+	"time"
 
-	"gorm.io/plugin/soft_delete"
+	jsoniter "github.com/json-iterator/go"
+	"gorm.io/gorm"
 )
 
 const TableNameUser = "user"
 
 // User 用户表
 type User struct {
-	ID         int64                 `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Nickname   string                `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`                           // 昵称
-	Username   string                `gorm:"column:username;not null;comment:用户名(登录账号)" json:"username"`                    // 用户名(登录账号)
-	Avatar     string                `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                               // 头像
-	Password   string                `gorm:"column:password;not null;comment:密码 md5" json:"password"`                       // 密码 md5
-	CreateTime int64                 `gorm:"column:create_time;not null;autoCreateTime;comment:创建|注册时间" json:"create_time"` // 创建|注册时间
-	LoginTime  int64                 `gorm:"column:login_time;not null;comment:登录时间" json:"login_time"`                     // 登录时间
-	Status     int32                 `gorm:"column:status;not null;default:1;comment:状态" json:"status"`                     // 状态
-	DeleteTime soft_delete.DeletedAt `gorm:"column:delete_time;not null;comment:删除时间" json:"delete_time"`                   // 删除时间
-	UserRole   []UserRole            `gorm:"foreignKey:user_id;references:id" json:"user_role"`
+	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	Nickname  string         `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`             // 昵称
+	Username  string         `gorm:"column:username;not null;comment:用户名(登录账号)" json:"username"`      // 用户名(登录账号)
+	Avatar    string         `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                 // 头像
+	Password  string         `gorm:"column:password;not null;comment:密码 md5" json:"password"`         // 密码 md5
+	Status    int32          `gorm:"column:status;not null;default:1;comment:状态" json:"status"`       // 状态
+	LoginTime int64          `gorm:"column:login_time;comment:登录时间" json:"login_time"`                // 登录时间
+	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间
+	UpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime;comment:更新时间" json:"updated_at"` // 更新时间
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间" json:"deleted_at"`                // 删除时间
+	UserRole  []UserRole     `gorm:"foreignKey:user_id;references:id" json:"user_role"`
 }
 
 // MarshalBinary 支持json序列化
 func (m *User) MarshalBinary() (data []byte, err error) {
-	return json.Marshal(m)
+	return jsoniter.Marshal(m)
 }
 
 // UnmarshalBinary 支持json反序列化
 func (m *User) UnmarshalBinary(data []byte) error {
-	return json.Unmarshal(data, m)
+	return jsoniter.Unmarshal(data, m)
 }
 
 // TableName User's table name

@@ -5,38 +5,40 @@
 package model
 
 import (
-	"encoding/json"
+	"time"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 const TableNameLog = "log"
 
 // Log 日志表
 type Log struct {
-	ID            int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	AppID         int64  `gorm:"column:app_id;not null;comment:应用ID 0为未知" json:"app_id"`                                 // 应用ID 0为未知
-	TypeID        int64  `gorm:"column:type_id;not null;comment:日志级别 <10为系统日志" json:"type_id"`                           // 日志级别 <10为系统日志
-	TypeName      string `gorm:"column:type_name;not null;comment:日志级别名称" json:"type_name"`                              // 日志级别名称
-	Title         string `gorm:"column:title;not null;comment:标题" json:"title"`                                          // 标题
-	Value         string `gorm:"column:value;comment:日志内容" json:"value"`                                                 // 日志内容
-	ValueType     string `gorm:"column:value_type;not null;default:text;comment:日志类型  text,json,html" json:"value_type"` // 日志类型  text,json,html
-	RequestSource string `gorm:"column:request_source;not null;comment:请求来源" json:"request_source"`                      // 请求来源
-	RequestIP     string `gorm:"column:request_ip;not null;comment:请求来源IP" json:"request_ip"`                            // 请求来源IP
-	RequestUserID int64  `gorm:"column:request_user_id;not null;comment:操作人ID" json:"request_user_id"`                   // 操作人ID
-	RequestUser   string `gorm:"column:request_user;not null;comment:操作人" json:"request_user"`                           // 操作人
-	CreateTime    int64  `gorm:"column:create_time;not null;autoCreateTime;comment:记录时间" json:"create_time"`             // 记录时间
-	UpdateTime    int64  `gorm:"column:update_time;not null;autoUpdateTime;comment:更新时间" json:"update_time"`             // 更新时间
-	Status        int32  `gorm:"column:status;not null;comment:状态 0=未处理 1=已查看 2=已处理" json:"status"`                      // 状态 0=未处理 1=已查看 2=已处理
-	LogType       User   `gorm:"foreignKey:type_id;references:id" json:"log_type"`
+	ID            int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	AppID         int64     `gorm:"column:app_id;not null;comment:应用ID 0为未知" json:"app_id"`                                 // 应用ID 0为未知
+	TypeID        int64     `gorm:"column:type_id;not null;comment:日志级别 <10为系统日志" json:"type_id"`                           // 日志级别 <10为系统日志
+	TypeName      string    `gorm:"column:type_name;not null;comment:日志级别名称" json:"type_name"`                              // 日志级别名称
+	Title         string    `gorm:"column:title;not null;comment:标题" json:"title"`                                          // 标题
+	Value         string    `gorm:"column:value;comment:日志内容" json:"value"`                                                 // 日志内容
+	ValueType     string    `gorm:"column:value_type;not null;default:text;comment:日志类型  text,json,html" json:"value_type"` // 日志类型  text,json,html
+	RequestSource string    `gorm:"column:request_source;not null;comment:请求来源" json:"request_source"`                      // 请求来源
+	RequestIP     string    `gorm:"column:request_ip;not null;comment:请求来源IP" json:"request_ip"`                            // 请求来源IP
+	RequestUserID int64     `gorm:"column:request_user_id;not null;comment:操作人ID" json:"request_user_id"`                   // 操作人ID
+	RequestUser   string    `gorm:"column:request_user;not null;comment:操作人" json:"request_user"`                           // 操作人
+	Status        int32     `gorm:"column:status;not null;comment:状态 0=未处理 1=已查看 2=已处理" json:"status"`                      // 状态 0=未处理 1=已查看 2=已处理
+	CreatedAt     time.Time `gorm:"column:created_at;autoCreateTime;comment:创建时间" json:"created_at"`                        // 创建时间
+	UpdatedAt     time.Time `gorm:"column:updated_at;autoUpdateTime;comment:更新时间" json:"updated_at"`                        // 更新时间
+	LogType       User      `gorm:"foreignKey:type_id;references:id" json:"log_type"`
 }
 
 // MarshalBinary 支持json序列化
 func (m *Log) MarshalBinary() (data []byte, err error) {
-	return json.Marshal(m)
+	return jsoniter.Marshal(m)
 }
 
 // UnmarshalBinary 支持json反序列化
 func (m *Log) UnmarshalBinary(data []byte) error {
-	return json.Unmarshal(data, m)
+	return jsoniter.Unmarshal(data, m)
 }
 
 // TableName Log's table name

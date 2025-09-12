@@ -39,9 +39,9 @@ func newLog(db *gorm.DB, opts ...gen.DOOption) log {
 	_log.RequestIP = field.NewString(tableName, "request_ip")
 	_log.RequestUserID = field.NewInt64(tableName, "request_user_id")
 	_log.RequestUser = field.NewString(tableName, "request_user")
-	_log.CreateTime = field.NewInt64(tableName, "create_time")
-	_log.UpdateTime = field.NewInt64(tableName, "update_time")
 	_log.Status = field.NewInt32(tableName, "status")
+	_log.CreatedAt = field.NewTime(tableName, "created_at")
+	_log.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_log.LogType = logHasOneLogType{
 		db: db.Session(&gorm.Session{}),
 
@@ -93,9 +93,9 @@ type log struct {
 	RequestIP     field.String // 请求来源IP
 	RequestUserID field.Int64  // 操作人ID
 	RequestUser   field.String // 操作人
-	CreateTime    field.Int64  // 记录时间
-	UpdateTime    field.Int64  // 更新时间
 	Status        field.Int32  // 状态 0=未处理 1=已查看 2=已处理
+	CreatedAt     field.Time   // 创建时间
+	UpdatedAt     field.Time   // 更新时间
 	LogType       logHasOneLogType
 
 	fieldMap map[string]field.Expr
@@ -124,9 +124,9 @@ func (l *log) updateTableName(table string) *log {
 	l.RequestIP = field.NewString(table, "request_ip")
 	l.RequestUserID = field.NewInt64(table, "request_user_id")
 	l.RequestUser = field.NewString(table, "request_user")
-	l.CreateTime = field.NewInt64(table, "create_time")
-	l.UpdateTime = field.NewInt64(table, "update_time")
 	l.Status = field.NewInt32(table, "status")
+	l.CreatedAt = field.NewTime(table, "created_at")
+	l.UpdatedAt = field.NewTime(table, "updated_at")
 
 	l.fillFieldMap()
 
@@ -155,9 +155,9 @@ func (l *log) fillFieldMap() {
 	l.fieldMap["request_ip"] = l.RequestIP
 	l.fieldMap["request_user_id"] = l.RequestUserID
 	l.fieldMap["request_user"] = l.RequestUser
-	l.fieldMap["create_time"] = l.CreateTime
-	l.fieldMap["update_time"] = l.UpdateTime
 	l.fieldMap["status"] = l.Status
+	l.fieldMap["created_at"] = l.CreatedAt
+	l.fieldMap["updated_at"] = l.UpdatedAt
 
 }
 

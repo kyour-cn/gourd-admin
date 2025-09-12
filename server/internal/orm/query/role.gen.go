@@ -33,12 +33,13 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 	_role.Name = field.NewString(tableName, "name")
 	_role.Rules = field.NewString(tableName, "rules")
 	_role.RulesCheckd = field.NewString(tableName, "rules_checkd")
-	_role.CreateTime = field.NewInt64(tableName, "create_time")
-	_role.UpdateTime = field.NewInt64(tableName, "update_time")
 	_role.Remark = field.NewString(tableName, "remark")
 	_role.Status = field.NewInt32(tableName, "status")
 	_role.Sort = field.NewInt32(tableName, "sort")
 	_role.IsAdmin = field.NewInt32(tableName, "is_admin")
+	_role.CreatedAt = field.NewTime(tableName, "created_at")
+	_role.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_role.DeletedAt = field.NewField(tableName, "deleted_at")
 	_role.App = roleHasOneApp{
 		db: db.Session(&gorm.Session{}),
 
@@ -60,12 +61,13 @@ type role struct {
 	Name        field.String // 角色名称
 	Rules       field.String // 权限ID ,分割a
 	RulesCheckd field.String // 权限树选中的字节点ID
-	CreateTime  field.Int64  // 创建时间
-	UpdateTime  field.Int64  // 更新时间
 	Remark      field.String // 简介
 	Status      field.Int32  // 状态
 	Sort        field.Int32  // 排序
 	IsAdmin     field.Int32  // 是否为管理员（所有权限）
+	CreatedAt   field.Time   // 创建时间
+	UpdatedAt   field.Time   // 更新时间
+	DeletedAt   field.Field  // 删除时间
 	App         roleHasOneApp
 
 	fieldMap map[string]field.Expr
@@ -88,12 +90,13 @@ func (r *role) updateTableName(table string) *role {
 	r.Name = field.NewString(table, "name")
 	r.Rules = field.NewString(table, "rules")
 	r.RulesCheckd = field.NewString(table, "rules_checkd")
-	r.CreateTime = field.NewInt64(table, "create_time")
-	r.UpdateTime = field.NewInt64(table, "update_time")
 	r.Remark = field.NewString(table, "remark")
 	r.Status = field.NewInt32(table, "status")
 	r.Sort = field.NewInt32(table, "sort")
 	r.IsAdmin = field.NewInt32(table, "is_admin")
+	r.CreatedAt = field.NewTime(table, "created_at")
+	r.UpdatedAt = field.NewTime(table, "updated_at")
+	r.DeletedAt = field.NewField(table, "deleted_at")
 
 	r.fillFieldMap()
 
@@ -110,18 +113,19 @@ func (r *role) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *role) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 12)
+	r.fieldMap = make(map[string]field.Expr, 13)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["app_id"] = r.AppID
 	r.fieldMap["name"] = r.Name
 	r.fieldMap["rules"] = r.Rules
 	r.fieldMap["rules_checkd"] = r.RulesCheckd
-	r.fieldMap["create_time"] = r.CreateTime
-	r.fieldMap["update_time"] = r.UpdateTime
 	r.fieldMap["remark"] = r.Remark
 	r.fieldMap["status"] = r.Status
 	r.fieldMap["sort"] = r.Sort
 	r.fieldMap["is_admin"] = r.IsAdmin
+	r.fieldMap["created_at"] = r.CreatedAt
+	r.fieldMap["updated_at"] = r.UpdatedAt
+	r.fieldMap["deleted_at"] = r.DeletedAt
 
 }
 

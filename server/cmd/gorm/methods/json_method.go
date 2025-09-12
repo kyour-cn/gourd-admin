@@ -1,6 +1,8 @@
 package methods
 
-import "encoding/json"
+import (
+	"github.com/json-iterator/go"
+)
 
 // JsonMethod 实现json序列化、反序列化接口方法
 type JsonMethod struct {
@@ -8,10 +10,10 @@ type JsonMethod struct {
 
 // MarshalBinary 支持json序列化
 func (m *JsonMethod) MarshalBinary() (data []byte, err error) {
-	return json.Marshal(m)
+	return jsoniter.Marshal(m)
 }
 
 // UnmarshalBinary 支持json反序列化
 func (m *JsonMethod) UnmarshalBinary(data []byte) error {
-	return json.Unmarshal(data, m)
+	return jsoniter.Unmarshal(data, m)
 }

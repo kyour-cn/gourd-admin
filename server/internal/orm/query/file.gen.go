@@ -40,7 +40,9 @@ func newFile(db *gorm.DB, opts ...gen.DOOption) file {
 	_file.HashMd5 = field.NewString(tableName, "hash_md5")
 	_file.UserID = field.NewInt64(tableName, "user_id")
 	_file.Status = field.NewInt32(tableName, "status")
-	_file.CreateTime = field.NewInt64(tableName, "create_time")
+	_file.CreatedAt = field.NewTime(tableName, "created_at")
+	_file.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_file.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_file.fillFieldMap()
 
@@ -64,7 +66,9 @@ type file struct {
 	HashMd5    field.String // 文件内容的MD5
 	UserID     field.Int64  // 上传用户id
 	Status     field.Int32  // 状态 1=正常 0=停用
-	CreateTime field.Int64  // 上传时间
+	CreatedAt  field.Time   // 创建时间
+	UpdatedAt  field.Time   // 更新时间
+	DeletedAt  field.Field  // 删除时间
 
 	fieldMap map[string]field.Expr
 }
@@ -93,7 +97,9 @@ func (f *file) updateTableName(table string) *file {
 	f.HashMd5 = field.NewString(table, "hash_md5")
 	f.UserID = field.NewInt64(table, "user_id")
 	f.Status = field.NewInt32(table, "status")
-	f.CreateTime = field.NewInt64(table, "create_time")
+	f.CreatedAt = field.NewTime(table, "created_at")
+	f.UpdatedAt = field.NewTime(table, "updated_at")
+	f.DeletedAt = field.NewField(table, "deleted_at")
 
 	f.fillFieldMap()
 
@@ -110,7 +116,7 @@ func (f *file) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (f *file) fillFieldMap() {
-	f.fieldMap = make(map[string]field.Expr, 13)
+	f.fieldMap = make(map[string]field.Expr, 15)
 	f.fieldMap["id"] = f.ID
 	f.fieldMap["file_name"] = f.FileName
 	f.fieldMap["file_type"] = f.FileType
@@ -123,7 +129,9 @@ func (f *file) fillFieldMap() {
 	f.fieldMap["hash_md5"] = f.HashMd5
 	f.fieldMap["user_id"] = f.UserID
 	f.fieldMap["status"] = f.Status
-	f.fieldMap["create_time"] = f.CreateTime
+	f.fieldMap["created_at"] = f.CreatedAt
+	f.fieldMap["updated_at"] = f.UpdatedAt
+	f.fieldMap["deleted_at"] = f.DeletedAt
 }
 
 func (f file) clone(db *gorm.DB) file {

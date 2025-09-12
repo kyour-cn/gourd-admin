@@ -21,12 +21,12 @@ func (c *User) List(w http.ResponseWriter, r *http.Request) {
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
-	var conditions []gen.Condition
+	var conds []gen.Condition
 	qu := query.User
 
 	keyword := r.URL.Query().Get("keyword")
 	if keyword != "" {
-		conditions = append(conditions, qu.Where(
+		conds = append(conds, qu.Where(
 			qu.Where(qu.Username.Like("%"+keyword+"%")).
 				Or(qu.Nickname.Like("%"+keyword+"%")),
 		))
@@ -36,12 +36,9 @@ func (c *User) List(w http.ResponseWriter, r *http.Request) {
 	list, count, err := query.User.WithContext(r.Context()).
 		Preload(
 			query.User.UserRole,
-			query.User.UserRole.Role.Select(
-				query.Role.ID,
-				query.Role.Name,
-			),
+			query.User.UserRole.Role.Select(query.Role.ID, query.Role.Name),
 		).
-		Where(conditions...).
+		Where(conds...).
 		FindByPage((page-1)*pageSize, pageSize)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())

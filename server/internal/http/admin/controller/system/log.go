@@ -59,7 +59,7 @@ func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 101, "时间格式异常", nil)
 		return
 	}
-	condition = append(condition, query.Log.CreateTime.Between(startTime.Unix(), entTime.Unix()))
+	condition = append(condition, query.Log.CreatedAt.Between(startTime, entTime))
 
 	// 类型筛选
 	logType := params.Get("type_id")
@@ -112,7 +112,7 @@ func (c *Log) LogStat(w http.ResponseWriter, r *http.Request) {
 
 	type LogStat struct {
 		Date     string `gorm:"column:date" json:"date"`
-		Count_   int64  `gorm:"column:count;not null" json:"count"`
+		Count    int64  `gorm:"column:count;not null" json:"count"`
 		TypeName string `gorm:"column:type_name;not null;comment:日志级别名称" json:"type_name"`
 		TypeID   int32  `gorm:"column:type_id;not null;comment:日志级别 <10为系统日志" json:"type_id"`
 	}
@@ -123,12 +123,12 @@ func (c *Log) LogStat(w http.ResponseWriter, r *http.Request) {
 	// 查询日志数量
 	rows := db.Table(query.Log.TableName()).
 		Select(
-			"date_format(from_unixtime(`create_time`), '%Y-%m-%d') AS `date`",
-			"count(0) AS `count`",
+			"date_format(`created_at`, '%Y-%m-%d') AS `date`",
+			"count(*) AS `count`",
 			"type_name",
 			"type_id",
 		).
-		Where("`create_time` BETWEEN ? AND ?", startTime.Unix(), entTime.Unix()).
+		Where("`created_at` BETWEEN ? AND ?", startTime, entTime).
 		Group("date, type_name, type_id").
 		Find(&logRows)
 	if rows.Error != nil {

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"app/internal/modules/common/auth"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // Base 基础控制器
@@ -36,7 +36,7 @@ func (*Base) Success(w http.ResponseWriter, message string, data any) (err error
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	str, _ := json.Marshal(res)
+	str, _ := jsoniter.Marshal(res)
 	_, err = w.Write(str)
 	return
 }
@@ -53,7 +53,7 @@ func (*Base) Fail(w http.ResponseWriter, code int, message string, data any) (er
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	str, _ := json.Marshal(res)
+	str, _ := jsoniter.Marshal(res)
 	_, err = w.Write(str)
 	return
 }
@@ -61,7 +61,7 @@ func (*Base) Fail(w http.ResponseWriter, code int, message string, data any) (er
 // JsonReqUnmarshal 解析json请求参数
 func (*Base) JsonReqUnmarshal(r *http.Request, req any) error {
 	// 解析json参数
-	err := json.NewDecoder(r.Body).Decode(req)
+	err := jsoniter.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		return err
 	}

@@ -21,12 +21,12 @@ func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 	// 分页参数
 	page, pageSize := c.PageParam(r, 1, 10)
 
-	var conditions []gen.Condition
+	var conds []gen.Condition
 
 	// 筛选指定应用
 	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
 	if appId > 0 {
-		conditions = append(conditions, query.Role.AppID.Eq(int64(appId)))
+		conds = append(conds, query.Role.AppID.Eq(int64(appId)))
 	}
 
 	// 筛选指定id列表
@@ -37,13 +37,13 @@ func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 			num, _ := strconv.Atoi(v)
 			idSlice = append(idSlice, int64(num))
 		}
-		conditions = append(conditions, query.Role.ID.In(idSlice...))
+		conds = append(conds, query.Role.ID.In(idSlice...))
 	}
 
 	// 查询列表
 	list, count, err := query.Role.WithContext(r.Context()).
 		//Preload(query.Role.App).
-		Where(conditions...).
+		Where(conds...).
 		Order(query.Role.AppID.Asc(), query.Role.Sort.Asc()).
 		FindByPage((page-1)*pageSize, pageSize)
 	if err != nil {
