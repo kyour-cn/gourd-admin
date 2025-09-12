@@ -69,7 +69,7 @@ func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = c.Success(w, "success", data)
+	_ = c.Success(w, "", data)
 }
 
 func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	_ = c.Success(w, "success", nil)
+	_ = c.Success(w, "", nil)
 }
 
 // 递归获取所有子分类ID
@@ -176,5 +176,5 @@ func (c *Menu) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = c.Success(w, "success", nil)
+	_ = c.Success(w, "", nil)
 }

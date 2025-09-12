@@ -2,7 +2,6 @@ package system
 
 import (
 	"app/internal/http/common/controller"
-	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"net/http"
 	"strconv"
@@ -28,12 +27,11 @@ func (c *Log) TypeList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := struct {
-		Rows  []*model.LogType `json:"rows"`
-		Total int64            `json:"total"`
-	}{
-		Rows:  list,
-		Total: count,
+	res := map[string]any{
+		"rows":      list,
+		"total":     count,
+		"page":      page,
+		"page_size": pageSize,
 	}
 
 	_ = c.Success(w, "", res)
@@ -78,12 +76,11 @@ func (c *Log) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := struct {
-		Rows  []*model.Log `json:"rows"`
-		Total int64        `json:"total"`
-	}{
-		Rows:  list,
-		Total: count,
+	res := map[string]any{
+		"rows":      list,
+		"total":     count,
+		"page":      page,
+		"page_size": pageSize,
 	}
 
 	_ = c.Success(w, "", res)
@@ -136,12 +133,9 @@ func (c *Log) LogStat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = c.Success(w, "", struct {
-		Days []string   `json:"days"`
-		Rows []*LogStat `json:"rows"`
-	}{
-		Days: days,
-		Rows: logRows,
+	_ = c.Success(w, "", map[string]any{
+		"days": days,
+		"rows": logRows,
 	})
 }
 

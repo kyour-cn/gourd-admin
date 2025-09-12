@@ -24,12 +24,11 @@ func (c *App) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := struct {
-		Rows  []*model.App `json:"rows"`
-		Total int64        `json:"total"`
-	}{
-		Rows:  list,
-		Total: count,
+	res := map[string]any{
+		"rows":      list,
+		"total":     count,
+		"page":      page,
+		"page_size": pageSize,
 	}
 
 	_ = c.Success(w, "", res)

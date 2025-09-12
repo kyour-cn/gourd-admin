@@ -63,7 +63,7 @@ func GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, error) {
 	}
 
 	qm := query.Menu
-	conditions := []gen.Condition{
+	conds := []gen.Condition{
 		qm.Status.Eq(1),
 		qm.AppID.Eq(appId),
 	}
@@ -73,13 +73,13 @@ func GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, error) {
 		if len(mIds) == 0 {
 			return nil, errors.New("暂无权限")
 		}
-		conditions = append(conditions, qm.ID.In(mIds...))
+		conds = append(conds, qm.ID.In(mIds...))
 	}
 
 	// 获取菜单
 	menu, err := query.Menu.
 		Preload(query.Menu.MenuApi).
-		Where(conditions...).
+		Where(conds...).
 		Find()
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func GetPermission(userInfo *model.User, appId int64) ([]string, error) {
 	}
 
 	qma := query.MenuAPI
-	conditions := []gen.Condition{
+	conds := []gen.Condition{
 		qma.AppID.Eq(appId),
 	}
 
@@ -122,12 +122,12 @@ func GetPermission(userInfo *model.User, appId int64) ([]string, error) {
 		if len(mIds) == 0 {
 			return []string{}, nil
 		}
-		conditions = append(conditions, qma.MenuID.In(mIds...))
+		conds = append(conds, qma.MenuID.In(mIds...))
 	}
 
 	// 查询菜单的全部接口权限
 	list, err := query.MenuAPI.
-		Where(conditions...).
+		Where(conds...).
 		Select(query.MenuAPI.ID, query.MenuAPI.Tag).
 		Find()
 	if err != nil {
@@ -146,14 +146,14 @@ func GetPermission(userInfo *model.User, appId int64) ([]string, error) {
 func GetMenuFormApp(appId int64) (any, error) {
 
 	qm := query.Menu
-	conditions := []gen.Condition{
+	conds := []gen.Condition{
 		qm.Status.Eq(1),
 		qm.AppID.Eq(appId),
 	}
 
 	menu, err := query.Menu.
 		Preload(query.Menu.MenuApi).
-		Where(conditions...).
+		Where(conds...).
 		Find()
 	if err != nil {
 		return nil, err

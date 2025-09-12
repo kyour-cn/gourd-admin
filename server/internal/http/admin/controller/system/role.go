@@ -51,12 +51,11 @@ func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := struct {
-		Rows  []*model.Role `json:"rows"`
-		Total int64         `json:"total"`
-	}{
-		Rows:  list,
-		Total: count,
+	res := map[string]any{
+		"rows":      list,
+		"total":     count,
+		"page":      page,
+		"page_size": pageSize,
 	}
 
 	_ = c.Success(w, "", res)
@@ -75,7 +74,7 @@ func (c *Role) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = c.Success(w, "success", req)
+	_ = c.Success(w, "", req)
 }
 
 func (c *Role) Edit(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +106,7 @@ func (c *Role) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = c.Success(w, "success", req)
+	_ = c.Success(w, "", req)
 }
 
 func (c *Role) Delete(w http.ResponseWriter, r *http.Request) {
@@ -127,5 +126,5 @@ func (c *Role) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = c.Success(w, "success", nil)
+	_ = c.Success(w, "", nil)
 }
