@@ -108,7 +108,7 @@ onMounted(() => {
 
 // 获取应用列表
 const getApp = async () => {
-  const res = await systemApi.app.list.get()
+  const res = await systemApi.app.list.get({page: 1, page_size: 50})
   state.appList = res.data.rows
 
   // 读取缓存 sys_menu_app_id

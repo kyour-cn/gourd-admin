@@ -72,9 +72,7 @@ const state = reactive({
 // })
 
 const getApp = async () => {
-  const res = await systemApi.app.list.get({
-    pageSize: 50
-  });
+  const res = await systemApi.app.list.get({page: 1, page_size: 50});
   state.appList = res.data.rows;
   state.selectedApp = res.data.rows[0].id;
 }

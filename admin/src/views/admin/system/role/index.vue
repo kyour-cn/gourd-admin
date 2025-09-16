@@ -143,7 +143,7 @@ onMounted(() => {
 })
 
 const getApp = async () => {
-	const res = await systemApi.app.list.get()
+	const res = await systemApi.app.list.get({page: 1, page_size: 50})
 
 	//初始化筛选器
 	const opts = []
