@@ -7,6 +7,7 @@ toolchain go1.24.4
 require (
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-gourd/gourd v1.4.2
+	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.27.0
@@ -21,7 +22,6 @@ require (
 	gorm.io/gen v0.3.27
 	gorm.io/gorm v1.30.5
 	gorm.io/plugin/dbresolver v1.6.2
-	gorm.io/plugin/soft_delete v1.2.1
 )
 
 require (
@@ -43,6 +43,7 @@ require (
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/tools v0.36.0 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gorm.io/datatypes v1.2.6 // indirect
 	gorm.io/hints v1.1.2 // indirect
 )

@@ -1,17 +1,20 @@
 package controller
 
 import (
-	"app/internal/modules/common/auth"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/form"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
 	jsoniter "github.com/json-iterator/go"
+
+	"app/internal/modules/common/auth"
 )
 
 // Base 基础控制器
@@ -22,6 +25,25 @@ type Response struct {
 	Code    int    `json:"code"`
 	Data    any    `json:"data"`
 	Message string `json:"message"`
+}
+
+var (
+	validate      *validator.Validate
+	validateTrans ut.Translator
+	decoder       = form.NewDecoder()
+)
+
+func init() {
+	// 创建验证器和翻译器
+	validate = validator.New()
+	zhCh := zh.New()
+	uni := ut.New(zhCh, zhCh)
+	validateTrans, _ = uni.GetTranslator("zh")
+	// 注册中文翻译器到 validator
+	err := zhtranslations.RegisterDefaultTranslations(validate, validateTrans)
+	if err != nil {
+		slog.Error("注册中文翻译器失败", slog.String("error", err.Error()))
+	}
 }
 
 // Success 成功时响应
@@ -61,19 +83,7 @@ func (*Base) Fail(w http.ResponseWriter, code int, message string, data any) (er
 // JsonReqUnmarshal 解析json请求参数
 func (*Base) JsonReqUnmarshal(r *http.Request, req any) error {
 	// 解析json参数
-	err := jsoniter.NewDecoder(r.Body).Decode(req)
-	if err != nil {
-		return err
-	}
-
-	// 创建验证器和翻译器
-	validate := validator.New()
-	zhCh := zh.New()
-	uni := ut.New(zhCh, zhCh)
-	trans, _ := uni.GetTranslator("zh")
-	// 注册中文翻译器到 validator
-	err = zhtranslations.RegisterDefaultTranslations(validate, trans)
-	if err != nil {
+	if err := jsoniter.NewDecoder(r.Body).Decode(req); err != nil {
 		return err
 	}
 
@@ -83,8 +93,28 @@ func (*Base) JsonReqUnmarshal(r *http.Request, req any) error {
 		errors.As(err, &errs)
 		for _, e := range errs {
 			// 输出中文错误提示 第一个
-			err := fmt.Errorf(e.Translate(trans))
-			return err
+			return fmt.Errorf(e.Translate(validateTrans))
+		}
+	}
+	return nil
+}
+
+// QueryReqUnmarshal 解析GET请求参数
+func (*Base) QueryReqUnmarshal(r *http.Request, req any) error {
+	if err := r.ParseForm(); err != nil {
+		return err
+	}
+	if err := decoder.Decode(req, r.Form); err != nil {
+		return err
+	}
+
+	// 校验参数
+	if err := validate.Struct(req); err != nil {
+		var errs validator.ValidationErrors
+		errors.As(err, &errs)
+		for _, e := range errs {
+			// 输出中文错误提示 第一个
+			return fmt.Errorf(e.Translate(validateTrans))
 		}
 	}
 	return nil

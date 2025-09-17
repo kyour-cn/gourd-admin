@@ -1,73 +1,63 @@
 package system
 
 import (
+	"app/internal/http/admin/dto"
+	"app/internal/http/admin/services"
 	"app/internal/http/common/controller"
-	"app/internal/orm/model"
-	"app/internal/orm/query"
 	"net/http"
 )
 
-// App 用户控制器
+// App 应用控制器
 type App struct {
 	controller.Base //继承基础控制器
 }
 
 func (c *App) List(w http.ResponseWriter, r *http.Request) {
-	// 分页参数
-	page, pageSize := c.PageParam(r, 1, 10)
+	req := &dto.AppListReq{}
+	if err := c.QueryReqUnmarshal(r, req); err != nil {
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), "")
+		return
+	}
 
-	// 查询列表
-	list, count, err := query.App.WithContext(r.Context()).
-		FindByPage((page-1)*pageSize, pageSize)
+	service := services.NewAppService(r.Context())
+	res, err := service.GetList(req)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
 		return
 	}
-
-	res := map[string]any{
-		"rows":      list,
-		"total":     count,
-		"page":      page,
-		"page_size": pageSize,
-	}
-
 	_ = c.Success(w, "", res)
 }
 
 func (c *App) Add(w http.ResponseWriter, r *http.Request) {
-	req := &model.App{}
-	if err := c.JsonReqUnmarshal(r, &req); err != nil {
+	req := &dto.AppCreateReq{}
+	if err := c.JsonReqUnmarshal(r, req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	err := query.App.WithContext(r.Context()).Create(req)
+	service := services.NewAppService(r.Context())
+	err := service.Create(req)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
 	}
-
-	_ = c.Success(w, "success", req)
+	_ = c.Success(w, "success", nil)
 }
 
 func (c *App) Edit(w http.ResponseWriter, r *http.Request) {
-	req := model.App{}
-	if err := c.JsonReqUnmarshal(r, &req); err != nil {
+	req := &dto.AppUpdateReq{}
+	if err := c.JsonReqUnmarshal(r, req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	qa := query.App
-
-	_, err := qa.WithContext(r.Context()).
-		Where(query.App.ID.Eq(req.ID)).
-		Select(qa.Name, qa.Key, qa.Remark, qa.Status, qa.Sort).
-		Updates(req)
+	service := services.NewAppService(r.Context())
+	res, err := service.Update(req)
 	if err != nil {
+		_ = c.Fail(w, 1, "更新失败", err.Error())
 		return
 	}
-
-	_ = c.Success(w, "success", req)
+	_ = c.Success(w, "success", res)
 }
 
 func (c *App) Delete(w http.ResponseWriter, r *http.Request) {
@@ -79,13 +69,11 @@ func (c *App) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := query.App.WithContext(r.Context()).
-		Where(query.App.ID.In(req.Ids...)).
-		Delete()
+	service := services.NewAppService(r.Context())
+	res, err := service.Delete(req.Ids)
 	if err != nil {
 		_ = c.Fail(w, 1, "删除失败", err.Error())
 		return
 	}
-
-	_ = c.Success(w, "success", nil)
+	_ = c.Success(w, "success", res)
 }

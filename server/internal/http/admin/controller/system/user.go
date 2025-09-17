@@ -159,7 +159,7 @@ func (c *User) UpdateRole(userID int64, roleIDs []int64) error {
 		}
 	}
 
-	// 新增新增角色
+	// 新增角色
 	for _, roleID := range roleIDs {
 		if oldRoleMap[roleID] {
 			continue
