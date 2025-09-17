@@ -258,7 +258,7 @@ const arrayPad = (arr, len, val) => {
 }
 
 onMounted(() => {
-  systemApi.log.typeList.get({page_size: 1000}).then((res) => {
+  systemApi.log.typeList.get({page: 1,page_size: 500}).then((res) => {
     state.types = res.data.rows
     state.category = renderTreeMenu(res.data.rows)
     echartsRender();

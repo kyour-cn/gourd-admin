@@ -143,7 +143,11 @@ onMounted(() => {
 })
 
 const getApp = async () => {
-	const res = await systemApi.app.list.get({page: 1, page_size: 50})
+	const res = await systemApi.app.list.get()
+  if (res.code !== 0) {
+    await ElMessageBox.alert(res.message, "提示", {type: 'error'});
+    return
+  }
 
 	//初始化筛选器
 	const opts = []

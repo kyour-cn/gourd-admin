@@ -41,7 +41,7 @@
               </el-button>
               <el-popconfirm title="确定删除吗？" @confirm="tableDel(scope.row)">
                 <template #reference>
-                  <el-button v-auth="'admin.system.app.delete1'" text plain type="danger" size="small">删除</el-button>
+                  <el-button v-auth="'admin.system.app.delete'" text plain type="danger" size="small">删除</el-button>
                 </template>
               </el-popconfirm>
             </el-button-group>
