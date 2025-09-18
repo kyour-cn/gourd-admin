@@ -58,7 +58,8 @@ func (s *UserService) Create(req *dto.UserCreateReq) error {
 		req.Password = hex.EncodeToString(hash[:])
 	}
 
-	if err := query.User.WithContext(s.ctx).Create(&req.User); err != nil {
+	err := query.User.WithContext(s.ctx).Create(&req.User)
+	if err != nil {
 		return err
 	}
 

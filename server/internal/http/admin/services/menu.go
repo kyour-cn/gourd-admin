@@ -57,7 +57,6 @@ func (s *MenuService) Create(req *dto.MenuCreateReq) error {
 		Type:      req.Meta.Type,
 		Path:      req.Path,
 		Component: req.Component,
-		Status:    1,
 		Sort:      0,
 		Meta:      string(mate),
 	}

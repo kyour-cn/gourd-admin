@@ -1,15 +1,11 @@
 package system
 
 import (
-	"app/internal/http/common/controller"
-	"app/internal/orm/model"
-	"app/internal/orm/query"
 	"net/http"
-	"strconv"
-	"strings"
 
-	"gorm.io/gen"
-	"gorm.io/gen/field"
+	"app/internal/http/admin/dto"
+	"app/internal/http/admin/services"
+	"app/internal/http/common/controller"
 )
 
 // Role 用户控制器
@@ -18,95 +14,52 @@ type Role struct {
 }
 
 func (c *Role) List(w http.ResponseWriter, r *http.Request) {
-	// 分页参数
-	page, pageSize := c.PageParam(r, 1, 10)
-
-	var conds []gen.Condition
-
-	// 筛选指定应用
-	appId, _ := strconv.Atoi(r.URL.Query().Get("app_id"))
-	if appId > 0 {
-		conds = append(conds, query.Role.AppID.Eq(int64(appId)))
+	req := &dto.RoleListReq{}
+	if err := c.QueryReqUnmarshal(r, req); err != nil {
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), "")
+		return
 	}
 
-	// 筛选指定id列表
-	ids := r.URL.Query().Get("ids")
-	if ids != "" {
-		idSlice := make([]int64, 0)
-		for _, v := range strings.Split(ids, ",") {
-			num, _ := strconv.Atoi(v)
-			idSlice = append(idSlice, int64(num))
-		}
-		conds = append(conds, query.Role.ID.In(idSlice...))
-	}
-
-	// 查询列表
-	list, count, err := query.Role.WithContext(r.Context()).
-		//Preload(query.Role.App).
-		Where(conds...).
-		Order(query.Role.AppID.Asc(), query.Role.Sort.Asc()).
-		FindByPage((page-1)*pageSize, pageSize)
+	service := services.NewRoleService(r.Context())
+	res, err := service.GetList(req)
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
 		return
 	}
-
-	res := map[string]any{
-		"rows":      list,
-		"total":     count,
-		"page":      page,
-		"page_size": pageSize,
-	}
-
 	_ = c.Success(w, "", res)
 }
 
 func (c *Role) Add(w http.ResponseWriter, r *http.Request) {
-	req := &model.Role{}
-	if err := c.JsonReqUnmarshal(r, &req); err != nil {
+	req := &dto.RoleCreateReq{}
+	if err := c.JsonReqUnmarshal(r, req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
 
-	err := query.Role.WithContext(r.Context()).Create(req)
-	if err != nil {
+	service := services.NewRoleService(r.Context())
+	if err := service.Create(req); err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
 	}
-
-	_ = c.Success(w, "", req)
+	_ = c.Success(w, "success", nil)
 }
 
 func (c *Role) Edit(w http.ResponseWriter, r *http.Request) {
-	req := model.Role{}
-	if err := c.JsonReqUnmarshal(r, &req); err != nil {
+	req := &dto.RoleUpdateReq{}
+	if err := c.JsonReqUnmarshal(r, req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
 		return
 	}
+	// 从查询参数读取 type（permission 或 空）
+	req.Type = r.URL.Query().Get("type")
 
-	qm := query.Role
-
-	var fields []field.Expr
-	if r.URL.Query().Get("type") == "permission" {
-		// 权限编辑
-		fields = append(fields,
-			qm.Rules, qm.RulesCheckd,
-		)
-	} else {
-		fields = append(fields,
-			qm.IsAdmin, qm.Name, qm.Remark, qm.Status, qm.Sort,
-		)
-	}
-
-	_, err := query.Role.WithContext(r.Context()).
-		Where(query.Role.ID.Eq(req.ID)).
-		Select(fields...).
-		Updates(req)
+	service := services.NewRoleService(r.Context())
+	res, err := service.Update(req)
 	if err != nil {
+		_ = c.Fail(w, 1, "更新失败", err.Error())
 		return
 	}
-
-	_ = c.Success(w, "", req)
+	_ = c.Success(w, "", res)
 }
 
 func (c *Role) Delete(w http.ResponseWriter, r *http.Request) {
@@ -118,13 +71,11 @@ func (c *Role) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := query.Role.WithContext(r.Context()).
-		Where(query.Role.ID.In(req.Ids...)).
-		Delete()
+	service := services.NewRoleService(r.Context())
+	res, err := service.Delete(req.Ids)
 	if err != nil {
 		_ = c.Fail(w, 1, "删除失败", err.Error())
 		return
 	}
-
-	_ = c.Success(w, "", nil)
+	_ = c.Success(w, "", res)
 }

@@ -65,7 +65,7 @@ const state = reactive({
   isSaving: false,
   //表单数据
   form: {
-    id: "",
+    id: 0,
     name: "",
     sort: 1,
     is_admin: 0,
@@ -90,15 +90,17 @@ const submit = () => {
     if (valid) {
       state.isSaving = true;
 
-      const data = state.form
-      data.is_admin = data.is_admin ? 1 : 0;
-      data.status = data.status ? 1 : 0;
+      // 拷贝表单数据，避免引用问题
+      const formData = JSON.parse(JSON.stringify(state.form))
+      // 格式转换
+      formData.is_admin = formData.is_admin ? 1 : 0;
+      formData.status = formData.status ? 1 : 0;
 
       if (state.mode === 'add') {
-        delete data.id
+        delete formData.id
       }
 
-      const res = await systemApi.role[state.mode].post(data);
+      const res = await systemApi.role[state.mode].post(formData);
       state.isSaving = false;
       if (res.code === 0) {
         emits('success', state.form, state.mode)

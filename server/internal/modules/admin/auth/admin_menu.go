@@ -64,7 +64,6 @@ func GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, error) {
 
 	qm := query.Menu
 	conds := []gen.Condition{
-		qm.Status.Eq(1),
 		qm.AppID.Eq(appId),
 	}
 
@@ -147,7 +146,6 @@ func GetMenuFormApp(appId int64) (any, error) {
 
 	qm := query.Menu
 	conds := []gen.Condition{
-		qm.Status.Eq(1),
 		qm.AppID.Eq(appId),
 	}
 

@@ -108,7 +108,7 @@ onMounted(() => {
 
 // 获取应用列表
 const getApp = async () => {
-  const res = await systemApi.app.list.get({page: 1, page_size: 50})
+  const res = await systemApi.app.list.get({page: 1, page_size: 500})
   state.appList = res.data.rows
 
   // 读取缓存 sys_menu_app_id
@@ -124,6 +124,8 @@ const getApp = async () => {
 const getMenu = async () => {
   state.menuLoading = true
   const res = await systemApi.menu.list.get({
+    page: 1,
+    page_size: 50,
     app_id: state.selectedApp
   })
   saveDialogRef.value.unsetData()

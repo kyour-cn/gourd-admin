@@ -29,6 +29,7 @@ type MenuUpdateReq struct {
 	Meta      auth.MenuMate `json:"meta"`
 	AppId     int64         `json:"appId"`
 	Pid       int64         `json:"pid"`
+	Status    int32         `json:"status"`
 	ApiList   []struct {
 		Path string `json:"path"`
 		Tag  string `json:"tag"`

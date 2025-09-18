@@ -11,11 +11,11 @@ const TableNameFileStorage = "file_storage"
 // FileStorage 文件存储
 type FileStorage struct {
 	ID        int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Name      string `gorm:"column:name;not null;comment:名称" json:"name"`                         // 名称
-	Key       string `gorm:"column:key;not null;comment:唯一标识" json:"key"`                         // 唯一标识
-	Config    string `gorm:"column:config;comment:配置" json:"config"`                              // 配置
-	IsDefault int32  `gorm:"column:is_default;not null;comment:是否默认" json:"is_default"`           // 是否默认
-	Status    int32  `gorm:"column:status;not null;default:1;comment:状态 1=正常 0=停用" json:"status"` // 状态 1=正常 0=停用
+	Name      string `gorm:"column:name;not null;comment:名称" json:"name"`               // 名称
+	Key       string `gorm:"column:key;not null;comment:唯一标识" json:"key"`               // 唯一标识
+	Config    string `gorm:"column:config;comment:配置" json:"config"`                    // 配置
+	IsDefault int32  `gorm:"column:is_default;not null;comment:是否默认" json:"is_default"` // 是否默认
+	Status    int32  `gorm:"column:status;not null;comment:状态 1=正常 0=停用" json:"status"` // 状态 1=正常 0=停用
 }
 
 // MarshalBinary 支持json序列化

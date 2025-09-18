@@ -36,7 +36,6 @@ func newMenu(db *gorm.DB, opts ...gen.DOOption) menu {
 	_menu.Type = field.NewString(tableName, "type")
 	_menu.Path = field.NewString(tableName, "path")
 	_menu.Component = field.NewString(tableName, "component")
-	_menu.Status = field.NewInt32(tableName, "status")
 	_menu.Sort = field.NewInt64(tableName, "sort")
 	_menu.Meta = field.NewString(tableName, "meta")
 	_menu.App = menuHasOneApp{
@@ -69,7 +68,6 @@ type menu struct {
 	Type      field.String // 类型
 	Path      field.String // 路由地址
 	Component field.String // 组件地址
-	Status    field.Int32  // 是否启用
 	Sort      field.Int64  // 排序
 	Meta      field.String // meta路由参数
 	App       menuHasOneApp
@@ -99,7 +97,6 @@ func (m *menu) updateTableName(table string) *menu {
 	m.Type = field.NewString(table, "type")
 	m.Path = field.NewString(table, "path")
 	m.Component = field.NewString(table, "component")
-	m.Status = field.NewInt32(table, "status")
 	m.Sort = field.NewInt64(table, "sort")
 	m.Meta = field.NewString(table, "meta")
 
@@ -118,7 +115,7 @@ func (m *menu) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (m *menu) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 13)
+	m.fieldMap = make(map[string]field.Expr, 12)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["app_id"] = m.AppID
 	m.fieldMap["pid"] = m.Pid
@@ -127,7 +124,6 @@ func (m *menu) fillFieldMap() {
 	m.fieldMap["type"] = m.Type
 	m.fieldMap["path"] = m.Path
 	m.fieldMap["component"] = m.Component
-	m.fieldMap["status"] = m.Status
 	m.fieldMap["sort"] = m.Sort
 	m.fieldMap["meta"] = m.Meta
 

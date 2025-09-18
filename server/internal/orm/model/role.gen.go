@@ -21,7 +21,7 @@ type Role struct {
 	Rules       string         `gorm:"column:rules;not null;comment:权限ID ,分割a" json:"rules"`                 // 权限ID ,分割a
 	RulesCheckd string         `gorm:"column:rules_checkd;not null;comment:权限树选中的字节点ID" json:"rules_checkd"` // 权限树选中的字节点ID
 	Remark      string         `gorm:"column:remark;not null;comment:简介" json:"remark"`                      // 简介
-	Status      int32          `gorm:"column:status;not null;default:1;comment:状态" json:"status"`            // 状态
+	Status      int32          `gorm:"column:status;not null;comment:状态" json:"status"`                      // 状态
 	Sort        int32          `gorm:"column:sort;not null;comment:排序" json:"sort"`                          // 排序
 	IsAdmin     int32          `gorm:"column:is_admin;not null;comment:是否为管理员（所有权限）" json:"is_admin"`        // 是否为管理员（所有权限）
 	CreatedAt   time.Time      `gorm:"column:created_at;autoCreateTime;comment:创建时间" json:"created_at"`      // 创建时间
