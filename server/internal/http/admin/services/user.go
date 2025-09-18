@@ -1,0 +1,143 @@
+package services
+
+import (
+	"app/internal/http/admin/dto"
+	"app/internal/orm/model"
+	"app/internal/orm/query"
+	"context"
+	"crypto/md5"
+	"encoding/hex"
+
+	"gorm.io/gen"
+	"gorm.io/gen/field"
+)
+
+func NewUserService(ctx context.Context) *UserService {
+	return &UserService{ctx: ctx}
+}
+
+type UserService struct {
+	ctx context.Context
+}
+
+func (s *UserService) GetList(req *dto.UserListReq) (*dto.PageListReq, error) {
+	q := query.User
+	var conds []gen.Condition
+
+	// 关键字搜索：用户名或昵称
+	if req.Keyword != "" {
+		conds = append(conds, q.Where(
+			q.Where(q.Username.Like("%"+req.Keyword+"%")).
+				Or(q.Nickname.Like("%"+req.Keyword+"%")),
+		))
+	}
+
+	list, count, err := q.WithContext(s.ctx).
+		Preload(
+			query.User.UserRole,
+			query.User.UserRole.Role.Select(query.Role.ID, query.Role.Name),
+		).
+		Where(conds...).
+		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.PageListReq{
+		Rows:     list,
+		Total:    count,
+		Page:     req.Page,
+		PageSize: req.PageSize,
+	}, nil
+}
+
+func (s *UserService) Create(req *dto.UserCreateReq) error {
+	// 密码处理
+	if req.Password != "" {
+		hash := md5.Sum([]byte(req.Password))
+		req.Password = hex.EncodeToString(hash[:])
+	}
+
+	if err := query.User.WithContext(s.ctx).Create(&req.User); err != nil {
+		return err
+	}
+
+	// 新增用户角色
+	return s.updateRole(req.ID, req.Roles)
+}
+
+func (s *UserService) Update(req *dto.UserUpdateReq) (gen.ResultInfo, error) {
+	qu := query.User
+
+	fields := []field.Expr{
+		qu.Nickname, qu.Username, qu.Avatar, qu.Status,
+	}
+	// 密码更新（如提供）
+	if req.Password != "" {
+		hash := md5.Sum([]byte(req.Password))
+		req.Password = hex.EncodeToString(hash[:])
+		fields = append(fields, qu.Password)
+	}
+
+	res, err := qu.WithContext(s.ctx).
+		Where(qu.ID.Eq(req.ID)).
+		Select(fields...).
+		Updates(req.User)
+	if err != nil {
+		return res, err
+	}
+
+	// 更新用户角色
+	if err := s.updateRole(req.ID, req.Roles); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
+func (s *UserService) Delete(ids []int64) (gen.ResultInfo, error) {
+	return query.User.WithContext(s.ctx).
+		Where(query.User.ID.In(ids...)).
+		Delete()
+}
+
+// updateRole 差异更新用户角色
+func (s *UserService) updateRole(userID int64, roleIDs []int64) error {
+	// 原有角色
+	oldRoles, err := query.UserRole.WithContext(s.ctx).
+		Where(query.UserRole.UserID.Eq(userID)).
+		Find()
+	if err != nil {
+		return err
+	}
+
+	oldRoleMap := make(map[int64]bool)
+	for _, role := range oldRoles {
+		oldRoleMap[role.RoleID] = true
+	}
+	newRoleMap := make(map[int64]bool)
+	for _, roleID := range roleIDs {
+		newRoleMap[roleID] = true
+	}
+
+	// 删除失效角色
+	for roleID := range oldRoleMap {
+		if !newRoleMap[roleID] {
+			if _, err := query.UserRole.WithContext(s.ctx).
+				Where(query.UserRole.UserID.Eq(userID), query.UserRole.RoleID.Eq(roleID)).
+				Delete(); err != nil {
+				return err
+			}
+		}
+	}
+
+	// 新增缺失角色
+	for _, roleID := range roleIDs {
+		if oldRoleMap[roleID] {
+			continue
+		}
+		if err := query.UserRole.WithContext(s.ctx).Create(&model.UserRole{UserID: userID, RoleID: roleID}); err != nil {
+			return err
+		}
+	}
+	return nil
+}

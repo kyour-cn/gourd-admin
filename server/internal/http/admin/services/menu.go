@@ -153,7 +153,7 @@ func (s *MenuService) Delete(ids []int64) error {
 	if err != nil {
 		return err
 	}
-	_, err = q.WithContext(r.Context()).
+	_, err = q.WithContext(s.ctx).
 		Where(q.ID.In(allIDs...)).
 		Delete()
 	if err != nil {

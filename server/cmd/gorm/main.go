@@ -84,7 +84,6 @@ func main() {
 				"references": {"id"},
 			},
 		}),
-		gen.FieldType("login_time", "int64"),
 	)...)
 	allTables = append(allTables, userModel)
 
