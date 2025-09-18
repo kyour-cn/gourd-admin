@@ -1,6 +1,11 @@
 package controller
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"net/http"
+	"strconv"
+
 	"app/internal/config"
 	"app/internal/modules/admin/auth"
 	auth2 "app/internal/modules/common/auth"
@@ -8,10 +13,6 @@ import (
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"app/internal/util/captcha"
-	"crypto/md5"
-	"encoding/hex"
-	"net/http"
-	"strconv"
 )
 
 // Auth 用户控制器

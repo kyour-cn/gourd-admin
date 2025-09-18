@@ -1,13 +1,14 @@
 package upload
 
 import (
-	"app/internal/orm/model"
 	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"io"
 	"os"
 	"path/filepath"
+
+	"app/internal/orm/model"
 )
 
 func NewLocalUploader(storage *model.FileStorage) Uploader {

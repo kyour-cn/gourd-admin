@@ -1,8 +1,6 @@
 package auth
 
 import (
-	"app/internal/orm/model"
-	"app/internal/orm/query"
 	"encoding/json"
 	"errors"
 	"sort"
@@ -10,6 +8,9 @@ import (
 	"strings"
 
 	"gorm.io/gen"
+
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 )
 
 type MenuMate struct {

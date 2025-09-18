@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"app/internal/orm/model"
-	"app/internal/orm/query"
 	"crypto/md5"
 	"encoding/hex"
 	"net/http"
+
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 )
 
 // User 用户控制器

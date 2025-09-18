@@ -1,11 +1,12 @@
 package initialize
 
 import (
-	"app/internal/config"
-	"app/internal/http/router"
 	"fmt"
 	"log/slog"
 	"net/http"
+
+	"app/internal/config"
+	"app/internal/http/router"
 )
 
 // InitHttpServer 启动http服务

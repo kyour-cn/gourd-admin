@@ -1,8 +1,6 @@
 package initialize
 
 import (
-	"app/internal/config"
-	"app/internal/orm/query"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -11,6 +9,9 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"app/internal/config"
+	"app/internal/orm/query"
 )
 
 // 使用自定义logger接管gorm日志

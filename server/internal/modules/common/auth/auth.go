@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"app/internal/orm/query"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"app/internal/orm/query"
 )
 
 // CheckPath 检查Token接口权限

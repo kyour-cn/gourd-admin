@@ -1,13 +1,14 @@
 package services
 
 import (
-	"app/internal/http/admin/dto"
-	"app/internal/orm/query"
 	"context"
 	"fmt"
 	"time"
 
 	"gorm.io/gen"
+
+	"app/internal/http/admin/dto"
+	"app/internal/orm/query"
 )
 
 func NewLogTypeService(ctx context.Context) *LogTypeService {

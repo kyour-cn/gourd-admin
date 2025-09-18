@@ -1,12 +1,13 @@
 package middleware
 
 import (
-	"app/internal/config"
-	auth2 "app/internal/modules/common/auth"
 	"context"
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
+
+	"app/internal/config"
+	auth2 "app/internal/modules/common/auth"
 )
 
 // AuthJwtMiddleware JWT鉴权中间件

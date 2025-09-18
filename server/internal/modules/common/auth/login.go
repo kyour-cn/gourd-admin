@@ -1,15 +1,16 @@
 package auth
 
 import (
-	"app/internal/config"
-	"app/internal/orm/model"
-	"app/internal/orm/query"
-	"app/internal/util/cache"
 	"context"
 	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+
+	"app/internal/config"
+	"app/internal/orm/model"
+	"app/internal/orm/query"
+	"app/internal/util/cache"
 )
 
 type UserClaims struct {

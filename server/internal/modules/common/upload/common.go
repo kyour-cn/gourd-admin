@@ -1,8 +1,6 @@
 package upload
 
 import (
-	"app/internal/orm/model"
-	"app/internal/orm/query"
 	"context"
 	"fmt"
 	"io"
@@ -13,6 +11,9 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gen"
+
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 )
 
 // Input 上传请求参数

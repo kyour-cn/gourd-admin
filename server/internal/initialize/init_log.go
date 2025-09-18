@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"app/internal/config"
 	"context"
 	"io"
 	"log/slog"
@@ -9,6 +8,8 @@ import (
 	"time"
 
 	"gopkg.in/natefinch/lumberjack.v2"
+
+	"app/internal/config"
 )
 
 // InitLog 初始化日志

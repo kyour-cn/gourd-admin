@@ -1,7 +1,6 @@
 package captcha
 
 import (
-	"app/internal/util/cache"
 	"encoding/json"
 	"errors"
 	"log/slog"
@@ -11,6 +10,8 @@ import (
 	"github.com/wenlng/go-captcha-assets/resources/images"
 	"github.com/wenlng/go-captcha-assets/resources/tiles"
 	"github.com/wenlng/go-captcha/v2/slide"
+
+	"app/internal/util/cache"
 )
 
 var (
