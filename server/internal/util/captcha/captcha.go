@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log/slog"
+	"sync"
 	"time"
 
 	"github.com/wenlng/go-captcha-assets/helper"
@@ -16,48 +17,45 @@ import (
 
 var (
 	slideCapt slide.Captcha
-	initEd    = false
+	once      sync.Once
 )
 
 func Init() {
-	if initEd {
-		return
-	}
-	initEd = true
+	once.Do(func() {
+		builder := slide.NewBuilder(
+			//slide.WithGenGraphNumber(2),
+			slide.WithEnableGraphVerticalRandom(true),
+		)
 
-	builder := slide.NewBuilder(
-		//slide.WithGenGraphNumber(2),
-		slide.WithEnableGraphVerticalRandom(true),
-	)
+		// background images
+		bgImages, err := images.GetImages()
+		if err != nil {
+			slog.Error(err.Error())
+		}
 
-	// background images
-	bgImages, err := images.GetImages()
-	if err != nil {
-		slog.Error(err.Error())
-	}
+		graphs, err := tiles.GetTiles()
+		if err != nil {
+			slog.Error(err.Error())
+		}
 
-	graphs, err := tiles.GetTiles()
-	if err != nil {
-		slog.Error(err.Error())
-	}
+		var newGraphs = make([]*slide.GraphImage, 0, len(graphs))
+		for i := 0; i < len(graphs); i++ {
+			graph := graphs[i]
+			newGraphs = append(newGraphs, &slide.GraphImage{
+				OverlayImage: graph.OverlayImage,
+				MaskImage:    graph.MaskImage,
+				ShadowImage:  graph.ShadowImage,
+			})
+		}
 
-	var newGraphs = make([]*slide.GraphImage, 0, len(graphs))
-	for i := 0; i < len(graphs); i++ {
-		graph := graphs[i]
-		newGraphs = append(newGraphs, &slide.GraphImage{
-			OverlayImage: graph.OverlayImage,
-			MaskImage:    graph.MaskImage,
-			ShadowImage:  graph.ShadowImage,
-		})
-	}
+		// set resources
+		builder.SetResources(
+			slide.WithGraphImages(newGraphs),
+			slide.WithBackgrounds(bgImages),
+		)
 
-	// set resources
-	builder.SetResources(
-		slide.WithGraphImages(newGraphs),
-		slide.WithBackgrounds(bgImages),
-	)
-
-	slideCapt = builder.Make()
+		slideCapt = builder.Make()
+	})
 }
 
 // GenerateSlide 生成滑动验证码
