@@ -2,8 +2,8 @@ package config
 
 // JwtConfig 日志配置
 type JwtConfig struct {
-	Secret string `toml:"secret" json:"secret"` // 加密密钥
-	Expire int64  `toml:"expire" json:"expire"` // 过期时间（单位：秒）
+	Secret string `toml:"secret" json:"secret" comment:"加密密钥"`
+	Expire int64  `toml:"expire" json:"expire" comment:"过期时间（单位：秒）"`
 }
 
 var jwtConf *JwtConfig

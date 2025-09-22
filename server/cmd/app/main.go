@@ -9,13 +9,13 @@ import (
 
 func main() {
 
-	ctx := context.WithValue(context.Background(), "app_name", "app")
+	ctx := context.Background()
 
 	// 创建一个应用实例
 	app := gourd.App{
-		// 应用事件初始化入口
-		EventHandler: event.AppEvent,
+		EventHandler: event.AppEvent, // 应用事件初始化
 		Context:      ctx,
+		DisableLogo:  true,
 	}
 
 	// 执行初始化

@@ -10,7 +10,7 @@ import (
 )
 
 // AppEvent 事件注册
-func AppEvent(ctx context.Context) {
+func AppEvent(_ context.Context) {
 
 	// Boot事件(应用) -初始化应用时执行
 	event.Listen("app.boot", func(ctx context.Context) {
