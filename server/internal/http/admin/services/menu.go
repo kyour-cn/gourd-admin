@@ -67,8 +67,7 @@ func (s *MenuService) Create(req *dto.MenuCreateReq) error {
 		return fmt.Errorf("创建失败: %w", err)
 	}
 
-	return q.WithContext(s.ctx).
-		Create(data)
+	return nil
 }
 
 func (s *MenuService) Update(req *dto.MenuUpdateReq) error {
