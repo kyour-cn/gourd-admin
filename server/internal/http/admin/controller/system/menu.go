@@ -37,12 +37,12 @@ func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	service := services.NewMenuService(r.Context())
-	err := service.Create(req)
+	menu, err := service.Create(req)
 	if err != nil {
 		_ = c.Fail(w, 1, "创建失败", err.Error())
 		return
 	}
-	_ = c.Success(w, "success", nil)
+	_ = c.Success(w, "success", menu)
 }
 
 func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {

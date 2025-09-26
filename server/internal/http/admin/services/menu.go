@@ -46,11 +46,11 @@ func (s *MenuService) GetList(req *dto.MenuListReq) (*dto.PageListReq, error) {
 	}, nil
 }
 
-func (s *MenuService) Create(req *dto.MenuCreateReq) error {
+func (s *MenuService) Create(req *dto.MenuCreateReq) (*model.Menu, error) {
 	q := query.Menu
 
 	mate, _ := json.Marshal(req.Meta)
-	data := &model.Menu{
+	menu := &model.Menu{
 		AppID:     req.AppId,
 		Pid:       req.Pid,
 		Name:      req.Name,
@@ -62,12 +62,12 @@ func (s *MenuService) Create(req *dto.MenuCreateReq) error {
 		Meta:      string(mate),
 	}
 
-	err := q.WithContext(s.ctx).Create(data)
+	err := q.WithContext(s.ctx).Create(menu)
 	if err != nil {
-		return fmt.Errorf("创建失败: %w", err)
+		return nil, fmt.Errorf("创建失败: %w", err)
 	}
 
-	return nil
+	return menu, nil
 }
 
 func (s *MenuService) Update(req *dto.MenuUpdateReq) error {
