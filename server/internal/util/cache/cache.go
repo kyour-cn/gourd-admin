@@ -64,6 +64,13 @@ func (c *Cache) Delete(key string) {
 	delete(c.data, key)
 }
 
+// Clear 清空所有缓存
+func (c *Cache) Clear() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.data = make(map[string]Item)
+}
+
 // GC 清理过期的项
 func (c *Cache) GC() {
 	c.mu.Lock()

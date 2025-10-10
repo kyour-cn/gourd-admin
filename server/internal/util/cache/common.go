@@ -16,7 +16,7 @@ func InitDefaultCache(ctx context.Context) {
 	once.Do(func() {
 		defaultCache = NewCache()
 		go func() {
-			ticker := time.NewTicker(1 * time.Minute)
+			ticker := time.NewTicker(30 * time.Second)
 			defer ticker.Stop()
 			for {
 				select {
@@ -45,4 +45,25 @@ func Get(key string) (any, bool) {
 
 func Delete(key string) {
 	GetDefaultCache().Delete(key)
+}
+
+// Remember 尝试从默认缓存获取，未命中则使用 fn 生成并写入（泛型函数，方法无类型形参）
+func Remember[T any](key string, duration time.Duration, fn func() (T, error)) (T, error) {
+	c := GetDefaultCache()
+
+	// 快路径：从缓存读取并断言类型
+	if v, ok := c.Get(key); ok {
+		if tv, ok2 := v.(T); ok2 {
+			return tv, nil
+		}
+	}
+	// 生成新值
+	v, err := fn()
+	if err != nil {
+		var zero T
+		return zero, err
+	}
+	// 写入缓存
+	c.Set(key, v, duration)
+	return v, nil
 }
