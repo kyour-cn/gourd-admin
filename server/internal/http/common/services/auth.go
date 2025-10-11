@@ -1,6 +1,8 @@
-package auth
+package services
 
 import (
+	"app/internal/orm/model"
+	"context"
 	"encoding/json"
 	"errors"
 	"sort"
@@ -9,9 +11,18 @@ import (
 
 	"gorm.io/gen"
 
-	"app/internal/orm/model"
 	"app/internal/orm/query"
 )
+
+func NewAuthService(ctx context.Context) *AuthService {
+	return &AuthService{
+		ctx: ctx,
+	}
+}
+
+type AuthService struct {
+	ctx context.Context
+}
 
 type MenuMate struct {
 	Title            string `json:"title"`
@@ -39,8 +50,7 @@ type menuTree struct {
 }
 type MenuTreeArr []menuTree
 
-// GetMenu 获取用户菜单
-func GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, error) {
+func (s *AuthService) GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, error) {
 	if len(userInfo.UserRole) == 0 {
 		return nil, errors.New("用户角色不存在")
 	}
@@ -77,8 +87,8 @@ func GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, error) {
 	}
 
 	// 获取菜单
-	menu, err := query.Menu.
-		Preload(query.Menu.MenuApi).
+	menu, err := qm.WithContext(s.ctx).
+		Preload(qm.MenuApi).
 		Where(conds...).
 		Find()
 	if err != nil {
@@ -86,10 +96,66 @@ func GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, error) {
 	}
 
 	// 构建菜单树
-	return RecursionMenu(menu, 0), nil
+	return s.RecursionMenu(menu, 0), nil
 }
 
-func GetPermission(userInfo *model.User, appId int64) ([]string, error) {
+// RecursionMenu 递归菜单
+func (s *AuthService) RecursionMenu(menus []*model.Menu, parentId int64) MenuTreeArr {
+	var arr MenuTreeArr
+	for _, menu := range menus {
+		if menu.Pid == parentId {
+			children := s.RecursionMenu(menus, menu.ID)
+
+			mate := &MenuMate{}
+			if menu.Meta != "" {
+				_ = json.Unmarshal([]byte(menu.Meta), mate)
+			}
+
+			menuTree := menuTree{
+				ParentId:  menu.Pid,
+				Id:        menu.ID,
+				Name:      menu.Name,
+				Title:     menu.Title,
+				Path:      menu.Path,
+				Component: menu.Component,
+				Sort:      menu.Sort,
+				Meta:      mate,
+				AppId:     menu.AppID,
+				Children:  children,
+				ApiList:   menu.MenuApi,
+			}
+			arr = append(arr, menuTree)
+		}
+	}
+
+	// 按Sort字段从小到大排序
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[i].Sort < arr[j].Sort
+	})
+
+	return arr
+}
+
+// GetMenuFormApp 获取指定应用的菜单
+func (s *AuthService) GetMenuFormApp(appId int64) (any, error) {
+
+	qm := query.Menu
+	conds := []gen.Condition{
+		qm.AppID.Eq(appId),
+	}
+
+	menu, err := query.Menu.
+		Preload(query.Menu.MenuApi).
+		Where(conds...).
+		Find()
+	if err != nil {
+		return nil, err
+	}
+	// 构建菜单树
+	return s.RecursionMenu(menu, 0), nil
+}
+
+func (s *AuthService) GetPermission(userInfo *model.User, appId int64) ([]string, error) {
 	if len(userInfo.UserRole) == 0 {
 		return nil, errors.New("用户角色不存在")
 	}
@@ -140,60 +206,4 @@ func GetPermission(userInfo *model.User, appId int64) ([]string, error) {
 	}
 
 	return arr, nil
-}
-
-// GetMenuFormApp 获取指定应用的菜单
-func GetMenuFormApp(appId int64) (any, error) {
-
-	qm := query.Menu
-	conds := []gen.Condition{
-		qm.AppID.Eq(appId),
-	}
-
-	menu, err := query.Menu.
-		Preload(query.Menu.MenuApi).
-		Where(conds...).
-		Find()
-	if err != nil {
-		return nil, err
-	}
-	// 构建菜单树
-	return RecursionMenu(menu, 0), nil
-}
-
-// RecursionMenu 递归菜单
-func RecursionMenu(menus []*model.Menu, parentId int64) MenuTreeArr {
-	var arr MenuTreeArr
-	for _, menu := range menus {
-		if menu.Pid == parentId {
-			children := RecursionMenu(menus, menu.ID)
-
-			mate := &MenuMate{}
-			if menu.Meta != "" {
-				_ = json.Unmarshal([]byte(menu.Meta), mate)
-			}
-
-			menuTree := menuTree{
-				ParentId:  menu.Pid,
-				Id:        menu.ID,
-				Name:      menu.Name,
-				Title:     menu.Title,
-				Path:      menu.Path,
-				Component: menu.Component,
-				Sort:      menu.Sort,
-				Meta:      mate,
-				AppId:     menu.AppID,
-				Children:  children,
-				ApiList:   menu.MenuApi,
-			}
-			arr = append(arr, menuTree)
-		}
-	}
-
-	// 按Sort字段从小到大排序
-	sort.Slice(arr, func(i, j int) bool {
-		return arr[i].Sort < arr[j].Sort
-	})
-
-	return arr
 }

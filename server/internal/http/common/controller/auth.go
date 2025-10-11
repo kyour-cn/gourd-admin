@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	"app/internal/config"
-	"app/internal/modules/admin/auth"
-	auth2 "app/internal/modules/common/auth"
+	"app/internal/http/common/services"
+	cauth "app/internal/modules/common/auth"
 	"app/internal/modules/common/dblog"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
@@ -60,7 +60,7 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 登录
-	userData, err := auth2.LoginUser(r.Context(), req.Username, req.Password)
+	userData, err := cauth.LoginUser(r.Context(), req.Username, req.Password)
 	if err != nil {
 		_ = c.Fail(w, 103, "登录失败："+err.Error(), "")
 		return
@@ -81,11 +81,11 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 104, "token配置异常,请联系管理员", err)
 	}
 	// 生成token
-	claims := auth2.UserClaims{
+	claims := cauth.UserClaims{
 		Sub:  userData.ID,
 		Name: userData.Nickname,
 	}
-	token, err := auth2.GenerateToken(claims)
+	token, err := cauth.GenerateToken(claims)
 	if err != nil {
 		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return
@@ -152,21 +152,23 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menus, err := auth.GetMenu(userInfo, int64(appId))
+	serv := services.NewAuthService(r.Context())
+
+	menus, err := serv.GetMenu(userInfo, int64(appId))
 	if err != nil {
 		_ = c.Fail(w, 102, "获取菜单失败", err.Error())
 		return
 	}
 
-	permissions, err := auth.GetPermission(userInfo, int64(appId))
+	permissions, err := serv.GetPermission(userInfo, int64(appId))
 	if err != nil {
 		_ = c.Fail(w, 102, "获取权限失败", err.Error())
 		return
 	}
 
 	res := struct {
-		Menu        auth.MenuTreeArr `json:"menu"`
-		Permissions []string         `json:"permissions"`
+		Menu        services.MenuTreeArr `json:"menu"`
+		Permissions []string             `json:"permissions"`
 	}{
 		Menu:        menus,
 		Permissions: permissions,

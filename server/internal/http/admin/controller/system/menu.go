@@ -6,7 +6,7 @@ import (
 	"app/internal/http/admin/dto"
 	"app/internal/http/admin/services"
 	"app/internal/http/common/controller"
-	"app/internal/modules/admin/auth"
+	cs "app/internal/http/common/services"
 )
 
 // Menu 用户控制器
@@ -21,7 +21,9 @@ func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menus, err := auth.GetMenuFormApp(req.AppId)
+	serv := cs.NewAuthService(r.Context())
+
+	menus, err := serv.GetMenuFormApp(req.AppId)
 	if err != nil {
 		return
 	}
