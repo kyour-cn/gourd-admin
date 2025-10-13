@@ -1,13 +1,13 @@
 package router
 
 import (
-	"app/internal/http/common/middleware"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 
 	"app/internal/config"
 	adminRouter "app/internal/http/admin/router"
+	"app/internal/http/common/middleware"
 )
 
 var router *chi.Mux
@@ -26,7 +26,7 @@ func GetRouter() *chi.Mux {
 func InitRouter() {
 	r := GetRouter()
 
-	// 静态资源
+	// 静态资源处理中间件
 	conf, err := config.GetHttpConfig()
 	if err == nil && conf.Static != "" {
 		r.Use(middleware.StaticOrNext(conf.Static))
@@ -39,9 +39,9 @@ func InitRouter() {
 	})
 
 	// 主页
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("hello gourd!"))
-	})
+	//r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	//	_, _ = w.Write([]byte("Hello world!"))
+	//})
 
 	// 注册admin子路由
 	adminSubRouter := chi.NewRouter()
