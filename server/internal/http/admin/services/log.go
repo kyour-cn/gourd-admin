@@ -61,6 +61,7 @@ func (s *LogTypeService) GetList(req *dto.LogListReq) (*dto.PageListReq, error) 
 
 	list, count, err := q.WithContext(s.ctx).
 		Where(conds...).
+		Order(q.ID.Desc()).
 		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
 	if err != nil {
 		return nil, err
