@@ -18,6 +18,7 @@ import (
 var (
 	Q           = new(Query)
 	App         *app
+	Config      *config
 	File        *file
 	FileStorage *fileStorage
 	Log         *log
@@ -32,6 +33,7 @@ var (
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
 	App = &Q.App
+	Config = &Q.Config
 	File = &Q.File
 	FileStorage = &Q.FileStorage
 	Log = &Q.Log
@@ -47,6 +49,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:          db,
 		App:         newApp(db, opts...),
+		Config:      newConfig(db, opts...),
 		File:        newFile(db, opts...),
 		FileStorage: newFileStorage(db, opts...),
 		Log:         newLog(db, opts...),
@@ -63,6 +66,7 @@ type Query struct {
 	db *gorm.DB
 
 	App         app
+	Config      config
 	File        file
 	FileStorage fileStorage
 	Log         log
@@ -80,6 +84,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:          db,
 		App:         q.App.clone(db),
+		Config:      q.Config.clone(db),
 		File:        q.File.clone(db),
 		FileStorage: q.FileStorage.clone(db),
 		Log:         q.Log.clone(db),
@@ -104,6 +109,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:          db,
 		App:         q.App.replaceDB(db),
+		Config:      q.Config.replaceDB(db),
 		File:        q.File.replaceDB(db),
 		FileStorage: q.FileStorage.replaceDB(db),
 		Log:         q.Log.replaceDB(db),
@@ -118,6 +124,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 
 type queryCtx struct {
 	App         IAppDo
+	Config      IConfigDo
 	File        IFileDo
 	FileStorage IFileStorageDo
 	Log         ILogDo
@@ -132,6 +139,7 @@ type queryCtx struct {
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		App:         q.App.WithContext(ctx),
+		Config:      q.Config.WithContext(ctx),
 		File:        q.File.WithContext(ctx),
 		FileStorage: q.FileStorage.WithContext(ctx),
 		Log:         q.Log.WithContext(ctx),

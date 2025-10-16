@@ -57,10 +57,7 @@ func main() {
 	// Role
 	roleModel := g.GenerateModel("role", append(comOpts,
 		gen.FieldRelate(field.HasOne, "App", appModel, &field.RelateConfig{
-			GORMTag: field.GormTag{
-				"foreignKey": {"app_id"},
-				"references": {"id"},
-			},
+			GORMTag: field.GormTag{"foreignKey": {"app_id"}, "references": {"id"}},
 		}),
 	)...)
 	allTables = append(allTables, roleModel)
@@ -68,10 +65,7 @@ func main() {
 	// UserRole
 	userRoleModel := g.GenerateModel("user_role", append(comOpts,
 		gen.FieldRelate(field.HasOne, "Role", roleModel, &field.RelateConfig{
-			GORMTag: field.GormTag{
-				"foreignKey": {"role_id"},
-				"references": {"id"},
-			},
+			GORMTag: field.GormTag{"foreignKey": {"role_id"}, "references": {"id"}},
 		}),
 	)...)
 	allTables = append(allTables, userRoleModel)
@@ -79,10 +73,7 @@ func main() {
 	// User
 	userModel := g.GenerateModel("user", append(comOpts,
 		gen.FieldRelate(field.HasMany, "UserRole", userRoleModel, &field.RelateConfig{
-			GORMTag: field.GormTag{
-				"foreignKey": {"user_id"},
-				"references": {"id"},
-			},
+			GORMTag: field.GormTag{"foreignKey": {"user_id"}, "references": {"id"}},
 		}),
 	)...)
 	allTables = append(allTables, userModel)
@@ -93,39 +84,29 @@ func main() {
 
 	// Menu
 	menuModel := g.GenerateModel("menu", append(comOpts,
-		gen.FieldRelate(field.HasOne, "App", appModel, &field.RelateConfig{
-			GORMTag: field.GormTag{
-				"foreignKey": {"app_id"},
-				"references": {"id"},
-			},
-		}),
 		gen.FieldRelate(field.HasMany, "MenuApi", menuApiModel, &field.RelateConfig{
-			GORMTag: field.GormTag{
-				"foreignKey": {"menu_id"},
-				"references": {"id"},
-			},
+			GORMTag: field.GormTag{"foreignKey": {"menu_id"}, "references": {"id"}},
 		}),
 	)...)
 	allTables = append(allTables, menuModel)
 
 	// Log/LogType
 	logTypeModel := g.GenerateModel("log_type", comOpts...)
-	allTables = append(allTables, logTypeModel)
 	logModel := g.GenerateModel("log", append(comOpts,
 		gen.FieldRelate(field.HasOne, "LogType", userModel, &field.RelateConfig{
-			GORMTag: field.GormTag{
-				"foreignKey": {"type_id"},
-				"references": {"id"},
-			},
+			GORMTag: field.GormTag{"foreignKey": {"type_id"}, "references": {"id"}},
 		}),
 	)...)
-	allTables = append(allTables, logModel)
+	allTables = append(allTables, logTypeModel, logModel)
 
 	// File/FileStorage
 	fileModel := g.GenerateModel("file", comOpts...)
-	allTables = append(allTables, fileModel)
 	fileStorageModel := g.GenerateModel("file_storage", comOpts...)
-	allTables = append(allTables, fileStorageModel)
+	allTables = append(allTables, fileModel, fileStorageModel)
+
+	// Config
+	configModel := g.GenerateModel("config", comOpts...)
+	allTables = append(allTables, configModel)
 
 	// 生成指定表
 	g.ApplyBasic(allTables...)
