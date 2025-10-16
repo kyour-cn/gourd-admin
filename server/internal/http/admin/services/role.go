@@ -96,7 +96,7 @@ func (s *RoleService) Update(req *dto.RoleUpdateReq) (gen.ResultInfo, error) {
 			Remark:      req.Remark,
 			Status:      req.Status,
 			Rules:       req.Rules,
-			RulesCheckd: req.RulesCheckd,
+			RulesCheckd: req.RulesChecked,
 		})
 }
 

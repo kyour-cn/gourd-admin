@@ -19,14 +19,14 @@ type RoleCreateReq struct {
 }
 
 type RoleUpdateReq struct {
-	Type        string `json:"type"`
-	ID          int64  `json:"id" validate:"gt=0"`
-	AppID       int64  `json:"app_id" validate:"gt=0"`
-	Name        string `json:"name" validate:"required"`
-	Sort        int32  `json:"sort"`
-	Status      int32  `json:"status"` // 0 禁用 1 启用
-	Remark      string `json:"remark"`
-	IsAdmin     int32  `json:"is_admin"`
-	Rules       string `json:"rules"` // 权限ID 列表
-	RulesCheckd string `json:"rules_checkd"`
+	Type         string `json:"type"`
+	ID           int64  `json:"id" validate:"gt=0"`
+	AppID        int64  `json:"app_id"`
+	Name         string `json:"name"`
+	Sort         int32  `json:"sort"`
+	Status       int32  `json:"status"` // 0 禁用 1 启用
+	Remark       string `json:"remark"`
+	IsAdmin      int32  `json:"is_admin"`
+	Rules        string `json:"rules"` // 权限ID 列表
+	RulesChecked string `json:"rules_checked"`
 }

@@ -4,7 +4,7 @@ import "app/internal/http/common/services"
 
 type MenuListReq struct {
 	Page     int    `form:"page" validate:"gte=1"`
-	PageSize int    `form:"page_size" validate:"gte=1,lte=500"`
+	PageSize int    `form:"page_size" validate:"gte=1,lte=1000"`
 	AppId    int64  `form:"app_id" validate:"gt=0"`
 	Keyword  string `form:"keyword"`
 }

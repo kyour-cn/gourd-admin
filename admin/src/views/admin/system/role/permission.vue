@@ -84,6 +84,8 @@ const submit = async () => {
 
 const getRule = async () => {
   const res = await systemApi.menu.list.get({
+    page: 1,
+    page_size: 1000,
     app_id: state.row.app_id
   });
   if (res.code === 0) {
