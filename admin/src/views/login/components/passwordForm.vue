@@ -92,6 +92,7 @@ import authApi from "@/api/common/auth.js"
 import tool from "@/utils/tool.js";
 import {ElMessage, ElMessageBox} from "element-plus";
 import router from "@/router/index.js";
+import "go-captcha-vue/dist/style.css"
 
 const proxy = getCurrentInstance().proxy
 const loginForm = ref(null)

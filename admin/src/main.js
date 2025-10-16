@@ -7,7 +7,6 @@ import i18n from './locales'
 import router from './router'
 import store from './store'
 import App from './App.vue'
-import "go-captcha-vue/dist/style.css"
 
 const app = createApp(App);
 
