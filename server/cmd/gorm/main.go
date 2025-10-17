@@ -99,10 +99,11 @@ func main() {
 	)...)
 	allTables = append(allTables, logTypeModel, logModel)
 
-	// File/FileStorage
+	// File/FileStorage/FileMenu
 	fileModel := g.GenerateModel("file", comOpts...)
+	fileMenuModel := g.GenerateModel("file_menu", comOpts...)
 	fileStorageModel := g.GenerateModel("file_storage", comOpts...)
-	allTables = append(allTables, fileModel, fileStorageModel)
+	allTables = append(allTables, fileModel, fileStorageModel, fileMenuModel)
 
 	// Config
 	configModel := g.GenerateModel("config", comOpts...)

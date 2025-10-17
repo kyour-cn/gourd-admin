@@ -20,6 +20,7 @@ var (
 	App         *app
 	Config      *config
 	File        *file
+	FileMenu    *fileMenu
 	FileStorage *fileStorage
 	Log         *log
 	LogType     *logType
@@ -35,6 +36,7 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	App = &Q.App
 	Config = &Q.Config
 	File = &Q.File
+	FileMenu = &Q.FileMenu
 	FileStorage = &Q.FileStorage
 	Log = &Q.Log
 	LogType = &Q.LogType
@@ -51,6 +53,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		App:         newApp(db, opts...),
 		Config:      newConfig(db, opts...),
 		File:        newFile(db, opts...),
+		FileMenu:    newFileMenu(db, opts...),
 		FileStorage: newFileStorage(db, opts...),
 		Log:         newLog(db, opts...),
 		LogType:     newLogType(db, opts...),
@@ -68,6 +71,7 @@ type Query struct {
 	App         app
 	Config      config
 	File        file
+	FileMenu    fileMenu
 	FileStorage fileStorage
 	Log         log
 	LogType     logType
@@ -86,6 +90,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		App:         q.App.clone(db),
 		Config:      q.Config.clone(db),
 		File:        q.File.clone(db),
+		FileMenu:    q.FileMenu.clone(db),
 		FileStorage: q.FileStorage.clone(db),
 		Log:         q.Log.clone(db),
 		LogType:     q.LogType.clone(db),
@@ -111,6 +116,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		App:         q.App.replaceDB(db),
 		Config:      q.Config.replaceDB(db),
 		File:        q.File.replaceDB(db),
+		FileMenu:    q.FileMenu.replaceDB(db),
 		FileStorage: q.FileStorage.replaceDB(db),
 		Log:         q.Log.replaceDB(db),
 		LogType:     q.LogType.replaceDB(db),
@@ -126,6 +132,7 @@ type queryCtx struct {
 	App         IAppDo
 	Config      IConfigDo
 	File        IFileDo
+	FileMenu    IFileMenuDo
 	FileStorage IFileStorageDo
 	Log         ILogDo
 	LogType     ILogTypeDo
@@ -141,6 +148,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		App:         q.App.WithContext(ctx),
 		Config:      q.Config.WithContext(ctx),
 		File:        q.File.WithContext(ctx),
+		FileMenu:    q.FileMenu.WithContext(ctx),
 		FileStorage: q.FileStorage.WithContext(ctx),
 		Log:         q.Log.WithContext(ctx),
 		LogType:     q.LogType.WithContext(ctx),

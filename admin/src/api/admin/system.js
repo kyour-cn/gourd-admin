@@ -151,5 +151,35 @@ export default {
         return await http.post(this.url, data);
       }
     }
+  },
+  file: {
+    menu: {
+      url: `${config.API_URL}/admin/system/file/menuList`,
+      name: "文件菜单",
+      get: async function (params = {}) {
+        return await http.get(this.url, params);
+      }
+    },
+    upload: {
+      url: `${config.API_URL}/admin/system/file/upload`,
+      name: "上传文件",
+      post: async function (data = {}) {
+        return await http.post(this.url, data);
+      }
+    },
+    list: {
+      url: `${config.API_URL}/admin/system/file/list`,
+      name: "菜单列表",
+      get: async function (params = {}) {
+        return await http.get(this.url, params);
+      }
+    },
+    delete: {
+      url: `${config.API_URL}/admin/system/file/delete`,
+      name: "删除文件",
+      post: async function (data = {}) {
+        return await http.post(this.url, data);
+      }
+    }
   }
 }

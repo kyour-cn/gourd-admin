@@ -56,7 +56,7 @@
 								<el-icon><el-icon-check /></el-icon>
 							</div>
 							<div class="sc-file-select__item__box"></div>
-							<el-image v-if="_isImg(item[fileProps.url])" :src="item[fileProps.url]" fit="contain" lazy></el-image>
+							<el-image v-if="_isImg(item[fileProps.url])" :src="tool.resUrl(item[fileProps.url])" fit="contain" lazy></el-image>
 							<div v-else class="item-file item-file-doc">
 								<i v-if="files[_getExt(item[fileProps.url])]" :class="files[_getExt(item[fileProps.url])].icon" :style="{color:files[_getExt(item[fileProps.url])].color}"></i>
 								<i v-else class="sc-icon-file-list-fill" style="color: #999;"></i>
@@ -79,8 +79,14 @@
 
 <script>
 	import config from "@/config/fileSelect"
+  import tool from "@/utils/tool.js";
 
 	export default {
+    computed: {
+      tool() {
+        return tool
+      }
+    },
 		props: {
 			modelValue: null,
 			hideUpload: { type: Boolean, default: false },
@@ -122,8 +128,8 @@
 			//获取分类数据
 			async getMenu(){
 				this.menuLoading = true
-				var res = await config.menuApiObj.get()
-				this.menu = res.data
+        const res = await config.menuApiObj.get();
+        this.menu = res.data
 				this.menuLoading = false
 			},
 			//获取列表数据
@@ -138,9 +144,9 @@
 				if(this.onlyImage){
 					reqData.type = 'image'
 				}
-				var res = await config.listApiObj.get(reqData)
-				var parseData = config.listParseData(res)
-				this.data = parseData.rows
+        const res = await config.listApiObj.get(reqData);
+        const parseData = config.listParseData(res);
+        this.data = parseData.rows
 				this.total = parseData.total
 				this.listLoading = false
 				this.$refs.scrollbar.setScrollTop(0)
@@ -164,7 +170,7 @@
 				const itemUrl = item[this.fileProps.url]
 				if(this.multiple){
 					if(this.value.includes(itemUrl)){
-						this.value.splice(this.value.findIndex(f => f == itemUrl), 1)
+						this.value.splice(this.value.findIndex(f => f === itemUrl), 1)
 					}else{
 						this.value.push(itemUrl)
 					}
@@ -194,8 +200,8 @@
 				}
 			},
 			uploadRequest(param){
-				var apiObj = config.apiObj;
-				const data = new FormData();
+        const apiObj = config.apiObj;
+        const data = new FormData();
 				data.append("file", param.file);
 				data.append([config.request.menuKey], this.menuId);
 				apiObj.post(data, {

@@ -1,13 +1,12 @@
-import API from "@/api";
+import systemApi from "@/api/admin/system.js";
 
 //文件选择器配置
-
 export default {
-  apiObj: API.common.upload,
-  menuApiObj: API.common.file.menu,
-  listApiObj: API.common.file.list,
+  apiObj: systemApi.file.upload,
+  menuApiObj: systemApi.file.menu,
+  listApiObj: systemApi.file.list,
   successCode: 200,
-  maxSize: 30,
+  maxSize: 10,
   max: 99,
   uploadParseData: function (res) {
     return {
@@ -28,16 +27,16 @@ export default {
     page: 'page',
     pageSize: 'page_size',
     keyword: 'keyword',
-    menuKey: 'groupId'
+    menuKey: 'menuId'
   },
   menuProps: {
     key: 'id',
-    label: 'label',
+    label: 'name',
     children: 'children'
   },
   fileProps: {
     key: 'id',
-    fileName: 'fileName',
+    fileName: 'file_name',
     url: 'url'
   },
   files: {

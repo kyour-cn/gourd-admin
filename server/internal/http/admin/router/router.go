@@ -27,9 +27,8 @@ func Router(r chi.Router) {
 	r.Route("/upload", func(r chi.Router) {
 		r.Use(middleware2.AuthJwtMiddleware)
 		c := common.Upload{}
-		r.Post("/image", c.Image)   // 上传图片
-		r.Post("/file", c.File)     // 上传文件
-		r.Post("/delete", c.Delete) // 上传文件
+		r.Post("/image", c.Image) // 上传图片
+		r.Post("/file", c.File)   // 上传文件
 	})
 
 	// 用户
@@ -85,6 +84,16 @@ func Router(r chi.Router) {
 			r.Get("/list", c.List)
 			r.Get("/typeList", c.TypeList)
 			r.Get("/logStat", c.LogStat)
+		})
+
+		// file相关路由
+		r.Route("/file", func(r chi.Router) {
+			c := system.File{}
+			r.Get("/list", c.List)
+			r.Post("/upload", c.Upload)
+			r.Post("/delete", c.Delete)
+
+			r.Get("/menuList", c.MenuList)
 		})
 	})
 

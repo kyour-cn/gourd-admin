@@ -55,11 +55,12 @@ func (u LocalUploader) Upload(_ context.Context, input Input, savePath string) (
 	}
 
 	return &Output{
-		URL:      savePath,
-		Path:     savePath,
-		FileName: input.FileName,
-		Storage:  u.StoreKey,
-		Hash:     hex.EncodeToString(hash.Sum(nil)),
+		URL:       savePath,
+		Path:      savePath,
+		FileName:  input.FileName,
+		Storage:   u.StoreKey,
+		StorageID: u.storage.ID,
+		Hash:      hex.EncodeToString(hash.Sum(nil)),
 	}, nil
 }
 

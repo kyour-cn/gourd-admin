@@ -26,11 +26,13 @@ type Input struct {
 
 // Output 上传返回结果
 type Output struct {
-	URL      string `json:"url"`      // 可访问链接
-	Path     string `json:"path"`     // 存储路径
-	FileName string `json:"fileName"` // 文件名（带后缀）
-	Hash     string `json:"hash"`     // 文件hash（如md5）
-	Storage  string `json:"storage"`  // 存储类型
+	URL       string `json:"url"`       // 可访问链接
+	Path      string `json:"path"`      // 存储路径
+	Ext       string `json:"ext"`       // 存储路径
+	FileName  string `json:"fileName"`  // 文件名（带后缀）
+	Hash      string `json:"hash"`      // 文件hash（如md5）
+	Storage   string `json:"storage"`   // 存储类型
+	StorageID int64  `json:"storageID"` // 存储类型
 }
 
 // Uploader 接口定义了上传和删除文件的方法
