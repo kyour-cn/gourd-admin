@@ -31,6 +31,9 @@ func InitDefaultCache(ctx context.Context) {
 }
 
 func GetDefaultCache() *Cache {
+	if defaultCache != nil {
+		return defaultCache
+	}
 	InitDefaultCache(context.Background()) // 保证已初始化
 	return defaultCache
 }
