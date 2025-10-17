@@ -2,7 +2,6 @@ package event
 
 import (
 	"app/internal/initialize"
-	"app/internal/util/cache"
 	"context"
 	"log/slog"
 
@@ -17,22 +16,13 @@ func AppEvent(_ context.Context) {
 		slog.Debug("boot event.")
 
 		// 初始化一些全局配置、工具等
-		initialize.InitCommon()
-
-		// 初始化日志
-		err := initialize.InitLog()
-		if err != nil {
-			panic(err)
-		}
+		initialize.InitCommon(ctx)
 
 		// 初始化数据库
-		err = initialize.InitDatabase()
+		err := initialize.InitDatabase()
 		if err != nil {
 			panic(err)
 		}
-
-		// 初始化缓存
-		cache.InitDefaultCache(ctx)
 
 		// 初始化命令行
 		initialize.InitCmd()

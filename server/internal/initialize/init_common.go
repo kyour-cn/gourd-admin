@@ -1,6 +1,8 @@
 package initialize
 
 import (
+	"app/internal/util/cache"
+	"context"
 	"time"
 	"unsafe"
 
@@ -8,9 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitCommon() {
+func InitCommon(ctx context.Context) {
+
+	// 初始化日志
+	err := InitLog()
+	if err != nil {
+		panic(err)
+	}
 
 	// 注册全局 encoder/empty 判定（在程序初始化时执行一次）
+	// 主要用来处理 time.Time 类型的零值，后期建议使用json/v2替换
 	jsoniter.RegisterTypeEncoderFunc("time.Time",
 		func(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 			t := *((*time.Time)(ptr))
@@ -39,4 +48,7 @@ func InitCommon() {
 			return t.IsZero()
 		},
 	)
+
+	// 初始化缓存
+	cache.InitDefaultCache(ctx)
 }
