@@ -69,6 +69,8 @@ func GetUploader(key string) (Uploader, error) {
 	switch storage.Key {
 	case "local":
 		return NewLocalUploader(storage), nil
+	case "qiniu":
+		return NewQiniuUploader(storage), nil
 	default:
 		return nil, fmt.Errorf("不支持的上传类型: %s", storage.Key)
 	}
