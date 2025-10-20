@@ -3,13 +3,11 @@
     <el-header>
       <div class="left-panel">
         <el-button type="primary" icon="el-icon-plus" @click="add"/>
-        <el-button type="danger" plain icon="el-icon-delete" :disabled="!state.selection.length"
-                   @click="batchDel"/>
+        <el-button type="danger" plain icon="el-icon-delete" :disabled="!state.selection.length" @click="batchDel"/>
       </div>
       <div class="right-panel">
         <div class="right-panel-search">
-          <el-input v-model="state.search.keyword" placeholder="登录账号 / 昵称 / 手机号" clearable
-                    @clear="clearSearch"/>
+          <el-input v-model="state.search.keyword" placeholder="登录账号 / 昵称 / 手机号" clearable @clear="clearSearch"/>
           <el-button type="primary" icon="el-icon-search" @click="upSearch"/>
         </div>
       </div>
@@ -34,7 +32,7 @@
         <el-table-column label="昵称" prop="nickname" width="150"/>
         <el-table-column label="所属角色" prop="role_id" width="200"/>
         <el-table-column label="注册时间" prop="created_at" width="170"/>
-        <el-table-column label="操作" fixed="right" align="right" width="300">
+        <el-table-column label="操作" fixed="right" align="right" width="165">
           <template #default="scope">
             <el-button-group>
               <el-button text plain type="success" size="small" @click="tableShow(scope.row)">查看</el-button>

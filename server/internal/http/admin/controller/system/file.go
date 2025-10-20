@@ -70,7 +70,7 @@ func (c *File) Upload(w http.ResponseWriter, r *http.Request) {
 		File:       file,
 		FileHeader: header,
 	}
-	req.MenuId, _ = strconv.ParseInt(r.FormValue(""), 10, 64)
+	req.MenuId, _ = strconv.ParseInt(r.FormValue("menu_id"), 10, 64)
 
 	service := services.NewFileService(r.Context())
 	res, err := service.Upload(req)

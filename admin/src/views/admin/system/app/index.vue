@@ -33,11 +33,12 @@
           </template>
         </el-table-column>
         <el-table-column label="备注信息" prop="remark"></el-table-column>
-        <el-table-column label="操作" fixed="right" align="right" width="300">
+        <el-table-column label="操作" fixed="right" align="right" width="120">
           <template #default="scope">
             <el-button-group>
               <el-button v-auth="'admin.system.app.edit'" text plain type="primary" size="small"
-                         @click="tableEdit(scope.row)">编辑
+               @click="tableEdit(scope.row)">
+                编辑
               </el-button>
               <el-popconfirm title="确定删除吗？" @confirm="tableDel(scope.row)">
                 <template #reference>

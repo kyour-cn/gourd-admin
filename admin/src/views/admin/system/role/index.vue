@@ -50,18 +50,18 @@
         <el-table-column label="排序" prop="sort" width="80"/>
         <el-table-column label="创建时间" prop="created_at" width="170"/>
         <el-table-column label="备注" prop="remark" min-width="150"/>
-        <el-table-column label="操作" fixed="right" align="right" width="160">
+        <el-table-column label="操作" fixed="right" align="right" width="165">
           <template #default="scope">
             <el-button-group>
-              <el-button text type="primary" size="small" @click="tableEdit(scope.row)">
+              <el-button text plain type="primary" size="small" @click="tableEdit(scope.row)">
                 编辑
               </el-button>
-              <el-button text type="warning" size="small" @click="openPermission(scope.row)">
+              <el-button text plain type="warning" size="small" @click="openPermission(scope.row)">
                 权限
               </el-button>
               <el-popconfirm title="确定删除吗？" @confirm="tableDel(scope.row)">
                 <template #reference>
-                  <el-button text type="danger" size="small">删除</el-button>
+                  <el-button text plain type="danger" size="small">删除</el-button>
                 </template>
               </el-popconfirm>
             </el-button-group>

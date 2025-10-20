@@ -102,8 +102,11 @@
 				total: 0,
 				currentPage: 1,
 				data: [],
-				menu: [],
-				menuId: '',
+				menu: [{
+          id: 0,
+          name: '全部'
+        }],
+				menuId: 0,
 				value: this.multiple ? [] : '',
 				fileList: [],
 				accept: this.onlyImage ? "image/gif, image/jpeg, image/png" : "",
@@ -129,19 +132,25 @@
 			async getMenu(){
 				this.menuLoading = true
         const res = await config.menuApiObj.get();
-        this.menu = res.data
+
+        // 保留第一个，追加接口返回数据
+        this.menu.splice(1, this.menu.length-1)
+        res.data.forEach(item => {
+          this.menu.push(item)
+        })
+        // this.menu = res.data
 				this.menuLoading = false
 			},
 			//获取列表数据
 			async getData(){
 				this.listLoading = true
-				var reqData = {
-					[config.request.menuKey]: this.menuId,
-					[config.request.page]: this.currentPage,
-					[config.request.pageSize]: this.pageSize,
-					[config.request.keyword]: this.keyword
-				}
-				if(this.onlyImage){
+        const reqData = {
+          [config.request.menuKey]: this.menuId,
+          [config.request.page]: this.currentPage,
+          [config.request.pageSize]: this.pageSize,
+          [config.request.keyword]: this.keyword
+        };
+        if(this.onlyImage){
 					reqData.type = 'image'
 				}
         const res = await config.listApiObj.get(reqData);
@@ -218,9 +227,9 @@
 				file.progress = Number((event.loaded / event.total * 100).toFixed(2))
 			},
 			uploadSuccess(res, file){
-				this.fileList.splice(this.fileList.findIndex(f => f.uid == file.uid), 1)
-				var response = config.uploadParseData(res);
-				this.data.unshift({
+				this.fileList.splice(this.fileList.findIndex(f => f.uid === file.uid), 1)
+        const response = config.uploadParseData(res);
+        this.data.unshift({
 					[this.fileProps.key]: response.id,
 					[this.fileProps.fileName]: response.fileName,
 					[this.fileProps.url]: response.url
@@ -239,7 +248,7 @@
 			_isImg(fileUrl){
 				const imgExt = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
 				const fileExt = fileUrl.substring(fileUrl.lastIndexOf("."))
-				return imgExt.indexOf(fileExt) != -1
+				return imgExt.indexOf(fileExt) !== -1
 			},
 			_getExt(fileUrl){
 				return fileUrl.substring(fileUrl.lastIndexOf(".") + 1)

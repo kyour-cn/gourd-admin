@@ -37,6 +37,7 @@ func (s *FileService) GetList(req *dto.FileListReq) (*dto.PageListReq, error) {
 
 	list, count, err := q.WithContext(s.ctx).
 		Where(conds...).
+		Order(q.ID.Desc()).
 		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
 	if err != nil {
 		return nil, err
@@ -73,6 +74,7 @@ func (s *FileService) Upload(req *dto.FileUploadReq) (*model.File, error) {
 		StorageKey: output.Storage,
 		HashMd5:    output.Hash,
 		UserID:     req.Claims.Sub,
+		MenuID:     req.MenuId,
 	}
 
 	err = q.WithContext(s.ctx).Create(file)

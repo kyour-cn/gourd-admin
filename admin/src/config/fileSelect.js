@@ -27,7 +27,7 @@ export default {
     page: 'page',
     pageSize: 'page_size',
     keyword: 'keyword',
-    menuKey: 'menuId'
+    menuKey: 'menu_id'
   },
   menuProps: {
     key: 'id',

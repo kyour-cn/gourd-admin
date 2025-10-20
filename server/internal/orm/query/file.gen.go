@@ -35,6 +35,7 @@ func newFile(db *gorm.DB, opts ...gen.DOOption) file {
 	_file.FileSize = field.NewInt64(tableName, "file_size")
 	_file.URL = field.NewString(tableName, "url")
 	_file.FilePath = field.NewString(tableName, "file_path")
+	_file.MenuID = field.NewInt64(tableName, "menu_id")
 	_file.StorageID = field.NewInt64(tableName, "storage_id")
 	_file.StorageKey = field.NewString(tableName, "storage_key")
 	_file.HashMd5 = field.NewString(tableName, "hash_md5")
@@ -61,6 +62,7 @@ type file struct {
 	FileSize   field.Int64  // 文件大小（字节）
 	URL        field.String // 链接地址
 	FilePath   field.String // 存储路径
+	MenuID     field.Int64
 	StorageID  field.Int64  // 存储方式id
 	StorageKey field.String // 储存方式key
 	HashMd5    field.String // 文件内容的MD5
@@ -92,6 +94,7 @@ func (f *file) updateTableName(table string) *file {
 	f.FileSize = field.NewInt64(table, "file_size")
 	f.URL = field.NewString(table, "url")
 	f.FilePath = field.NewString(table, "file_path")
+	f.MenuID = field.NewInt64(table, "menu_id")
 	f.StorageID = field.NewInt64(table, "storage_id")
 	f.StorageKey = field.NewString(table, "storage_key")
 	f.HashMd5 = field.NewString(table, "hash_md5")
@@ -116,7 +119,7 @@ func (f *file) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (f *file) fillFieldMap() {
-	f.fieldMap = make(map[string]field.Expr, 15)
+	f.fieldMap = make(map[string]field.Expr, 16)
 	f.fieldMap["id"] = f.ID
 	f.fieldMap["file_name"] = f.FileName
 	f.fieldMap["file_type"] = f.FileType
@@ -124,6 +127,7 @@ func (f *file) fillFieldMap() {
 	f.fieldMap["file_size"] = f.FileSize
 	f.fieldMap["url"] = f.URL
 	f.fieldMap["file_path"] = f.FilePath
+	f.fieldMap["menu_id"] = f.MenuID
 	f.fieldMap["storage_id"] = f.StorageID
 	f.fieldMap["storage_key"] = f.StorageKey
 	f.fieldMap["hash_md5"] = f.HashMd5
