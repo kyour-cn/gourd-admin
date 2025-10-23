@@ -42,14 +42,11 @@ func AppEvent(_ context.Context) {
 
 		// 初始化Http服务
 		initialize.InitHttpServer()
-
 	})
 
-	// Stop事件(应用) -终止时执行
+	// Stop事件(应用) -停止时执行
 	event.Listen("app.stop", func(context.Context) {
 		slog.Debug("stop event.")
 	})
-
-	// 注册更多自定义事件监听
 
 }
