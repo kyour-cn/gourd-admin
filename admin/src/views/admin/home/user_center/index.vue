@@ -6,7 +6,7 @@
 					<div class="user-info-top">
 						<el-avatar :size="70" src="/admin/img/avatar.png"></el-avatar>
 						<h2>{{ user.userName }}</h2>
-						<p><el-tag effect="dark" round size="large" disable-transitions>{{ user.role }}</el-tag></p>
+						<p><el-tag v-for="role in user.role" effect="dark" round size="large" disable-transitions>{{ role }}</el-tag></p>
 					</div>
 				</el-header>
 				<el-main class="nopadding">
@@ -38,6 +38,7 @@
 
 <script>
 	import { defineAsyncComponent } from 'vue'
+  import tool from "@/utils/tool.js";
 
 	export default {
 		name: 'user_center',
@@ -46,9 +47,9 @@
 			seting: defineAsyncComponent(() => import('./user/seting')),
 			pushSettings: defineAsyncComponent(() => import('./user/pushSettings')),
 			password: defineAsyncComponent(() => import('./user/password')),
-			space: defineAsyncComponent(() => import('./user/space')),
+			// space: defineAsyncComponent(() => import('./user/space')),
 			logs: defineAsyncComponent(() => import('./user/logs')),
-			upToEnterprise: defineAsyncComponent(() => import('./user/upToEnterprise'))
+			// upToEnterprise: defineAsyncComponent(() => import('./user/upToEnterprise'))
 		},
 		data() {
 			return {
@@ -63,7 +64,7 @@
 							},
 							{
 								icon: "el-icon-operation",
-								title: "个人设置",
+								title: "*个人设置",
 								component: "seting"
 							},
 							{
@@ -73,7 +74,7 @@
 							},
 							{
 								icon: "el-icon-bell",
-								title: "通知设置",
+								title: "*通知设置",
 								component: "pushSettings"
 							}
 						]
@@ -81,35 +82,47 @@
 					{
 						groupName: "数据管理",
 						list: [
-							{
-								icon: "el-icon-coin",
-								title: "存储空间信息",
-								component: "space"
-							},
+							// {
+							// 	icon: "el-icon-coin",
+							// 	title: "存储空间信息",
+							// 	component: "space"
+							// },
 							{
 								icon: "el-icon-clock",
-								title: "操作日志",
+								title: "*操作日志",
 								component: "logs"
 							}
 						]
 					},
-					{
-						groupName: "账号升级",
-						list: [
-							{
-								icon: "el-icon-office-building",
-								title: "升级为企业账号",
-								component: "upToEnterprise"
-							}
-						]
-					}
+					// {
+					// 	groupName: "账号升级",
+					// 	list: [
+					// 		{
+					// 			icon: "el-icon-office-building",
+					// 			title: "升级为企业账号",
+					// 			component: "upToEnterprise"
+					// 		}
+					// 	]
+					// }
 				],
 				user: {
-					userName: "Sakuya",
-					role: "超级管理员",
+					userName: "",
+					role: [],
 				},
 				page: "account"
 			}
+		},
+    mounted() {
+      const userInfo = tool.data.get("USER_INFO")
+      if(userInfo) {
+        this.user.userName = userInfo.nickname || ""
+        if(userInfo.user_role) {
+          userInfo.user_role.forEach(item => {
+            this.user.role.push(item.role.name)
+          })
+        }
+      }
+      console.log(userInfo)
 		},
 		//路由跳转进来 判断from是否有特殊标识做特殊处理
 		beforeRouteEnter (to, from, next){
