@@ -6,7 +6,9 @@
 					<div class="user-info-top">
 						<el-avatar :size="70" src="/admin/img/avatar.png"></el-avatar>
 						<h2>{{ user.userName }}</h2>
-						<p><el-tag v-for="role in user.role" effect="dark" round size="large" disable-transitions>{{ role }}</el-tag></p>
+						<p>
+              <el-tag class="user-info-role" v-for="role in user.role" effect="dark" round size="large" disable-transitions>{{ role }}</el-tag>
+            </p>
 					</div>
 				</el-header>
 				<el-main class="nopadding">
@@ -146,14 +148,40 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page-user {
-    .user-info-top {text-align: center;}
-    .user-info-top h2 {font-size: 18px;margin-top: 5px;}
-    .user-info-top p {margin: 8px 0 10px 0;}
-    .menu {background: none;}
-    .menu .el-menu-item {font-size: 12px;--el-menu-item-height:50px;}
-    .menu .el-menu-item-group {border-top: 1px solid var(--el-border-color-light);}
-    .menu .el-menu-item-group:first-child {border: 0;}
+  .user-info-top {
+    text-align: center;
+  }
+
+  .user-info-top h2 {
+    font-size: 18px;
+    margin-top: 5px;
+  }
+
+  .user-info-top p {
+    margin: 8px 0 10px 0;
+  }
+
+  .menu {
+    background: none;
+  }
+
+  .menu .el-menu-item {
+    font-size: 12px;
+    --el-menu-item-height: 50px;
+  }
+
+  .menu .el-menu-item-group {
+    border-top: 1px solid var(--el-border-color-light);
+  }
+
+  .menu .el-menu-item-group:first-child {
+    border: 0;
+  }
+
+  .user-info-role {
+    margin: 2px;
+  }
 }
 </style>
