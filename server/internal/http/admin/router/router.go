@@ -37,6 +37,7 @@ func Router(r chi.Router) {
 		c := common.User{}
 		r.HandleFunc("/info", c.Info)        // 用户信息
 		r.Post("/password", c.ResetPassword) // 修改密码
+		r.Get("/taskList", c.TaskList)       // 任务列表
 	})
 
 	// 系统相关路由

@@ -73,3 +73,19 @@ func (c *User) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = c.Success(w, "密码重置成功", nil)
 }
+
+func (c *User) TaskList(w http.ResponseWriter, r *http.Request) {
+	claims, err := c.GetJwt(r)
+	if err != nil {
+		_ = c.Fail(w, 101, err.Error(), "")
+		return
+	}
+
+	service := services.NewUserService(r.Context())
+	list, err := service.GetTaskList(claims)
+	if err != nil {
+		_ = c.Fail(w, 500, err.Error(), nil)
+		return
+	}
+	_ = c.Success(w, "", list)
+}

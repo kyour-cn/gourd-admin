@@ -18,5 +18,12 @@ export default {
     post: async function (data = {}) {
       return await http.post(this.url, data);
     }
+  },
+  tasks: {
+    url: `${config.API_URL}/admin/user/`,
+    name: "修改密码",
+    list: async function (param = {}) {
+      return await http.get(this.url+'taskList', param);
+    }
   }
 }

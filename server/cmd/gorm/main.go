@@ -1,14 +1,14 @@
 package main
 
 import (
-	"app/cmd/gorm/methods"
-	"app/cmd/gorm/tags"
-	"app/internal/config"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
+
+	"app/cmd/gorm/methods"
+	"app/cmd/gorm/tags"
+	"app/internal/config"
 )
 
 func main() {
@@ -108,6 +108,10 @@ func main() {
 	// Config
 	configModel := g.GenerateModel("config", comOpts...)
 	allTables = append(allTables, configModel)
+
+	// Task
+	taskModel := g.GenerateModel("task", comOpts...)
+	allTables = append(allTables, taskModel)
 
 	// 生成指定表
 	g.ApplyBasic(allTables...)

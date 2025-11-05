@@ -1,30 +1,32 @@
 <template>
 	<el-container v-loading="loading">
 		<el-main>
-			<el-empty v-if="tasks.length==0" :image-size="120" >
+			<el-empty v-if="tasks.length===0" :image-size="120" >
 				<template #description>
 					<h2>没有正在执行的任务</h2>
 				</template>
-				<p style="font-size: 14px;color: #999;line-height: 1.5;margin: 0 40px;">在处理耗时过久的任务时为了不阻碍正在处理的工作，可在任务中心进行异步执行。</p>
+				<p style="font-size: 14px;color: #999;line-height: 1.5;margin: 0 40px;">暂时还没有任务哦，快去创建一个吧！</p>
 			</el-empty>
 			<el-card v-for="task in tasks" :key="task.id" shadow="hover" class="user-bar-tasks-item">
 				<div class="user-bar-tasks-item-body">
 					<div class="taskIcon">
-						<el-icon v-if="task.type=='export'" :size="20"><el-icon-paperclip /></el-icon>
-						<el-icon v-if="task.type=='report'" :size="20"><el-icon-dataAnalysis /></el-icon>
+						<el-icon v-if="task.type==='export'" :size="20"><el-icon-paperclip /></el-icon>
+						<el-icon v-if="task.type==='report'" :size="20"><el-icon-dataAnalysis /></el-icon>
 					</div>
 					<div class="taskMain">
 						<div class="title">
-							<h2>{{ task.taskName }}</h2>
-							<p><span v-time.tip="task.createDate"></span> 创建</p>
+							<h2>{{ task.title }}</h2>
+							<p><span v-time.tip="task.created_at"></span> 创建</p>
 						</div>
 						<div class="bottom">
 							<div class="state">
-								<el-tag type="info" v-if="task.state=='0'">执行中</el-tag>
-								<el-tag v-if="task.state=='1'">完成</el-tag>
+								<el-tag type="info" v-if="task.status===-1">异常</el-tag>
+								<el-tag type="info" v-if="task.status===0">等待中</el-tag>
+								<el-tag type="info" v-if="task.status===1">执行中</el-tag>
+								<el-tag v-if="task.status===2">完成</el-tag>
 							</div>
 							<div class="handler">
-								<el-button v-if="task.state=='1'" type="primary" circle icon="el-icon-download" @click="download(task)"></el-button>
+								<el-button v-if="task.status===2" type="primary" circle icon="el-icon-download" @click="download(task)"></el-button>
 							</div>
 						</div>
 					</div>
@@ -39,6 +41,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import userApi from "@/api/common/user.js";
 
 // 响应式数据
 const loading = ref(false)
@@ -47,8 +50,8 @@ const tasks = ref([])
 // 方法
 const getData = async () => {
 	loading.value = true
-	// var res = await this.$API.system.tasks.list.get()
-	// tasks.value = res.data
+  const res = await userApi.tasks.list();
+  tasks.value = res.data
 	loading.value = false
 }
 

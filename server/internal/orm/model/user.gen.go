@@ -16,15 +16,15 @@ const TableNameUser = "user"
 // User 用户表
 type User struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Nickname  string         `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`             // 昵称
-	Username  string         `gorm:"column:username;not null;comment:用户名(登录账号)" json:"username"`      // 用户名(登录账号)
-	Avatar    string         `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                 // 头像
-	Password  string         `gorm:"column:password;not null;comment:密码 md5" json:"password"`         // 密码 md5
-	Status    int32          `gorm:"column:status;not null;comment:状态" json:"status"`                 // 状态
-	LoginTime time.Time      `gorm:"column:login_time;comment:登录时间" json:"login_time"`                // 登录时间
-	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间
-	UpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime;comment:更新时间" json:"updated_at"` // 更新时间
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间" json:"deleted_at"`                // 删除时间
+	Nickname  string         `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`                      // 昵称
+	Username  string         `gorm:"column:username;not null;comment:用户名(登录账号)" json:"username"`               // 用户名(登录账号)
+	Avatar    string         `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                          // 头像
+	Password  string         `gorm:"column:password;not null;comment:密码 md5" json:"password"`                  // 密码 md5
+	Status    int32          `gorm:"column:status;not null;comment:状态" json:"status"`                          // 状态
+	LoginTime time.Time      `gorm:"column:login_time;comment:登录时间" json:"login_time"`                         // 登录时间
+	CreatedAt time.Time      `gorm:"column:created_at;not null;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间
+	UpdatedAt time.Time      `gorm:"column:updated_at;not null;autoUpdateTime;comment:更新时间" json:"updated_at"` // 更新时间
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间" json:"deleted_at"`                         // 删除时间
 	UserRole  []UserRole     `gorm:"foreignKey:user_id;references:id" json:"user_role"`
 }
 

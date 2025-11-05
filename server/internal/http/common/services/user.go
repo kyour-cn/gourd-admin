@@ -77,3 +77,11 @@ func (s *UserService) ResetPassword(req dto.UserResetPasswordReq) error {
 
 	return nil
 }
+
+func (s *UserService) GetTaskList(claims *auth.UserClaims) ([]*model.Task, error) {
+	q := query.Task
+	return q.WithContext(s.ctx).
+		Where(q.UserID.Eq(claims.Sub)).
+		Select(q.ID, q.Title, q.Content, q.Status, q.StatusName, q.Type, q.CreatedAt, q.UpdatedAt).
+		Find()
+}
