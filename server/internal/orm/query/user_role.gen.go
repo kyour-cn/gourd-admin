@@ -31,6 +31,8 @@ func newUserRole(db *gorm.DB, opts ...gen.DOOption) userRole {
 	_userRole.ID = field.NewInt64(tableName, "id")
 	_userRole.UserID = field.NewInt64(tableName, "user_id")
 	_userRole.RoleID = field.NewInt64(tableName, "role_id")
+	_userRole.CreatedAt = field.NewTime(tableName, "created_at")
+	_userRole.DeletedAt = field.NewField(tableName, "deleted_at")
 	_userRole.Role = userRoleHasOneRole{
 		db: db.Session(&gorm.Session{}),
 
@@ -51,11 +53,13 @@ func newUserRole(db *gorm.DB, opts ...gen.DOOption) userRole {
 type userRole struct {
 	userRoleDo
 
-	ALL    field.Asterisk
-	ID     field.Int64
-	UserID field.Int64 // 用户ID
-	RoleID field.Int64 // 角色ID
-	Role   userRoleHasOneRole
+	ALL       field.Asterisk
+	ID        field.Int64
+	UserID    field.Int64 // 用户ID
+	RoleID    field.Int64 // 角色ID
+	CreatedAt field.Time  // 创建时间
+	DeletedAt field.Field // 删除时间
+	Role      userRoleHasOneRole
 
 	fieldMap map[string]field.Expr
 }
@@ -75,6 +79,8 @@ func (u *userRole) updateTableName(table string) *userRole {
 	u.ID = field.NewInt64(table, "id")
 	u.UserID = field.NewInt64(table, "user_id")
 	u.RoleID = field.NewInt64(table, "role_id")
+	u.CreatedAt = field.NewTime(table, "created_at")
+	u.DeletedAt = field.NewField(table, "deleted_at")
 
 	u.fillFieldMap()
 
@@ -91,10 +97,12 @@ func (u *userRole) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *userRole) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 4)
+	u.fieldMap = make(map[string]field.Expr, 6)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["user_id"] = u.UserID
 	u.fieldMap["role_id"] = u.RoleID
+	u.fieldMap["created_at"] = u.CreatedAt
+	u.fieldMap["deleted_at"] = u.DeletedAt
 
 }
 

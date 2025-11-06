@@ -100,8 +100,27 @@ func (s *RoleService) Update(req *dto.RoleUpdateReq) (gen.ResultInfo, error) {
 		})
 }
 
-func (s *RoleService) Delete(ids []int64) (gen.ResultInfo, error) {
-	return query.Role.WithContext(s.ctx).
+func (s *RoleService) Delete(ids []int64) (*gen.ResultInfo, error) {
+	tx := query.Q.Begin()
+	re, err := tx.Role.WithContext(s.ctx).
 		Where(query.Role.ID.In(ids...)).
 		Delete()
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return nil, err
+		}
+		return &re, err
+	}
+
+	// 删除用户角色关联
+	_, err = tx.UserRole.WithContext(s.ctx).
+		Where(query.UserRole.RoleID.In(ids...)).
+		Delete()
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return nil, err
+		}
+		return &re, err
+	}
+	return &re, tx.Commit()
 }

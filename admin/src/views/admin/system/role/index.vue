@@ -190,7 +190,7 @@ const add = () => {
   dialog.save = true
   nextTick(() => {
     saveDialogRef.value.open()
-    saveDialogRef.value.setData({app_id: state.selectedApp.value})
+    saveDialogRef.value.setData({app_id: Number(state.selectedApp.value)})
   })
 }
 
@@ -222,7 +222,7 @@ const batchDel = async () => {
   if (!confirmRes) return false
 
   const ids = state.selection.map(v => v.id)
-  const res = await systemApi.role.del.post({ids})
+  const res = await systemApi.role.delete.post({ids})
   if (res.code === 0) {
     table.value.removeKeys(ids)
     ElMessage.success("操作成功");
