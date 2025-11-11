@@ -34,6 +34,7 @@ func newTask(db *gorm.DB, opts ...gen.DOOption) task {
 	_task.UserID = field.NewInt64(tableName, "user_id")
 	_task.Type = field.NewString(tableName, "type")
 	_task.Content = field.NewString(tableName, "content")
+	_task.Result = field.NewString(tableName, "result")
 	_task.Status = field.NewInt32(tableName, "status")
 	_task.StatusName = field.NewString(tableName, "status_name")
 	_task.CreatedAt = field.NewTime(tableName, "created_at")
@@ -56,6 +57,7 @@ type task struct {
 	UserID     field.Int64  // 关联用户ID
 	Type       field.String // 任务类型
 	Content    field.String // 任务内容
+	Result     field.String // 任务结果
 	Status     field.Int32  // 状态 0=待处理 1=处理中 2=已完成 -1=失败
 	StatusName field.String // 状态名称
 	CreatedAt  field.Time   // 创建时间
@@ -83,6 +85,7 @@ func (t *task) updateTableName(table string) *task {
 	t.UserID = field.NewInt64(table, "user_id")
 	t.Type = field.NewString(table, "type")
 	t.Content = field.NewString(table, "content")
+	t.Result = field.NewString(table, "result")
 	t.Status = field.NewInt32(table, "status")
 	t.StatusName = field.NewString(table, "status_name")
 	t.CreatedAt = field.NewTime(table, "created_at")
@@ -104,13 +107,14 @@ func (t *task) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *task) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 11)
+	t.fieldMap = make(map[string]field.Expr, 12)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["title"] = t.Title
 	t.fieldMap["group"] = t.Group_
 	t.fieldMap["user_id"] = t.UserID
 	t.fieldMap["type"] = t.Type
 	t.fieldMap["content"] = t.Content
+	t.fieldMap["result"] = t.Result
 	t.fieldMap["status"] = t.Status
 	t.fieldMap["status_name"] = t.StatusName
 	t.fieldMap["created_at"] = t.CreatedAt

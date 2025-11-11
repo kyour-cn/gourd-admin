@@ -1,13 +1,14 @@
 package initialize
 
 import (
-	"app/internal/util/cache"
 	"context"
 	"time"
 	"unsafe"
 
 	jsoniter "github.com/json-iterator/go"
 	"gorm.io/gorm"
+
+	"app/internal/util/cache"
 )
 
 func InitCommon(ctx context.Context) {

@@ -50,6 +50,7 @@ func main() {
 
 	var allTables []any
 
+	// 后台基础模型
 	// App
 	appModel := g.GenerateModel("app", comOpts...)
 	allTables = append(allTables, appModel)

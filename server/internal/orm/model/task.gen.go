@@ -20,7 +20,8 @@ type Task struct {
 	Group_     string         `gorm:"column:group;not null;default:system;comment:分组" json:"group"`             // 分组
 	UserID     int64          `gorm:"column:user_id;not null;comment:关联用户ID" json:"user_id"`                    // 关联用户ID
 	Type       string         `gorm:"column:type;not null;comment:任务类型" json:"type"`                            // 任务类型
-	Content    string         `gorm:"column:content;not null;comment:任务内容" json:"content"`                      // 任务内容
+	Content    string         `gorm:"column:content;comment:任务内容" json:"content"`                               // 任务内容
+	Result     string         `gorm:"column:result;comment:任务结果" json:"result"`                                 // 任务结果
 	Status     int32          `gorm:"column:status;not null;comment:状态 0=待处理 1=处理中 2=已完成 -1=失败" json:"status"`  // 状态 0=待处理 1=处理中 2=已完成 -1=失败
 	StatusName string         `gorm:"column:status_name;not null;comment:状态名称" json:"status_name"`              // 状态名称
 	CreatedAt  time.Time      `gorm:"column:created_at;not null;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间
