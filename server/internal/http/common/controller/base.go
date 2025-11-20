@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"app/internal/http/common/dto"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -14,6 +13,8 @@ import (
 	"github.com/go-playground/validator/v10"
 	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
 	jsoniter "github.com/json-iterator/go"
+
+	"app/internal/http/common/dto"
 )
 
 // Base 基础控制器
