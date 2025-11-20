@@ -82,6 +82,7 @@ func (s *AuthService) GetMenu(userInfo *model.User, appId int64) (MenuTreeArr, e
 	qm := query.Menu
 	conds := []gen.Condition{
 		qm.AppID.Eq(appId),
+		qm.Type.Eq("menu"),
 	}
 
 	// 判断是否管理员
