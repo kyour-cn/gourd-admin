@@ -1,17 +1,23 @@
 package services
 
 import (
-	"app/internal/orm/model"
 	"context"
 	"encoding/json"
 	"errors"
+	"net/http"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gen"
 
+	"app/internal/config"
+	"app/internal/http/common/dto"
+	"app/internal/orm/model"
 	"app/internal/orm/query"
+	"app/internal/util/cache"
 )
 
 func NewAuthService(ctx context.Context) *AuthService {
@@ -206,4 +212,110 @@ func (s *AuthService) GetPermission(userInfo *model.User, appId int64) ([]string
 	}
 
 	return arr, nil
+}
+
+// LoginUser 登录用户
+func (s *AuthService) LoginUser(username string, password string) (*model.User, error) {
+	// 登录频率限制锁 10秒
+	key := "login_lock:" + username
+	val, ok := cache.Get(key)
+	if !ok {
+		val = 0
+	}
+	failures, _ := val.(int)
+	// 10秒登录失败次数超过3次，禁止登录
+	if failures > 3 {
+		return nil, errors.New("登录失败次数过多，请稍后再试")
+	}
+
+	uq := query.User
+
+	// 查询用户
+	userModel, err := uq.
+		Preload(uq.UserRole, uq.UserRole.Role, uq.UserRole.Role.App).
+		Where(
+			uq.Username.Eq(username),
+			uq.Password.Eq(password),
+		).
+		Select(uq.ID, uq.Nickname, uq.Username, uq.Avatar, uq.CreatedAt, uq.Status).
+		First()
+	if err != nil {
+		// 登录失败次数+1
+		cache.Set(key, failures+1, 10*time.Second)
+		return nil, errors.New("用户名或密码错误")
+	}
+	cache.Delete(key)
+
+	return userModel, nil
+}
+
+// GenerateToken 生成token
+func (s *AuthService) GenerateToken(claims dto.UserClaims) (string, error) {
+	// 读取配置
+	conf, err := config.GetJwtConfig()
+	if err != nil {
+		return "", err
+	}
+
+	// 设置签署时间和过期时间
+	claims.IssuedAt = jwt.NewNumericDate(time.Now())
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Second * time.Duration(conf.Expire)))
+
+	// 使用HS256算法签名
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign and get the complete encoded token as a string using the secret
+	return token.SignedString([]byte(conf.Secret))
+}
+
+// CheckPath 检查Token接口权限
+func (s *AuthService) CheckPath(claims dto.UserClaims, r *http.Request) bool {
+	url := r.URL.Path
+
+	apis, err := query.MenuAPI.
+		Where(query.MenuAPI.Path.Eq(url)).
+		Select(query.MenuAPI.ID).
+		Find()
+	if err == nil && len(apis) == 0 {
+		// 路由未定义，不限制
+		return true
+	} else if err != nil {
+		return false
+	}
+
+	uq := query.User
+
+	userInfo, err := uq.WithContext(r.Context()).
+		Preload(uq.UserRole, uq.UserRole.Role).
+		Where(
+			uq.ID.Eq(claims.Sub),
+			uq.Status.Eq(1),
+		).
+		First()
+	if err != nil {
+		// 用户状态已失效
+		return false
+	}
+
+	// 权限匹配
+	ruleSet := make(map[int64]bool)
+	for _, v := range userInfo.UserRole {
+		// 管理员角色拥有所有权限
+		if v.Role.IsAdmin == 1 {
+			return true
+		}
+		for _, ruleIDStr := range strings.Split(v.Role.Rules, ",") {
+			ruleID, _ := strconv.Atoi(ruleIDStr)
+			ruleSet[int64(ruleID)] = true
+		}
+	}
+
+	// 判断是否有交集
+	for _, api := range apis {
+		if ruleSet[api.ID] {
+			return true
+		}
+	}
+
+	return false
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"app/internal/http/common/dto"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -13,8 +14,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
 	jsoniter "github.com/json-iterator/go"
-
-	"app/internal/modules/common/auth"
 )
 
 // Base 基础控制器
@@ -134,11 +133,11 @@ func (*Base) PageParam(r *http.Request, defaultPage int, defaultSize int) (int, 
 }
 
 // GetJwt 从请求上下文中获取JWT信息
-func (*Base) GetJwt(r *http.Request) (*auth.UserClaims, error) {
+func (*Base) GetJwt(r *http.Request) (*dto.UserClaims, error) {
 	jwtValue := r.Context().Value("jwt")
-	if _, ok := jwtValue.(auth.UserClaims); !ok {
+	if _, ok := jwtValue.(dto.UserClaims); !ok {
 		return nil, errors.New("获取登录信息失败")
 	}
-	claims := jwtValue.(auth.UserClaims)
+	claims := jwtValue.(dto.UserClaims)
 	return &claims, nil
 }

@@ -1,14 +1,14 @@
 package services
 
 import (
-	"app/internal/http/common/dto"
-	"app/internal/modules/common/auth"
-	"app/internal/orm/model"
-	"app/internal/orm/query"
 	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+
+	"app/internal/http/common/dto"
+	"app/internal/orm/model"
+	"app/internal/orm/query"
 )
 
 func NewUserService(ctx context.Context) *UserService {
@@ -21,7 +21,7 @@ type UserService struct {
 	ctx context.Context
 }
 
-func (s *UserService) GetInfo(claims *auth.UserClaims) (*model.User, error) {
+func (s *UserService) GetInfo(claims *dto.UserClaims) (*model.User, error) {
 	qu := query.User
 	return qu.WithContext(s.ctx).
 		Where(qu.ID.Eq(claims.Sub)).
@@ -78,7 +78,7 @@ func (s *UserService) ResetPassword(req dto.UserResetPasswordReq) error {
 	return nil
 }
 
-func (s *UserService) GetTaskList(claims *auth.UserClaims) ([]*model.Task, error) {
+func (s *UserService) GetTaskList(claims *dto.UserClaims) ([]*model.Task, error) {
 	q := query.Task
 	return q.WithContext(s.ctx).
 		Where(q.UserID.Eq(claims.Sub)).

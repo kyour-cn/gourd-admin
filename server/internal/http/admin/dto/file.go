@@ -1,9 +1,10 @@
 package dto
 
 import (
-	"app/internal/modules/common/auth"
-	"app/internal/orm/model"
 	"mime/multipart"
+
+	"app/internal/http/common/dto"
+	"app/internal/orm/model"
 )
 
 type FileListReq struct {
@@ -13,7 +14,7 @@ type FileListReq struct {
 }
 
 type FileUploadReq struct {
-	Claims     *auth.UserClaims
+	Claims     *dto.UserClaims
 	File       multipart.File
 	FileHeader *multipart.FileHeader
 	MenuId     int64

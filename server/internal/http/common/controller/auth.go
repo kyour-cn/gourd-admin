@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"app/internal/http/common/dto"
 	"crypto/md5"
 	"encoding/hex"
 	"net/http"
@@ -8,7 +9,6 @@ import (
 
 	"app/internal/config"
 	"app/internal/http/common/services"
-	cauth "app/internal/modules/common/auth"
 	"app/internal/modules/common/dblog"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
@@ -59,8 +59,10 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		req.Password = hex.EncodeToString(hash[:])
 	}
 
+	serv := services.NewAuthService(r.Context())
+
 	// 登录
-	userData, err := cauth.LoginUser(r.Context(), req.Username, req.Password)
+	userData, err := serv.LoginUser(req.Username, req.Password)
 	if err != nil {
 		_ = c.Fail(w, 103, "登录失败："+err.Error(), "")
 		return
@@ -81,11 +83,11 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		_ = c.Fail(w, 104, "token配置异常,请联系管理员", err)
 	}
 	// 生成token
-	claims := cauth.UserClaims{
+	claims := dto.UserClaims{
 		Sub:  userData.ID,
 		Name: userData.Nickname,
 	}
-	token, err := cauth.GenerateToken(claims)
+	token, err := serv.GenerateToken(claims)
 	if err != nil {
 		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return

@@ -1,11 +1,11 @@
 package dblog
 
 import (
+	"app/internal/http/common/dto"
 	"context"
 	"fmt"
 	"net/http"
 
-	"app/internal/modules/common/auth"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 )
@@ -49,7 +49,7 @@ func (l *Log) WithRequest(r *http.Request) *Log {
 
 	// 取出用户信息
 	jwtClaims := ctx.Value("jwt")
-	if claims, ok := jwtClaims.(auth.UserClaims); ok {
+	if claims, ok := jwtClaims.(dto.UserClaims); ok {
 		// 取出uid
 		l.Model.RequestUserID = claims.Sub
 		// 取出用户名称
