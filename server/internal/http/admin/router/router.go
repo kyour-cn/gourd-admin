@@ -1,11 +1,11 @@
 package router
 
 import (
+	"github.com/go-chi/chi/v5"
+
 	"app/internal/http/admin/controller/system"
 	common "app/internal/http/common/controller"
 	middleware2 "app/internal/http/common/middleware"
-
-	"github.com/go-chi/chi/v5"
 )
 
 // Router 注册路由组
@@ -74,6 +74,7 @@ func Router(r chi.Router) {
 		r.Route("/user", func(r chi.Router) {
 			c := system.User{}
 			r.Get("/list", c.List)
+			r.Get("/export", c.Export)
 			r.Post("/add", c.Add)
 			r.Post("/edit", c.Edit)
 			r.Post("/delete", c.Delete)

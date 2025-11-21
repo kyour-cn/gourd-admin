@@ -80,7 +80,7 @@ const submit = () => {
     if (valid) {
       state.isSaving = true;
 
-      const data = {...state.form};
+      const data = {...state.form}
       data.status = data.status ? 1 : 0;
 
       if (state.mode === 'add') {

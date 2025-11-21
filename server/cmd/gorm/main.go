@@ -55,21 +55,18 @@ func main() {
 	appModel := g.GenerateModel("app", comOpts...)
 	allTables = append(allTables, appModel)
 
-	// Role
+	// Role, UserRole
 	roleModel := g.GenerateModel("role", append(comOpts,
 		gen.FieldRelate(field.HasOne, "App", appModel, &field.RelateConfig{
 			GORMTag: field.GormTag{"foreignKey": {"app_id"}, "references": {"id"}},
 		}),
 	)...)
-	allTables = append(allTables, roleModel)
-
-	// UserRole
 	userRoleModel := g.GenerateModel("user_role", append(comOpts,
 		gen.FieldRelate(field.HasOne, "Role", roleModel, &field.RelateConfig{
 			GORMTag: field.GormTag{"foreignKey": {"role_id"}, "references": {"id"}},
 		}),
 	)...)
-	allTables = append(allTables, userRoleModel)
+	allTables = append(allTables, roleModel, userRoleModel)
 
 	// User
 	userModel := g.GenerateModel("user", append(comOpts,
@@ -94,7 +91,7 @@ func main() {
 	// Log/LogType
 	logTypeModel := g.GenerateModel("log_type", comOpts...)
 	logModel := g.GenerateModel("log", append(comOpts,
-		gen.FieldRelate(field.HasOne, "LogType", userModel, &field.RelateConfig{
+		gen.FieldRelate(field.HasOne, "LogType", logTypeModel, &field.RelateConfig{
 			GORMTag: field.GormTag{"foreignKey": {"type_id"}, "references": {"id"}},
 		}),
 	)...)

@@ -107,6 +107,13 @@ export default {
         return await http.get(this.url, params);
       }
     },
+    export: {
+      url: `${config.API_URL}/admin/system/user/export`,
+      name: "导出用户",
+      get: async function (params = {}) {
+        return await http.get(this.url, params);
+      }
+    },
     edit: {
       url: `${config.API_URL}/admin/system/user/edit`,
       name: "修改用户",

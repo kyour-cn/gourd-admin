@@ -9,6 +9,7 @@
         <div class="right-panel-search">
           <el-input v-model="state.search.keyword" placeholder="登录账号 / 昵称 / 手机号" clearable @clear="clearSearch"/>
           <el-button type="primary" icon="el-icon-search" @click="upSearch"/>
+          <el-button type="primary" icon="el-icon-download" @click="exportData"/>
         </div>
       </div>
     </el-header>
@@ -148,11 +149,30 @@ const batchDel = async () => {
   }
 }
 
-//搜索
+// 搜索
 const upSearch = () => {
   table.value.upData({
     keyword: state.search.keyword
   }, 1)
+}
+
+// 导出
+const exportData = async () => {
+  const res = await systemApi.user.export.get({
+    keyword: state.search.keyword
+  })
+  if (res.code === 0) {
+    ElMessageBox({
+      title: "成功发起任务",
+      message: `<div><img style="height:200px" src="img/tasks-example.png"/></div><p>已成功发起导出任务，您可以操作其他事务</p><p>稍后可在 <b>任务中心</b> 查看执行结果</p>`,
+      type: "success",
+      confirmButtonText: "知道了",
+      dangerouslyUseHTMLString: true,
+      center: true
+    }).catch(() => {})
+  } else {
+    await ElMessageBox.alert(res.message, "提示", {type: 'error'});
+  }
 }
 
 // 删除搜索

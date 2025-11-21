@@ -232,7 +232,7 @@ func (s *AuthService) LoginUser(username string, password string) (*model.User, 
 	uq := query.User
 
 	// 查询用户
-	userModel, err := uq.
+	userModel, err := uq.WithContext(s.ctx).
 		Preload(uq.UserRole, uq.UserRole.Role, uq.UserRole.Role.App).
 		Where(
 			uq.Username.Eq(username),
@@ -246,6 +246,13 @@ func (s *AuthService) LoginUser(username string, password string) (*model.User, 
 		return nil, errors.New("用户名或密码错误")
 	}
 	cache.Delete(key)
+
+	// 更新登录时间
+	_, _ = uq.WithContext(s.ctx).
+		Where(uq.ID.Eq(userModel.ID)).
+		Updates(&model.User{
+			LoginTime: time.Now(),
+		})
 
 	return userModel, nil
 }

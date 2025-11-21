@@ -45,31 +45,7 @@ func newLog(db *gorm.DB, opts ...gen.DOOption) log {
 	_log.LogType = logHasOneLogType{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("LogType", "model.User"),
-		UserRole: struct {
-			field.RelationField
-			Role struct {
-				field.RelationField
-				App struct {
-					field.RelationField
-				}
-			}
-		}{
-			RelationField: field.NewRelation("LogType.UserRole", "model.UserRole"),
-			Role: struct {
-				field.RelationField
-				App struct {
-					field.RelationField
-				}
-			}{
-				RelationField: field.NewRelation("LogType.UserRole.Role", "model.Role"),
-				App: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("LogType.UserRole.Role.App", "model.App"),
-				},
-			},
-		},
+		RelationField: field.NewRelation("LogType", "model.LogType"),
 	}
 
 	_log.fillFieldMap()
@@ -178,16 +154,6 @@ type logHasOneLogType struct {
 	db *gorm.DB
 
 	field.RelationField
-
-	UserRole struct {
-		field.RelationField
-		Role struct {
-			field.RelationField
-			App struct {
-				field.RelationField
-			}
-		}
-	}
 }
 
 func (a logHasOneLogType) Where(conds ...field.Expr) *logHasOneLogType {
@@ -224,11 +190,11 @@ func (a logHasOneLogType) Unscoped() *logHasOneLogType {
 
 type logHasOneLogTypeTx struct{ tx *gorm.Association }
 
-func (a logHasOneLogTypeTx) Find() (result *model.User, err error) {
+func (a logHasOneLogTypeTx) Find() (result *model.LogType, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a logHasOneLogTypeTx) Append(values ...*model.User) (err error) {
+func (a logHasOneLogTypeTx) Append(values ...*model.LogType) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -236,7 +202,7 @@ func (a logHasOneLogTypeTx) Append(values ...*model.User) (err error) {
 	return a.tx.Append(targetValues...)
 }
 
-func (a logHasOneLogTypeTx) Replace(values ...*model.User) (err error) {
+func (a logHasOneLogTypeTx) Replace(values ...*model.LogType) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -244,7 +210,7 @@ func (a logHasOneLogTypeTx) Replace(values ...*model.User) (err error) {
 	return a.tx.Replace(targetValues...)
 }
 
-func (a logHasOneLogTypeTx) Delete(values ...*model.User) (err error) {
+func (a logHasOneLogTypeTx) Delete(values ...*model.LogType) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v

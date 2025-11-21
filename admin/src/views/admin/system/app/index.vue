@@ -23,16 +23,16 @@
         @selection-change="selectionChange"
         stripe
       >
-        <el-table-column type="selection" width="50"></el-table-column>
-        <el-table-column label="名称" prop="name" width="180"></el-table-column>
-        <el-table-column label="应用key" prop="key" width="180"></el-table-column>
+        <el-table-column type="selection" width="50"/>
+        <el-table-column label="名称" prop="name" width="180"/>
+        <el-table-column label="应用key" prop="key" width="180"/>
         <el-table-column label="状态" prop="status" width="60">
           <template #default="scope">
             <sc-status-indicator v-if="scope.row.status" type="success"></sc-status-indicator>
             <sc-status-indicator v-if="!scope.row.status" pulse type="danger"></sc-status-indicator>
           </template>
         </el-table-column>
-        <el-table-column label="备注信息" prop="remark"></el-table-column>
+        <el-table-column label="备注信息" prop="remark"/>
         <el-table-column label="操作" fixed="right" align="right" width="120">
           <template #default="scope">
             <el-button-group>

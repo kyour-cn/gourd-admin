@@ -28,7 +28,7 @@ type Log struct {
 	Status        int32     `gorm:"column:status;not null;comment:状态 0=未处理 1=已查看 2=已处理" json:"status"`                      // 状态 0=未处理 1=已查看 2=已处理
 	CreatedAt     time.Time `gorm:"column:created_at;not null;autoCreateTime;comment:创建时间" json:"created_at"`               // 创建时间
 	UpdatedAt     time.Time `gorm:"column:updated_at;not null;autoUpdateTime;comment:更新时间" json:"updated_at"`               // 更新时间
-	LogType       User      `gorm:"foreignKey:type_id;references:id" json:"log_type"`
+	LogType       LogType   `gorm:"foreignKey:type_id;references:id" json:"log_type"`
 }
 
 // MarshalBinary 支持json序列化

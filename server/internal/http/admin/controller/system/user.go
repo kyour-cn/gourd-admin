@@ -29,6 +29,22 @@ func (c *User) List(w http.ResponseWriter, r *http.Request) {
 	_ = c.Success(w, "", res)
 }
 
+func (c *User) Export(w http.ResponseWriter, r *http.Request) {
+	req := &dto.UserListReq{}
+	if err := c.QueryReqUnmarshal(r, req); err != nil {
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), "")
+		return
+	}
+
+	service := services.NewUserService(r.Context())
+	res, err := service.GetList(req)
+	if err != nil {
+		_ = c.Fail(w, 500, "获取列表失败", err.Error())
+		return
+	}
+	_ = c.Success(w, "", res)
+}
+
 func (c *User) Add(w http.ResponseWriter, r *http.Request) {
 	req := &dto.UserCreateReq{}
 	if err := c.JsonReqUnmarshal(r, req); err != nil {

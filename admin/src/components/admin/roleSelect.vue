@@ -26,9 +26,9 @@
         </el-form-item>
       </el-form>
     </template>
-    <el-table-column prop="id" label="ID" width="180"></el-table-column>
-    <el-table-column prop="name" label="名称"></el-table-column>
-    <el-table-column prop="app.name" label="所属应用"></el-table-column>
+    <el-table-column prop="id" label="ID" width="180"/>
+    <el-table-column prop="name" label="名称"/>
+    <el-table-column prop="app.name" label="所属应用"/>
   </sc-table-select>
 </template>
 
