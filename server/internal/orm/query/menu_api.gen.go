@@ -6,7 +6,6 @@ package query
 
 import (
 	"context"
-	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -106,158 +105,95 @@ func (m menuAPI) replaceDB(db *gorm.DB) menuAPI {
 
 type menuAPIDo struct{ gen.DO }
 
-type IMenuAPIDo interface {
-	gen.SubQuery
-	Debug() IMenuAPIDo
-	WithContext(ctx context.Context) IMenuAPIDo
-	WithResult(fc func(tx gen.Dao)) gen.ResultInfo
-	ReplaceDB(db *gorm.DB)
-	ReadDB() IMenuAPIDo
-	WriteDB() IMenuAPIDo
-	As(alias string) gen.Dao
-	Session(config *gorm.Session) IMenuAPIDo
-	Columns(cols ...field.Expr) gen.Columns
-	Clauses(conds ...clause.Expression) IMenuAPIDo
-	Not(conds ...gen.Condition) IMenuAPIDo
-	Or(conds ...gen.Condition) IMenuAPIDo
-	Select(conds ...field.Expr) IMenuAPIDo
-	Where(conds ...gen.Condition) IMenuAPIDo
-	Order(conds ...field.Expr) IMenuAPIDo
-	Distinct(cols ...field.Expr) IMenuAPIDo
-	Omit(cols ...field.Expr) IMenuAPIDo
-	Join(table schema.Tabler, on ...field.Expr) IMenuAPIDo
-	LeftJoin(table schema.Tabler, on ...field.Expr) IMenuAPIDo
-	RightJoin(table schema.Tabler, on ...field.Expr) IMenuAPIDo
-	Group(cols ...field.Expr) IMenuAPIDo
-	Having(conds ...gen.Condition) IMenuAPIDo
-	Limit(limit int) IMenuAPIDo
-	Offset(offset int) IMenuAPIDo
-	Count() (count int64, err error)
-	Scopes(funcs ...func(gen.Dao) gen.Dao) IMenuAPIDo
-	Unscoped() IMenuAPIDo
-	Create(values ...*model.MenuAPI) error
-	CreateInBatches(values []*model.MenuAPI, batchSize int) error
-	Save(values ...*model.MenuAPI) error
-	First() (*model.MenuAPI, error)
-	Take() (*model.MenuAPI, error)
-	Last() (*model.MenuAPI, error)
-	Find() ([]*model.MenuAPI, error)
-	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.MenuAPI, err error)
-	FindInBatches(result *[]*model.MenuAPI, batchSize int, fc func(tx gen.Dao, batch int) error) error
-	Pluck(column field.Expr, dest interface{}) error
-	Delete(...*model.MenuAPI) (info gen.ResultInfo, err error)
-	Update(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	Updates(value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumn(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumnSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	UpdateColumns(value interface{}) (info gen.ResultInfo, err error)
-	UpdateFrom(q gen.SubQuery) gen.Dao
-	Attrs(attrs ...field.AssignExpr) IMenuAPIDo
-	Assign(attrs ...field.AssignExpr) IMenuAPIDo
-	Joins(fields ...field.RelationField) IMenuAPIDo
-	Preload(fields ...field.RelationField) IMenuAPIDo
-	FirstOrInit() (*model.MenuAPI, error)
-	FirstOrCreate() (*model.MenuAPI, error)
-	FindByPage(offset int, limit int) (result []*model.MenuAPI, count int64, err error)
-	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
-	Rows() (*sql.Rows, error)
-	Row() *sql.Row
-	Scan(result interface{}) (err error)
-	Returning(value interface{}, columns ...string) IMenuAPIDo
-	UnderlyingDB() *gorm.DB
-	schema.Tabler
-}
-
-func (m menuAPIDo) Debug() IMenuAPIDo {
+func (m menuAPIDo) Debug() *menuAPIDo {
 	return m.withDO(m.DO.Debug())
 }
 
-func (m menuAPIDo) WithContext(ctx context.Context) IMenuAPIDo {
+func (m menuAPIDo) WithContext(ctx context.Context) *menuAPIDo {
 	return m.withDO(m.DO.WithContext(ctx))
 }
 
-func (m menuAPIDo) ReadDB() IMenuAPIDo {
+func (m menuAPIDo) ReadDB() *menuAPIDo {
 	return m.Clauses(dbresolver.Read)
 }
 
-func (m menuAPIDo) WriteDB() IMenuAPIDo {
+func (m menuAPIDo) WriteDB() *menuAPIDo {
 	return m.Clauses(dbresolver.Write)
 }
 
-func (m menuAPIDo) Session(config *gorm.Session) IMenuAPIDo {
+func (m menuAPIDo) Session(config *gorm.Session) *menuAPIDo {
 	return m.withDO(m.DO.Session(config))
 }
 
-func (m menuAPIDo) Clauses(conds ...clause.Expression) IMenuAPIDo {
+func (m menuAPIDo) Clauses(conds ...clause.Expression) *menuAPIDo {
 	return m.withDO(m.DO.Clauses(conds...))
 }
 
-func (m menuAPIDo) Returning(value interface{}, columns ...string) IMenuAPIDo {
+func (m menuAPIDo) Returning(value interface{}, columns ...string) *menuAPIDo {
 	return m.withDO(m.DO.Returning(value, columns...))
 }
 
-func (m menuAPIDo) Not(conds ...gen.Condition) IMenuAPIDo {
+func (m menuAPIDo) Not(conds ...gen.Condition) *menuAPIDo {
 	return m.withDO(m.DO.Not(conds...))
 }
 
-func (m menuAPIDo) Or(conds ...gen.Condition) IMenuAPIDo {
+func (m menuAPIDo) Or(conds ...gen.Condition) *menuAPIDo {
 	return m.withDO(m.DO.Or(conds...))
 }
 
-func (m menuAPIDo) Select(conds ...field.Expr) IMenuAPIDo {
+func (m menuAPIDo) Select(conds ...field.Expr) *menuAPIDo {
 	return m.withDO(m.DO.Select(conds...))
 }
 
-func (m menuAPIDo) Where(conds ...gen.Condition) IMenuAPIDo {
+func (m menuAPIDo) Where(conds ...gen.Condition) *menuAPIDo {
 	return m.withDO(m.DO.Where(conds...))
 }
 
-func (m menuAPIDo) Order(conds ...field.Expr) IMenuAPIDo {
+func (m menuAPIDo) Order(conds ...field.Expr) *menuAPIDo {
 	return m.withDO(m.DO.Order(conds...))
 }
 
-func (m menuAPIDo) Distinct(cols ...field.Expr) IMenuAPIDo {
+func (m menuAPIDo) Distinct(cols ...field.Expr) *menuAPIDo {
 	return m.withDO(m.DO.Distinct(cols...))
 }
 
-func (m menuAPIDo) Omit(cols ...field.Expr) IMenuAPIDo {
+func (m menuAPIDo) Omit(cols ...field.Expr) *menuAPIDo {
 	return m.withDO(m.DO.Omit(cols...))
 }
 
-func (m menuAPIDo) Join(table schema.Tabler, on ...field.Expr) IMenuAPIDo {
+func (m menuAPIDo) Join(table schema.Tabler, on ...field.Expr) *menuAPIDo {
 	return m.withDO(m.DO.Join(table, on...))
 }
 
-func (m menuAPIDo) LeftJoin(table schema.Tabler, on ...field.Expr) IMenuAPIDo {
+func (m menuAPIDo) LeftJoin(table schema.Tabler, on ...field.Expr) *menuAPIDo {
 	return m.withDO(m.DO.LeftJoin(table, on...))
 }
 
-func (m menuAPIDo) RightJoin(table schema.Tabler, on ...field.Expr) IMenuAPIDo {
+func (m menuAPIDo) RightJoin(table schema.Tabler, on ...field.Expr) *menuAPIDo {
 	return m.withDO(m.DO.RightJoin(table, on...))
 }
 
-func (m menuAPIDo) Group(cols ...field.Expr) IMenuAPIDo {
+func (m menuAPIDo) Group(cols ...field.Expr) *menuAPIDo {
 	return m.withDO(m.DO.Group(cols...))
 }
 
-func (m menuAPIDo) Having(conds ...gen.Condition) IMenuAPIDo {
+func (m menuAPIDo) Having(conds ...gen.Condition) *menuAPIDo {
 	return m.withDO(m.DO.Having(conds...))
 }
 
-func (m menuAPIDo) Limit(limit int) IMenuAPIDo {
+func (m menuAPIDo) Limit(limit int) *menuAPIDo {
 	return m.withDO(m.DO.Limit(limit))
 }
 
-func (m menuAPIDo) Offset(offset int) IMenuAPIDo {
+func (m menuAPIDo) Offset(offset int) *menuAPIDo {
 	return m.withDO(m.DO.Offset(offset))
 }
 
-func (m menuAPIDo) Scopes(funcs ...func(gen.Dao) gen.Dao) IMenuAPIDo {
+func (m menuAPIDo) Scopes(funcs ...func(gen.Dao) gen.Dao) *menuAPIDo {
 	return m.withDO(m.DO.Scopes(funcs...))
 }
 
-func (m menuAPIDo) Unscoped() IMenuAPIDo {
+func (m menuAPIDo) Unscoped() *menuAPIDo {
 	return m.withDO(m.DO.Unscoped())
 }
 
@@ -323,22 +259,22 @@ func (m menuAPIDo) FindInBatches(result *[]*model.MenuAPI, batchSize int, fc fun
 	return m.DO.FindInBatches(result, batchSize, fc)
 }
 
-func (m menuAPIDo) Attrs(attrs ...field.AssignExpr) IMenuAPIDo {
+func (m menuAPIDo) Attrs(attrs ...field.AssignExpr) *menuAPIDo {
 	return m.withDO(m.DO.Attrs(attrs...))
 }
 
-func (m menuAPIDo) Assign(attrs ...field.AssignExpr) IMenuAPIDo {
+func (m menuAPIDo) Assign(attrs ...field.AssignExpr) *menuAPIDo {
 	return m.withDO(m.DO.Assign(attrs...))
 }
 
-func (m menuAPIDo) Joins(fields ...field.RelationField) IMenuAPIDo {
+func (m menuAPIDo) Joins(fields ...field.RelationField) *menuAPIDo {
 	for _, _f := range fields {
 		m = *m.withDO(m.DO.Joins(_f))
 	}
 	return &m
 }
 
-func (m menuAPIDo) Preload(fields ...field.RelationField) IMenuAPIDo {
+func (m menuAPIDo) Preload(fields ...field.RelationField) *menuAPIDo {
 	for _, _f := range fields {
 		m = *m.withDO(m.DO.Preload(_f))
 	}

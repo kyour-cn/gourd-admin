@@ -6,7 +6,6 @@ package query
 
 import (
 	"context"
-	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -206,158 +205,95 @@ func (a userRoleHasOneRoleTx) Unscoped() *userRoleHasOneRoleTx {
 
 type userRoleDo struct{ gen.DO }
 
-type IUserRoleDo interface {
-	gen.SubQuery
-	Debug() IUserRoleDo
-	WithContext(ctx context.Context) IUserRoleDo
-	WithResult(fc func(tx gen.Dao)) gen.ResultInfo
-	ReplaceDB(db *gorm.DB)
-	ReadDB() IUserRoleDo
-	WriteDB() IUserRoleDo
-	As(alias string) gen.Dao
-	Session(config *gorm.Session) IUserRoleDo
-	Columns(cols ...field.Expr) gen.Columns
-	Clauses(conds ...clause.Expression) IUserRoleDo
-	Not(conds ...gen.Condition) IUserRoleDo
-	Or(conds ...gen.Condition) IUserRoleDo
-	Select(conds ...field.Expr) IUserRoleDo
-	Where(conds ...gen.Condition) IUserRoleDo
-	Order(conds ...field.Expr) IUserRoleDo
-	Distinct(cols ...field.Expr) IUserRoleDo
-	Omit(cols ...field.Expr) IUserRoleDo
-	Join(table schema.Tabler, on ...field.Expr) IUserRoleDo
-	LeftJoin(table schema.Tabler, on ...field.Expr) IUserRoleDo
-	RightJoin(table schema.Tabler, on ...field.Expr) IUserRoleDo
-	Group(cols ...field.Expr) IUserRoleDo
-	Having(conds ...gen.Condition) IUserRoleDo
-	Limit(limit int) IUserRoleDo
-	Offset(offset int) IUserRoleDo
-	Count() (count int64, err error)
-	Scopes(funcs ...func(gen.Dao) gen.Dao) IUserRoleDo
-	Unscoped() IUserRoleDo
-	Create(values ...*model.UserRole) error
-	CreateInBatches(values []*model.UserRole, batchSize int) error
-	Save(values ...*model.UserRole) error
-	First() (*model.UserRole, error)
-	Take() (*model.UserRole, error)
-	Last() (*model.UserRole, error)
-	Find() ([]*model.UserRole, error)
-	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.UserRole, err error)
-	FindInBatches(result *[]*model.UserRole, batchSize int, fc func(tx gen.Dao, batch int) error) error
-	Pluck(column field.Expr, dest interface{}) error
-	Delete(...*model.UserRole) (info gen.ResultInfo, err error)
-	Update(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	Updates(value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumn(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumnSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	UpdateColumns(value interface{}) (info gen.ResultInfo, err error)
-	UpdateFrom(q gen.SubQuery) gen.Dao
-	Attrs(attrs ...field.AssignExpr) IUserRoleDo
-	Assign(attrs ...field.AssignExpr) IUserRoleDo
-	Joins(fields ...field.RelationField) IUserRoleDo
-	Preload(fields ...field.RelationField) IUserRoleDo
-	FirstOrInit() (*model.UserRole, error)
-	FirstOrCreate() (*model.UserRole, error)
-	FindByPage(offset int, limit int) (result []*model.UserRole, count int64, err error)
-	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
-	Rows() (*sql.Rows, error)
-	Row() *sql.Row
-	Scan(result interface{}) (err error)
-	Returning(value interface{}, columns ...string) IUserRoleDo
-	UnderlyingDB() *gorm.DB
-	schema.Tabler
-}
-
-func (u userRoleDo) Debug() IUserRoleDo {
+func (u userRoleDo) Debug() *userRoleDo {
 	return u.withDO(u.DO.Debug())
 }
 
-func (u userRoleDo) WithContext(ctx context.Context) IUserRoleDo {
+func (u userRoleDo) WithContext(ctx context.Context) *userRoleDo {
 	return u.withDO(u.DO.WithContext(ctx))
 }
 
-func (u userRoleDo) ReadDB() IUserRoleDo {
+func (u userRoleDo) ReadDB() *userRoleDo {
 	return u.Clauses(dbresolver.Read)
 }
 
-func (u userRoleDo) WriteDB() IUserRoleDo {
+func (u userRoleDo) WriteDB() *userRoleDo {
 	return u.Clauses(dbresolver.Write)
 }
 
-func (u userRoleDo) Session(config *gorm.Session) IUserRoleDo {
+func (u userRoleDo) Session(config *gorm.Session) *userRoleDo {
 	return u.withDO(u.DO.Session(config))
 }
 
-func (u userRoleDo) Clauses(conds ...clause.Expression) IUserRoleDo {
+func (u userRoleDo) Clauses(conds ...clause.Expression) *userRoleDo {
 	return u.withDO(u.DO.Clauses(conds...))
 }
 
-func (u userRoleDo) Returning(value interface{}, columns ...string) IUserRoleDo {
+func (u userRoleDo) Returning(value interface{}, columns ...string) *userRoleDo {
 	return u.withDO(u.DO.Returning(value, columns...))
 }
 
-func (u userRoleDo) Not(conds ...gen.Condition) IUserRoleDo {
+func (u userRoleDo) Not(conds ...gen.Condition) *userRoleDo {
 	return u.withDO(u.DO.Not(conds...))
 }
 
-func (u userRoleDo) Or(conds ...gen.Condition) IUserRoleDo {
+func (u userRoleDo) Or(conds ...gen.Condition) *userRoleDo {
 	return u.withDO(u.DO.Or(conds...))
 }
 
-func (u userRoleDo) Select(conds ...field.Expr) IUserRoleDo {
+func (u userRoleDo) Select(conds ...field.Expr) *userRoleDo {
 	return u.withDO(u.DO.Select(conds...))
 }
 
-func (u userRoleDo) Where(conds ...gen.Condition) IUserRoleDo {
+func (u userRoleDo) Where(conds ...gen.Condition) *userRoleDo {
 	return u.withDO(u.DO.Where(conds...))
 }
 
-func (u userRoleDo) Order(conds ...field.Expr) IUserRoleDo {
+func (u userRoleDo) Order(conds ...field.Expr) *userRoleDo {
 	return u.withDO(u.DO.Order(conds...))
 }
 
-func (u userRoleDo) Distinct(cols ...field.Expr) IUserRoleDo {
+func (u userRoleDo) Distinct(cols ...field.Expr) *userRoleDo {
 	return u.withDO(u.DO.Distinct(cols...))
 }
 
-func (u userRoleDo) Omit(cols ...field.Expr) IUserRoleDo {
+func (u userRoleDo) Omit(cols ...field.Expr) *userRoleDo {
 	return u.withDO(u.DO.Omit(cols...))
 }
 
-func (u userRoleDo) Join(table schema.Tabler, on ...field.Expr) IUserRoleDo {
+func (u userRoleDo) Join(table schema.Tabler, on ...field.Expr) *userRoleDo {
 	return u.withDO(u.DO.Join(table, on...))
 }
 
-func (u userRoleDo) LeftJoin(table schema.Tabler, on ...field.Expr) IUserRoleDo {
+func (u userRoleDo) LeftJoin(table schema.Tabler, on ...field.Expr) *userRoleDo {
 	return u.withDO(u.DO.LeftJoin(table, on...))
 }
 
-func (u userRoleDo) RightJoin(table schema.Tabler, on ...field.Expr) IUserRoleDo {
+func (u userRoleDo) RightJoin(table schema.Tabler, on ...field.Expr) *userRoleDo {
 	return u.withDO(u.DO.RightJoin(table, on...))
 }
 
-func (u userRoleDo) Group(cols ...field.Expr) IUserRoleDo {
+func (u userRoleDo) Group(cols ...field.Expr) *userRoleDo {
 	return u.withDO(u.DO.Group(cols...))
 }
 
-func (u userRoleDo) Having(conds ...gen.Condition) IUserRoleDo {
+func (u userRoleDo) Having(conds ...gen.Condition) *userRoleDo {
 	return u.withDO(u.DO.Having(conds...))
 }
 
-func (u userRoleDo) Limit(limit int) IUserRoleDo {
+func (u userRoleDo) Limit(limit int) *userRoleDo {
 	return u.withDO(u.DO.Limit(limit))
 }
 
-func (u userRoleDo) Offset(offset int) IUserRoleDo {
+func (u userRoleDo) Offset(offset int) *userRoleDo {
 	return u.withDO(u.DO.Offset(offset))
 }
 
-func (u userRoleDo) Scopes(funcs ...func(gen.Dao) gen.Dao) IUserRoleDo {
+func (u userRoleDo) Scopes(funcs ...func(gen.Dao) gen.Dao) *userRoleDo {
 	return u.withDO(u.DO.Scopes(funcs...))
 }
 
-func (u userRoleDo) Unscoped() IUserRoleDo {
+func (u userRoleDo) Unscoped() *userRoleDo {
 	return u.withDO(u.DO.Unscoped())
 }
 
@@ -423,22 +359,22 @@ func (u userRoleDo) FindInBatches(result *[]*model.UserRole, batchSize int, fc f
 	return u.DO.FindInBatches(result, batchSize, fc)
 }
 
-func (u userRoleDo) Attrs(attrs ...field.AssignExpr) IUserRoleDo {
+func (u userRoleDo) Attrs(attrs ...field.AssignExpr) *userRoleDo {
 	return u.withDO(u.DO.Attrs(attrs...))
 }
 
-func (u userRoleDo) Assign(attrs ...field.AssignExpr) IUserRoleDo {
+func (u userRoleDo) Assign(attrs ...field.AssignExpr) *userRoleDo {
 	return u.withDO(u.DO.Assign(attrs...))
 }
 
-func (u userRoleDo) Joins(fields ...field.RelationField) IUserRoleDo {
+func (u userRoleDo) Joins(fields ...field.RelationField) *userRoleDo {
 	for _, _f := range fields {
 		u = *u.withDO(u.DO.Joins(_f))
 	}
 	return &u
 }
 
-func (u userRoleDo) Preload(fields ...field.RelationField) IUserRoleDo {
+func (u userRoleDo) Preload(fields ...field.RelationField) *userRoleDo {
 	for _, _f := range fields {
 		u = *u.withDO(u.DO.Preload(_f))
 	}

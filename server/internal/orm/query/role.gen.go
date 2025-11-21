@@ -6,7 +6,6 @@ package query
 
 import (
 	"context"
-	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -225,158 +224,95 @@ func (a roleHasOneAppTx) Unscoped() *roleHasOneAppTx {
 
 type roleDo struct{ gen.DO }
 
-type IRoleDo interface {
-	gen.SubQuery
-	Debug() IRoleDo
-	WithContext(ctx context.Context) IRoleDo
-	WithResult(fc func(tx gen.Dao)) gen.ResultInfo
-	ReplaceDB(db *gorm.DB)
-	ReadDB() IRoleDo
-	WriteDB() IRoleDo
-	As(alias string) gen.Dao
-	Session(config *gorm.Session) IRoleDo
-	Columns(cols ...field.Expr) gen.Columns
-	Clauses(conds ...clause.Expression) IRoleDo
-	Not(conds ...gen.Condition) IRoleDo
-	Or(conds ...gen.Condition) IRoleDo
-	Select(conds ...field.Expr) IRoleDo
-	Where(conds ...gen.Condition) IRoleDo
-	Order(conds ...field.Expr) IRoleDo
-	Distinct(cols ...field.Expr) IRoleDo
-	Omit(cols ...field.Expr) IRoleDo
-	Join(table schema.Tabler, on ...field.Expr) IRoleDo
-	LeftJoin(table schema.Tabler, on ...field.Expr) IRoleDo
-	RightJoin(table schema.Tabler, on ...field.Expr) IRoleDo
-	Group(cols ...field.Expr) IRoleDo
-	Having(conds ...gen.Condition) IRoleDo
-	Limit(limit int) IRoleDo
-	Offset(offset int) IRoleDo
-	Count() (count int64, err error)
-	Scopes(funcs ...func(gen.Dao) gen.Dao) IRoleDo
-	Unscoped() IRoleDo
-	Create(values ...*model.Role) error
-	CreateInBatches(values []*model.Role, batchSize int) error
-	Save(values ...*model.Role) error
-	First() (*model.Role, error)
-	Take() (*model.Role, error)
-	Last() (*model.Role, error)
-	Find() ([]*model.Role, error)
-	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.Role, err error)
-	FindInBatches(result *[]*model.Role, batchSize int, fc func(tx gen.Dao, batch int) error) error
-	Pluck(column field.Expr, dest interface{}) error
-	Delete(...*model.Role) (info gen.ResultInfo, err error)
-	Update(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	Updates(value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumn(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumnSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	UpdateColumns(value interface{}) (info gen.ResultInfo, err error)
-	UpdateFrom(q gen.SubQuery) gen.Dao
-	Attrs(attrs ...field.AssignExpr) IRoleDo
-	Assign(attrs ...field.AssignExpr) IRoleDo
-	Joins(fields ...field.RelationField) IRoleDo
-	Preload(fields ...field.RelationField) IRoleDo
-	FirstOrInit() (*model.Role, error)
-	FirstOrCreate() (*model.Role, error)
-	FindByPage(offset int, limit int) (result []*model.Role, count int64, err error)
-	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
-	Rows() (*sql.Rows, error)
-	Row() *sql.Row
-	Scan(result interface{}) (err error)
-	Returning(value interface{}, columns ...string) IRoleDo
-	UnderlyingDB() *gorm.DB
-	schema.Tabler
-}
-
-func (r roleDo) Debug() IRoleDo {
+func (r roleDo) Debug() *roleDo {
 	return r.withDO(r.DO.Debug())
 }
 
-func (r roleDo) WithContext(ctx context.Context) IRoleDo {
+func (r roleDo) WithContext(ctx context.Context) *roleDo {
 	return r.withDO(r.DO.WithContext(ctx))
 }
 
-func (r roleDo) ReadDB() IRoleDo {
+func (r roleDo) ReadDB() *roleDo {
 	return r.Clauses(dbresolver.Read)
 }
 
-func (r roleDo) WriteDB() IRoleDo {
+func (r roleDo) WriteDB() *roleDo {
 	return r.Clauses(dbresolver.Write)
 }
 
-func (r roleDo) Session(config *gorm.Session) IRoleDo {
+func (r roleDo) Session(config *gorm.Session) *roleDo {
 	return r.withDO(r.DO.Session(config))
 }
 
-func (r roleDo) Clauses(conds ...clause.Expression) IRoleDo {
+func (r roleDo) Clauses(conds ...clause.Expression) *roleDo {
 	return r.withDO(r.DO.Clauses(conds...))
 }
 
-func (r roleDo) Returning(value interface{}, columns ...string) IRoleDo {
+func (r roleDo) Returning(value interface{}, columns ...string) *roleDo {
 	return r.withDO(r.DO.Returning(value, columns...))
 }
 
-func (r roleDo) Not(conds ...gen.Condition) IRoleDo {
+func (r roleDo) Not(conds ...gen.Condition) *roleDo {
 	return r.withDO(r.DO.Not(conds...))
 }
 
-func (r roleDo) Or(conds ...gen.Condition) IRoleDo {
+func (r roleDo) Or(conds ...gen.Condition) *roleDo {
 	return r.withDO(r.DO.Or(conds...))
 }
 
-func (r roleDo) Select(conds ...field.Expr) IRoleDo {
+func (r roleDo) Select(conds ...field.Expr) *roleDo {
 	return r.withDO(r.DO.Select(conds...))
 }
 
-func (r roleDo) Where(conds ...gen.Condition) IRoleDo {
+func (r roleDo) Where(conds ...gen.Condition) *roleDo {
 	return r.withDO(r.DO.Where(conds...))
 }
 
-func (r roleDo) Order(conds ...field.Expr) IRoleDo {
+func (r roleDo) Order(conds ...field.Expr) *roleDo {
 	return r.withDO(r.DO.Order(conds...))
 }
 
-func (r roleDo) Distinct(cols ...field.Expr) IRoleDo {
+func (r roleDo) Distinct(cols ...field.Expr) *roleDo {
 	return r.withDO(r.DO.Distinct(cols...))
 }
 
-func (r roleDo) Omit(cols ...field.Expr) IRoleDo {
+func (r roleDo) Omit(cols ...field.Expr) *roleDo {
 	return r.withDO(r.DO.Omit(cols...))
 }
 
-func (r roleDo) Join(table schema.Tabler, on ...field.Expr) IRoleDo {
+func (r roleDo) Join(table schema.Tabler, on ...field.Expr) *roleDo {
 	return r.withDO(r.DO.Join(table, on...))
 }
 
-func (r roleDo) LeftJoin(table schema.Tabler, on ...field.Expr) IRoleDo {
+func (r roleDo) LeftJoin(table schema.Tabler, on ...field.Expr) *roleDo {
 	return r.withDO(r.DO.LeftJoin(table, on...))
 }
 
-func (r roleDo) RightJoin(table schema.Tabler, on ...field.Expr) IRoleDo {
+func (r roleDo) RightJoin(table schema.Tabler, on ...field.Expr) *roleDo {
 	return r.withDO(r.DO.RightJoin(table, on...))
 }
 
-func (r roleDo) Group(cols ...field.Expr) IRoleDo {
+func (r roleDo) Group(cols ...field.Expr) *roleDo {
 	return r.withDO(r.DO.Group(cols...))
 }
 
-func (r roleDo) Having(conds ...gen.Condition) IRoleDo {
+func (r roleDo) Having(conds ...gen.Condition) *roleDo {
 	return r.withDO(r.DO.Having(conds...))
 }
 
-func (r roleDo) Limit(limit int) IRoleDo {
+func (r roleDo) Limit(limit int) *roleDo {
 	return r.withDO(r.DO.Limit(limit))
 }
 
-func (r roleDo) Offset(offset int) IRoleDo {
+func (r roleDo) Offset(offset int) *roleDo {
 	return r.withDO(r.DO.Offset(offset))
 }
 
-func (r roleDo) Scopes(funcs ...func(gen.Dao) gen.Dao) IRoleDo {
+func (r roleDo) Scopes(funcs ...func(gen.Dao) gen.Dao) *roleDo {
 	return r.withDO(r.DO.Scopes(funcs...))
 }
 
-func (r roleDo) Unscoped() IRoleDo {
+func (r roleDo) Unscoped() *roleDo {
 	return r.withDO(r.DO.Unscoped())
 }
 
@@ -442,22 +378,22 @@ func (r roleDo) FindInBatches(result *[]*model.Role, batchSize int, fc func(tx g
 	return r.DO.FindInBatches(result, batchSize, fc)
 }
 
-func (r roleDo) Attrs(attrs ...field.AssignExpr) IRoleDo {
+func (r roleDo) Attrs(attrs ...field.AssignExpr) *roleDo {
 	return r.withDO(r.DO.Attrs(attrs...))
 }
 
-func (r roleDo) Assign(attrs ...field.AssignExpr) IRoleDo {
+func (r roleDo) Assign(attrs ...field.AssignExpr) *roleDo {
 	return r.withDO(r.DO.Assign(attrs...))
 }
 
-func (r roleDo) Joins(fields ...field.RelationField) IRoleDo {
+func (r roleDo) Joins(fields ...field.RelationField) *roleDo {
 	for _, _f := range fields {
 		r = *r.withDO(r.DO.Joins(_f))
 	}
 	return &r
 }
 
-func (r roleDo) Preload(fields ...field.RelationField) IRoleDo {
+func (r roleDo) Preload(fields ...field.RelationField) *roleDo {
 	for _, _f := range fields {
 		r = *r.withDO(r.DO.Preload(_f))
 	}

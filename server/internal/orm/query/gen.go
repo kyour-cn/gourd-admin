@@ -135,19 +135,19 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
-	App         IAppDo
-	Config      IConfigDo
-	File        IFileDo
-	FileMenu    IFileMenuDo
-	FileStorage IFileStorageDo
-	Log         ILogDo
-	LogType     ILogTypeDo
-	Menu        IMenuDo
-	MenuAPI     IMenuAPIDo
-	Role        IRoleDo
-	Task        ITaskDo
-	User        IUserDo
-	UserRole    IUserRoleDo
+	App         *appDo
+	Config      *configDo
+	File        *fileDo
+	FileMenu    *fileMenuDo
+	FileStorage *fileStorageDo
+	Log         *logDo
+	LogType     *logTypeDo
+	Menu        *menuDo
+	MenuAPI     *menuAPIDo
+	Role        *roleDo
+	Task        *taskDo
+	User        *userDo
+	UserRole    *userRoleDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {

@@ -6,7 +6,6 @@ package query
 
 import (
 	"context"
-	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -109,158 +108,95 @@ func (c config) replaceDB(db *gorm.DB) config {
 
 type configDo struct{ gen.DO }
 
-type IConfigDo interface {
-	gen.SubQuery
-	Debug() IConfigDo
-	WithContext(ctx context.Context) IConfigDo
-	WithResult(fc func(tx gen.Dao)) gen.ResultInfo
-	ReplaceDB(db *gorm.DB)
-	ReadDB() IConfigDo
-	WriteDB() IConfigDo
-	As(alias string) gen.Dao
-	Session(config *gorm.Session) IConfigDo
-	Columns(cols ...field.Expr) gen.Columns
-	Clauses(conds ...clause.Expression) IConfigDo
-	Not(conds ...gen.Condition) IConfigDo
-	Or(conds ...gen.Condition) IConfigDo
-	Select(conds ...field.Expr) IConfigDo
-	Where(conds ...gen.Condition) IConfigDo
-	Order(conds ...field.Expr) IConfigDo
-	Distinct(cols ...field.Expr) IConfigDo
-	Omit(cols ...field.Expr) IConfigDo
-	Join(table schema.Tabler, on ...field.Expr) IConfigDo
-	LeftJoin(table schema.Tabler, on ...field.Expr) IConfigDo
-	RightJoin(table schema.Tabler, on ...field.Expr) IConfigDo
-	Group(cols ...field.Expr) IConfigDo
-	Having(conds ...gen.Condition) IConfigDo
-	Limit(limit int) IConfigDo
-	Offset(offset int) IConfigDo
-	Count() (count int64, err error)
-	Scopes(funcs ...func(gen.Dao) gen.Dao) IConfigDo
-	Unscoped() IConfigDo
-	Create(values ...*model.Config) error
-	CreateInBatches(values []*model.Config, batchSize int) error
-	Save(values ...*model.Config) error
-	First() (*model.Config, error)
-	Take() (*model.Config, error)
-	Last() (*model.Config, error)
-	Find() ([]*model.Config, error)
-	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.Config, err error)
-	FindInBatches(result *[]*model.Config, batchSize int, fc func(tx gen.Dao, batch int) error) error
-	Pluck(column field.Expr, dest interface{}) error
-	Delete(...*model.Config) (info gen.ResultInfo, err error)
-	Update(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	Updates(value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumn(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumnSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	UpdateColumns(value interface{}) (info gen.ResultInfo, err error)
-	UpdateFrom(q gen.SubQuery) gen.Dao
-	Attrs(attrs ...field.AssignExpr) IConfigDo
-	Assign(attrs ...field.AssignExpr) IConfigDo
-	Joins(fields ...field.RelationField) IConfigDo
-	Preload(fields ...field.RelationField) IConfigDo
-	FirstOrInit() (*model.Config, error)
-	FirstOrCreate() (*model.Config, error)
-	FindByPage(offset int, limit int) (result []*model.Config, count int64, err error)
-	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
-	Rows() (*sql.Rows, error)
-	Row() *sql.Row
-	Scan(result interface{}) (err error)
-	Returning(value interface{}, columns ...string) IConfigDo
-	UnderlyingDB() *gorm.DB
-	schema.Tabler
-}
-
-func (c configDo) Debug() IConfigDo {
+func (c configDo) Debug() *configDo {
 	return c.withDO(c.DO.Debug())
 }
 
-func (c configDo) WithContext(ctx context.Context) IConfigDo {
+func (c configDo) WithContext(ctx context.Context) *configDo {
 	return c.withDO(c.DO.WithContext(ctx))
 }
 
-func (c configDo) ReadDB() IConfigDo {
+func (c configDo) ReadDB() *configDo {
 	return c.Clauses(dbresolver.Read)
 }
 
-func (c configDo) WriteDB() IConfigDo {
+func (c configDo) WriteDB() *configDo {
 	return c.Clauses(dbresolver.Write)
 }
 
-func (c configDo) Session(config *gorm.Session) IConfigDo {
+func (c configDo) Session(config *gorm.Session) *configDo {
 	return c.withDO(c.DO.Session(config))
 }
 
-func (c configDo) Clauses(conds ...clause.Expression) IConfigDo {
+func (c configDo) Clauses(conds ...clause.Expression) *configDo {
 	return c.withDO(c.DO.Clauses(conds...))
 }
 
-func (c configDo) Returning(value interface{}, columns ...string) IConfigDo {
+func (c configDo) Returning(value interface{}, columns ...string) *configDo {
 	return c.withDO(c.DO.Returning(value, columns...))
 }
 
-func (c configDo) Not(conds ...gen.Condition) IConfigDo {
+func (c configDo) Not(conds ...gen.Condition) *configDo {
 	return c.withDO(c.DO.Not(conds...))
 }
 
-func (c configDo) Or(conds ...gen.Condition) IConfigDo {
+func (c configDo) Or(conds ...gen.Condition) *configDo {
 	return c.withDO(c.DO.Or(conds...))
 }
 
-func (c configDo) Select(conds ...field.Expr) IConfigDo {
+func (c configDo) Select(conds ...field.Expr) *configDo {
 	return c.withDO(c.DO.Select(conds...))
 }
 
-func (c configDo) Where(conds ...gen.Condition) IConfigDo {
+func (c configDo) Where(conds ...gen.Condition) *configDo {
 	return c.withDO(c.DO.Where(conds...))
 }
 
-func (c configDo) Order(conds ...field.Expr) IConfigDo {
+func (c configDo) Order(conds ...field.Expr) *configDo {
 	return c.withDO(c.DO.Order(conds...))
 }
 
-func (c configDo) Distinct(cols ...field.Expr) IConfigDo {
+func (c configDo) Distinct(cols ...field.Expr) *configDo {
 	return c.withDO(c.DO.Distinct(cols...))
 }
 
-func (c configDo) Omit(cols ...field.Expr) IConfigDo {
+func (c configDo) Omit(cols ...field.Expr) *configDo {
 	return c.withDO(c.DO.Omit(cols...))
 }
 
-func (c configDo) Join(table schema.Tabler, on ...field.Expr) IConfigDo {
+func (c configDo) Join(table schema.Tabler, on ...field.Expr) *configDo {
 	return c.withDO(c.DO.Join(table, on...))
 }
 
-func (c configDo) LeftJoin(table schema.Tabler, on ...field.Expr) IConfigDo {
+func (c configDo) LeftJoin(table schema.Tabler, on ...field.Expr) *configDo {
 	return c.withDO(c.DO.LeftJoin(table, on...))
 }
 
-func (c configDo) RightJoin(table schema.Tabler, on ...field.Expr) IConfigDo {
+func (c configDo) RightJoin(table schema.Tabler, on ...field.Expr) *configDo {
 	return c.withDO(c.DO.RightJoin(table, on...))
 }
 
-func (c configDo) Group(cols ...field.Expr) IConfigDo {
+func (c configDo) Group(cols ...field.Expr) *configDo {
 	return c.withDO(c.DO.Group(cols...))
 }
 
-func (c configDo) Having(conds ...gen.Condition) IConfigDo {
+func (c configDo) Having(conds ...gen.Condition) *configDo {
 	return c.withDO(c.DO.Having(conds...))
 }
 
-func (c configDo) Limit(limit int) IConfigDo {
+func (c configDo) Limit(limit int) *configDo {
 	return c.withDO(c.DO.Limit(limit))
 }
 
-func (c configDo) Offset(offset int) IConfigDo {
+func (c configDo) Offset(offset int) *configDo {
 	return c.withDO(c.DO.Offset(offset))
 }
 
-func (c configDo) Scopes(funcs ...func(gen.Dao) gen.Dao) IConfigDo {
+func (c configDo) Scopes(funcs ...func(gen.Dao) gen.Dao) *configDo {
 	return c.withDO(c.DO.Scopes(funcs...))
 }
 
-func (c configDo) Unscoped() IConfigDo {
+func (c configDo) Unscoped() *configDo {
 	return c.withDO(c.DO.Unscoped())
 }
 
@@ -326,22 +262,22 @@ func (c configDo) FindInBatches(result *[]*model.Config, batchSize int, fc func(
 	return c.DO.FindInBatches(result, batchSize, fc)
 }
 
-func (c configDo) Attrs(attrs ...field.AssignExpr) IConfigDo {
+func (c configDo) Attrs(attrs ...field.AssignExpr) *configDo {
 	return c.withDO(c.DO.Attrs(attrs...))
 }
 
-func (c configDo) Assign(attrs ...field.AssignExpr) IConfigDo {
+func (c configDo) Assign(attrs ...field.AssignExpr) *configDo {
 	return c.withDO(c.DO.Assign(attrs...))
 }
 
-func (c configDo) Joins(fields ...field.RelationField) IConfigDo {
+func (c configDo) Joins(fields ...field.RelationField) *configDo {
 	for _, _f := range fields {
 		c = *c.withDO(c.DO.Joins(_f))
 	}
 	return &c
 }
 
-func (c configDo) Preload(fields ...field.RelationField) IConfigDo {
+func (c configDo) Preload(fields ...field.RelationField) *configDo {
 	for _, _f := range fields {
 		c = *c.withDO(c.DO.Preload(_f))
 	}

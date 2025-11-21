@@ -6,7 +6,6 @@ package query
 
 import (
 	"context"
-	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -110,158 +109,95 @@ func (f fileStorage) replaceDB(db *gorm.DB) fileStorage {
 
 type fileStorageDo struct{ gen.DO }
 
-type IFileStorageDo interface {
-	gen.SubQuery
-	Debug() IFileStorageDo
-	WithContext(ctx context.Context) IFileStorageDo
-	WithResult(fc func(tx gen.Dao)) gen.ResultInfo
-	ReplaceDB(db *gorm.DB)
-	ReadDB() IFileStorageDo
-	WriteDB() IFileStorageDo
-	As(alias string) gen.Dao
-	Session(config *gorm.Session) IFileStorageDo
-	Columns(cols ...field.Expr) gen.Columns
-	Clauses(conds ...clause.Expression) IFileStorageDo
-	Not(conds ...gen.Condition) IFileStorageDo
-	Or(conds ...gen.Condition) IFileStorageDo
-	Select(conds ...field.Expr) IFileStorageDo
-	Where(conds ...gen.Condition) IFileStorageDo
-	Order(conds ...field.Expr) IFileStorageDo
-	Distinct(cols ...field.Expr) IFileStorageDo
-	Omit(cols ...field.Expr) IFileStorageDo
-	Join(table schema.Tabler, on ...field.Expr) IFileStorageDo
-	LeftJoin(table schema.Tabler, on ...field.Expr) IFileStorageDo
-	RightJoin(table schema.Tabler, on ...field.Expr) IFileStorageDo
-	Group(cols ...field.Expr) IFileStorageDo
-	Having(conds ...gen.Condition) IFileStorageDo
-	Limit(limit int) IFileStorageDo
-	Offset(offset int) IFileStorageDo
-	Count() (count int64, err error)
-	Scopes(funcs ...func(gen.Dao) gen.Dao) IFileStorageDo
-	Unscoped() IFileStorageDo
-	Create(values ...*model.FileStorage) error
-	CreateInBatches(values []*model.FileStorage, batchSize int) error
-	Save(values ...*model.FileStorage) error
-	First() (*model.FileStorage, error)
-	Take() (*model.FileStorage, error)
-	Last() (*model.FileStorage, error)
-	Find() ([]*model.FileStorage, error)
-	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.FileStorage, err error)
-	FindInBatches(result *[]*model.FileStorage, batchSize int, fc func(tx gen.Dao, batch int) error) error
-	Pluck(column field.Expr, dest interface{}) error
-	Delete(...*model.FileStorage) (info gen.ResultInfo, err error)
-	Update(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	Updates(value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumn(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumnSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	UpdateColumns(value interface{}) (info gen.ResultInfo, err error)
-	UpdateFrom(q gen.SubQuery) gen.Dao
-	Attrs(attrs ...field.AssignExpr) IFileStorageDo
-	Assign(attrs ...field.AssignExpr) IFileStorageDo
-	Joins(fields ...field.RelationField) IFileStorageDo
-	Preload(fields ...field.RelationField) IFileStorageDo
-	FirstOrInit() (*model.FileStorage, error)
-	FirstOrCreate() (*model.FileStorage, error)
-	FindByPage(offset int, limit int) (result []*model.FileStorage, count int64, err error)
-	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
-	Rows() (*sql.Rows, error)
-	Row() *sql.Row
-	Scan(result interface{}) (err error)
-	Returning(value interface{}, columns ...string) IFileStorageDo
-	UnderlyingDB() *gorm.DB
-	schema.Tabler
-}
-
-func (f fileStorageDo) Debug() IFileStorageDo {
+func (f fileStorageDo) Debug() *fileStorageDo {
 	return f.withDO(f.DO.Debug())
 }
 
-func (f fileStorageDo) WithContext(ctx context.Context) IFileStorageDo {
+func (f fileStorageDo) WithContext(ctx context.Context) *fileStorageDo {
 	return f.withDO(f.DO.WithContext(ctx))
 }
 
-func (f fileStorageDo) ReadDB() IFileStorageDo {
+func (f fileStorageDo) ReadDB() *fileStorageDo {
 	return f.Clauses(dbresolver.Read)
 }
 
-func (f fileStorageDo) WriteDB() IFileStorageDo {
+func (f fileStorageDo) WriteDB() *fileStorageDo {
 	return f.Clauses(dbresolver.Write)
 }
 
-func (f fileStorageDo) Session(config *gorm.Session) IFileStorageDo {
+func (f fileStorageDo) Session(config *gorm.Session) *fileStorageDo {
 	return f.withDO(f.DO.Session(config))
 }
 
-func (f fileStorageDo) Clauses(conds ...clause.Expression) IFileStorageDo {
+func (f fileStorageDo) Clauses(conds ...clause.Expression) *fileStorageDo {
 	return f.withDO(f.DO.Clauses(conds...))
 }
 
-func (f fileStorageDo) Returning(value interface{}, columns ...string) IFileStorageDo {
+func (f fileStorageDo) Returning(value interface{}, columns ...string) *fileStorageDo {
 	return f.withDO(f.DO.Returning(value, columns...))
 }
 
-func (f fileStorageDo) Not(conds ...gen.Condition) IFileStorageDo {
+func (f fileStorageDo) Not(conds ...gen.Condition) *fileStorageDo {
 	return f.withDO(f.DO.Not(conds...))
 }
 
-func (f fileStorageDo) Or(conds ...gen.Condition) IFileStorageDo {
+func (f fileStorageDo) Or(conds ...gen.Condition) *fileStorageDo {
 	return f.withDO(f.DO.Or(conds...))
 }
 
-func (f fileStorageDo) Select(conds ...field.Expr) IFileStorageDo {
+func (f fileStorageDo) Select(conds ...field.Expr) *fileStorageDo {
 	return f.withDO(f.DO.Select(conds...))
 }
 
-func (f fileStorageDo) Where(conds ...gen.Condition) IFileStorageDo {
+func (f fileStorageDo) Where(conds ...gen.Condition) *fileStorageDo {
 	return f.withDO(f.DO.Where(conds...))
 }
 
-func (f fileStorageDo) Order(conds ...field.Expr) IFileStorageDo {
+func (f fileStorageDo) Order(conds ...field.Expr) *fileStorageDo {
 	return f.withDO(f.DO.Order(conds...))
 }
 
-func (f fileStorageDo) Distinct(cols ...field.Expr) IFileStorageDo {
+func (f fileStorageDo) Distinct(cols ...field.Expr) *fileStorageDo {
 	return f.withDO(f.DO.Distinct(cols...))
 }
 
-func (f fileStorageDo) Omit(cols ...field.Expr) IFileStorageDo {
+func (f fileStorageDo) Omit(cols ...field.Expr) *fileStorageDo {
 	return f.withDO(f.DO.Omit(cols...))
 }
 
-func (f fileStorageDo) Join(table schema.Tabler, on ...field.Expr) IFileStorageDo {
+func (f fileStorageDo) Join(table schema.Tabler, on ...field.Expr) *fileStorageDo {
 	return f.withDO(f.DO.Join(table, on...))
 }
 
-func (f fileStorageDo) LeftJoin(table schema.Tabler, on ...field.Expr) IFileStorageDo {
+func (f fileStorageDo) LeftJoin(table schema.Tabler, on ...field.Expr) *fileStorageDo {
 	return f.withDO(f.DO.LeftJoin(table, on...))
 }
 
-func (f fileStorageDo) RightJoin(table schema.Tabler, on ...field.Expr) IFileStorageDo {
+func (f fileStorageDo) RightJoin(table schema.Tabler, on ...field.Expr) *fileStorageDo {
 	return f.withDO(f.DO.RightJoin(table, on...))
 }
 
-func (f fileStorageDo) Group(cols ...field.Expr) IFileStorageDo {
+func (f fileStorageDo) Group(cols ...field.Expr) *fileStorageDo {
 	return f.withDO(f.DO.Group(cols...))
 }
 
-func (f fileStorageDo) Having(conds ...gen.Condition) IFileStorageDo {
+func (f fileStorageDo) Having(conds ...gen.Condition) *fileStorageDo {
 	return f.withDO(f.DO.Having(conds...))
 }
 
-func (f fileStorageDo) Limit(limit int) IFileStorageDo {
+func (f fileStorageDo) Limit(limit int) *fileStorageDo {
 	return f.withDO(f.DO.Limit(limit))
 }
 
-func (f fileStorageDo) Offset(offset int) IFileStorageDo {
+func (f fileStorageDo) Offset(offset int) *fileStorageDo {
 	return f.withDO(f.DO.Offset(offset))
 }
 
-func (f fileStorageDo) Scopes(funcs ...func(gen.Dao) gen.Dao) IFileStorageDo {
+func (f fileStorageDo) Scopes(funcs ...func(gen.Dao) gen.Dao) *fileStorageDo {
 	return f.withDO(f.DO.Scopes(funcs...))
 }
 
-func (f fileStorageDo) Unscoped() IFileStorageDo {
+func (f fileStorageDo) Unscoped() *fileStorageDo {
 	return f.withDO(f.DO.Unscoped())
 }
 
@@ -327,22 +263,22 @@ func (f fileStorageDo) FindInBatches(result *[]*model.FileStorage, batchSize int
 	return f.DO.FindInBatches(result, batchSize, fc)
 }
 
-func (f fileStorageDo) Attrs(attrs ...field.AssignExpr) IFileStorageDo {
+func (f fileStorageDo) Attrs(attrs ...field.AssignExpr) *fileStorageDo {
 	return f.withDO(f.DO.Attrs(attrs...))
 }
 
-func (f fileStorageDo) Assign(attrs ...field.AssignExpr) IFileStorageDo {
+func (f fileStorageDo) Assign(attrs ...field.AssignExpr) *fileStorageDo {
 	return f.withDO(f.DO.Assign(attrs...))
 }
 
-func (f fileStorageDo) Joins(fields ...field.RelationField) IFileStorageDo {
+func (f fileStorageDo) Joins(fields ...field.RelationField) *fileStorageDo {
 	for _, _f := range fields {
 		f = *f.withDO(f.DO.Joins(_f))
 	}
 	return &f
 }
 
-func (f fileStorageDo) Preload(fields ...field.RelationField) IFileStorageDo {
+func (f fileStorageDo) Preload(fields ...field.RelationField) *fileStorageDo {
 	for _, _f := range fields {
 		f = *f.withDO(f.DO.Preload(_f))
 	}

@@ -6,7 +6,6 @@ package query
 
 import (
 	"context"
-	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -110,158 +109,95 @@ func (a app) replaceDB(db *gorm.DB) app {
 
 type appDo struct{ gen.DO }
 
-type IAppDo interface {
-	gen.SubQuery
-	Debug() IAppDo
-	WithContext(ctx context.Context) IAppDo
-	WithResult(fc func(tx gen.Dao)) gen.ResultInfo
-	ReplaceDB(db *gorm.DB)
-	ReadDB() IAppDo
-	WriteDB() IAppDo
-	As(alias string) gen.Dao
-	Session(config *gorm.Session) IAppDo
-	Columns(cols ...field.Expr) gen.Columns
-	Clauses(conds ...clause.Expression) IAppDo
-	Not(conds ...gen.Condition) IAppDo
-	Or(conds ...gen.Condition) IAppDo
-	Select(conds ...field.Expr) IAppDo
-	Where(conds ...gen.Condition) IAppDo
-	Order(conds ...field.Expr) IAppDo
-	Distinct(cols ...field.Expr) IAppDo
-	Omit(cols ...field.Expr) IAppDo
-	Join(table schema.Tabler, on ...field.Expr) IAppDo
-	LeftJoin(table schema.Tabler, on ...field.Expr) IAppDo
-	RightJoin(table schema.Tabler, on ...field.Expr) IAppDo
-	Group(cols ...field.Expr) IAppDo
-	Having(conds ...gen.Condition) IAppDo
-	Limit(limit int) IAppDo
-	Offset(offset int) IAppDo
-	Count() (count int64, err error)
-	Scopes(funcs ...func(gen.Dao) gen.Dao) IAppDo
-	Unscoped() IAppDo
-	Create(values ...*model.App) error
-	CreateInBatches(values []*model.App, batchSize int) error
-	Save(values ...*model.App) error
-	First() (*model.App, error)
-	Take() (*model.App, error)
-	Last() (*model.App, error)
-	Find() ([]*model.App, error)
-	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.App, err error)
-	FindInBatches(result *[]*model.App, batchSize int, fc func(tx gen.Dao, batch int) error) error
-	Pluck(column field.Expr, dest interface{}) error
-	Delete(...*model.App) (info gen.ResultInfo, err error)
-	Update(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	Updates(value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumn(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumnSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	UpdateColumns(value interface{}) (info gen.ResultInfo, err error)
-	UpdateFrom(q gen.SubQuery) gen.Dao
-	Attrs(attrs ...field.AssignExpr) IAppDo
-	Assign(attrs ...field.AssignExpr) IAppDo
-	Joins(fields ...field.RelationField) IAppDo
-	Preload(fields ...field.RelationField) IAppDo
-	FirstOrInit() (*model.App, error)
-	FirstOrCreate() (*model.App, error)
-	FindByPage(offset int, limit int) (result []*model.App, count int64, err error)
-	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
-	Rows() (*sql.Rows, error)
-	Row() *sql.Row
-	Scan(result interface{}) (err error)
-	Returning(value interface{}, columns ...string) IAppDo
-	UnderlyingDB() *gorm.DB
-	schema.Tabler
-}
-
-func (a appDo) Debug() IAppDo {
+func (a appDo) Debug() *appDo {
 	return a.withDO(a.DO.Debug())
 }
 
-func (a appDo) WithContext(ctx context.Context) IAppDo {
+func (a appDo) WithContext(ctx context.Context) *appDo {
 	return a.withDO(a.DO.WithContext(ctx))
 }
 
-func (a appDo) ReadDB() IAppDo {
+func (a appDo) ReadDB() *appDo {
 	return a.Clauses(dbresolver.Read)
 }
 
-func (a appDo) WriteDB() IAppDo {
+func (a appDo) WriteDB() *appDo {
 	return a.Clauses(dbresolver.Write)
 }
 
-func (a appDo) Session(config *gorm.Session) IAppDo {
+func (a appDo) Session(config *gorm.Session) *appDo {
 	return a.withDO(a.DO.Session(config))
 }
 
-func (a appDo) Clauses(conds ...clause.Expression) IAppDo {
+func (a appDo) Clauses(conds ...clause.Expression) *appDo {
 	return a.withDO(a.DO.Clauses(conds...))
 }
 
-func (a appDo) Returning(value interface{}, columns ...string) IAppDo {
+func (a appDo) Returning(value interface{}, columns ...string) *appDo {
 	return a.withDO(a.DO.Returning(value, columns...))
 }
 
-func (a appDo) Not(conds ...gen.Condition) IAppDo {
+func (a appDo) Not(conds ...gen.Condition) *appDo {
 	return a.withDO(a.DO.Not(conds...))
 }
 
-func (a appDo) Or(conds ...gen.Condition) IAppDo {
+func (a appDo) Or(conds ...gen.Condition) *appDo {
 	return a.withDO(a.DO.Or(conds...))
 }
 
-func (a appDo) Select(conds ...field.Expr) IAppDo {
+func (a appDo) Select(conds ...field.Expr) *appDo {
 	return a.withDO(a.DO.Select(conds...))
 }
 
-func (a appDo) Where(conds ...gen.Condition) IAppDo {
+func (a appDo) Where(conds ...gen.Condition) *appDo {
 	return a.withDO(a.DO.Where(conds...))
 }
 
-func (a appDo) Order(conds ...field.Expr) IAppDo {
+func (a appDo) Order(conds ...field.Expr) *appDo {
 	return a.withDO(a.DO.Order(conds...))
 }
 
-func (a appDo) Distinct(cols ...field.Expr) IAppDo {
+func (a appDo) Distinct(cols ...field.Expr) *appDo {
 	return a.withDO(a.DO.Distinct(cols...))
 }
 
-func (a appDo) Omit(cols ...field.Expr) IAppDo {
+func (a appDo) Omit(cols ...field.Expr) *appDo {
 	return a.withDO(a.DO.Omit(cols...))
 }
 
-func (a appDo) Join(table schema.Tabler, on ...field.Expr) IAppDo {
+func (a appDo) Join(table schema.Tabler, on ...field.Expr) *appDo {
 	return a.withDO(a.DO.Join(table, on...))
 }
 
-func (a appDo) LeftJoin(table schema.Tabler, on ...field.Expr) IAppDo {
+func (a appDo) LeftJoin(table schema.Tabler, on ...field.Expr) *appDo {
 	return a.withDO(a.DO.LeftJoin(table, on...))
 }
 
-func (a appDo) RightJoin(table schema.Tabler, on ...field.Expr) IAppDo {
+func (a appDo) RightJoin(table schema.Tabler, on ...field.Expr) *appDo {
 	return a.withDO(a.DO.RightJoin(table, on...))
 }
 
-func (a appDo) Group(cols ...field.Expr) IAppDo {
+func (a appDo) Group(cols ...field.Expr) *appDo {
 	return a.withDO(a.DO.Group(cols...))
 }
 
-func (a appDo) Having(conds ...gen.Condition) IAppDo {
+func (a appDo) Having(conds ...gen.Condition) *appDo {
 	return a.withDO(a.DO.Having(conds...))
 }
 
-func (a appDo) Limit(limit int) IAppDo {
+func (a appDo) Limit(limit int) *appDo {
 	return a.withDO(a.DO.Limit(limit))
 }
 
-func (a appDo) Offset(offset int) IAppDo {
+func (a appDo) Offset(offset int) *appDo {
 	return a.withDO(a.DO.Offset(offset))
 }
 
-func (a appDo) Scopes(funcs ...func(gen.Dao) gen.Dao) IAppDo {
+func (a appDo) Scopes(funcs ...func(gen.Dao) gen.Dao) *appDo {
 	return a.withDO(a.DO.Scopes(funcs...))
 }
 
-func (a appDo) Unscoped() IAppDo {
+func (a appDo) Unscoped() *appDo {
 	return a.withDO(a.DO.Unscoped())
 }
 
@@ -327,22 +263,22 @@ func (a appDo) FindInBatches(result *[]*model.App, batchSize int, fc func(tx gen
 	return a.DO.FindInBatches(result, batchSize, fc)
 }
 
-func (a appDo) Attrs(attrs ...field.AssignExpr) IAppDo {
+func (a appDo) Attrs(attrs ...field.AssignExpr) *appDo {
 	return a.withDO(a.DO.Attrs(attrs...))
 }
 
-func (a appDo) Assign(attrs ...field.AssignExpr) IAppDo {
+func (a appDo) Assign(attrs ...field.AssignExpr) *appDo {
 	return a.withDO(a.DO.Assign(attrs...))
 }
 
-func (a appDo) Joins(fields ...field.RelationField) IAppDo {
+func (a appDo) Joins(fields ...field.RelationField) *appDo {
 	for _, _f := range fields {
 		a = *a.withDO(a.DO.Joins(_f))
 	}
 	return &a
 }
 
-func (a appDo) Preload(fields ...field.RelationField) IAppDo {
+func (a appDo) Preload(fields ...field.RelationField) *appDo {
 	for _, _f := range fields {
 		a = *a.withDO(a.DO.Preload(_f))
 	}

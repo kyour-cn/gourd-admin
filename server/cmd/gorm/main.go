@@ -40,7 +40,7 @@ func main() {
 	g := gen.NewGenerator(gen.Config{
 		OutPath:      "./internal/orm/query",
 		ModelPkgPath: "model",
-		Mode:         gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface, // generate mode
+		Mode:         gen.WithoutContext | gen.WithDefaultQuery, // generate mode
 	})
 
 	g.UseDB(mainDB)

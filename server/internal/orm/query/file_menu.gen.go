@@ -6,7 +6,6 @@ package query
 
 import (
 	"context"
-	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -93,158 +92,95 @@ func (f fileMenu) replaceDB(db *gorm.DB) fileMenu {
 
 type fileMenuDo struct{ gen.DO }
 
-type IFileMenuDo interface {
-	gen.SubQuery
-	Debug() IFileMenuDo
-	WithContext(ctx context.Context) IFileMenuDo
-	WithResult(fc func(tx gen.Dao)) gen.ResultInfo
-	ReplaceDB(db *gorm.DB)
-	ReadDB() IFileMenuDo
-	WriteDB() IFileMenuDo
-	As(alias string) gen.Dao
-	Session(config *gorm.Session) IFileMenuDo
-	Columns(cols ...field.Expr) gen.Columns
-	Clauses(conds ...clause.Expression) IFileMenuDo
-	Not(conds ...gen.Condition) IFileMenuDo
-	Or(conds ...gen.Condition) IFileMenuDo
-	Select(conds ...field.Expr) IFileMenuDo
-	Where(conds ...gen.Condition) IFileMenuDo
-	Order(conds ...field.Expr) IFileMenuDo
-	Distinct(cols ...field.Expr) IFileMenuDo
-	Omit(cols ...field.Expr) IFileMenuDo
-	Join(table schema.Tabler, on ...field.Expr) IFileMenuDo
-	LeftJoin(table schema.Tabler, on ...field.Expr) IFileMenuDo
-	RightJoin(table schema.Tabler, on ...field.Expr) IFileMenuDo
-	Group(cols ...field.Expr) IFileMenuDo
-	Having(conds ...gen.Condition) IFileMenuDo
-	Limit(limit int) IFileMenuDo
-	Offset(offset int) IFileMenuDo
-	Count() (count int64, err error)
-	Scopes(funcs ...func(gen.Dao) gen.Dao) IFileMenuDo
-	Unscoped() IFileMenuDo
-	Create(values ...*model.FileMenu) error
-	CreateInBatches(values []*model.FileMenu, batchSize int) error
-	Save(values ...*model.FileMenu) error
-	First() (*model.FileMenu, error)
-	Take() (*model.FileMenu, error)
-	Last() (*model.FileMenu, error)
-	Find() ([]*model.FileMenu, error)
-	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.FileMenu, err error)
-	FindInBatches(result *[]*model.FileMenu, batchSize int, fc func(tx gen.Dao, batch int) error) error
-	Pluck(column field.Expr, dest interface{}) error
-	Delete(...*model.FileMenu) (info gen.ResultInfo, err error)
-	Update(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	Updates(value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumn(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
-	UpdateColumnSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
-	UpdateColumns(value interface{}) (info gen.ResultInfo, err error)
-	UpdateFrom(q gen.SubQuery) gen.Dao
-	Attrs(attrs ...field.AssignExpr) IFileMenuDo
-	Assign(attrs ...field.AssignExpr) IFileMenuDo
-	Joins(fields ...field.RelationField) IFileMenuDo
-	Preload(fields ...field.RelationField) IFileMenuDo
-	FirstOrInit() (*model.FileMenu, error)
-	FirstOrCreate() (*model.FileMenu, error)
-	FindByPage(offset int, limit int) (result []*model.FileMenu, count int64, err error)
-	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
-	Rows() (*sql.Rows, error)
-	Row() *sql.Row
-	Scan(result interface{}) (err error)
-	Returning(value interface{}, columns ...string) IFileMenuDo
-	UnderlyingDB() *gorm.DB
-	schema.Tabler
-}
-
-func (f fileMenuDo) Debug() IFileMenuDo {
+func (f fileMenuDo) Debug() *fileMenuDo {
 	return f.withDO(f.DO.Debug())
 }
 
-func (f fileMenuDo) WithContext(ctx context.Context) IFileMenuDo {
+func (f fileMenuDo) WithContext(ctx context.Context) *fileMenuDo {
 	return f.withDO(f.DO.WithContext(ctx))
 }
 
-func (f fileMenuDo) ReadDB() IFileMenuDo {
+func (f fileMenuDo) ReadDB() *fileMenuDo {
 	return f.Clauses(dbresolver.Read)
 }
 
-func (f fileMenuDo) WriteDB() IFileMenuDo {
+func (f fileMenuDo) WriteDB() *fileMenuDo {
 	return f.Clauses(dbresolver.Write)
 }
 
-func (f fileMenuDo) Session(config *gorm.Session) IFileMenuDo {
+func (f fileMenuDo) Session(config *gorm.Session) *fileMenuDo {
 	return f.withDO(f.DO.Session(config))
 }
 
-func (f fileMenuDo) Clauses(conds ...clause.Expression) IFileMenuDo {
+func (f fileMenuDo) Clauses(conds ...clause.Expression) *fileMenuDo {
 	return f.withDO(f.DO.Clauses(conds...))
 }
 
-func (f fileMenuDo) Returning(value interface{}, columns ...string) IFileMenuDo {
+func (f fileMenuDo) Returning(value interface{}, columns ...string) *fileMenuDo {
 	return f.withDO(f.DO.Returning(value, columns...))
 }
 
-func (f fileMenuDo) Not(conds ...gen.Condition) IFileMenuDo {
+func (f fileMenuDo) Not(conds ...gen.Condition) *fileMenuDo {
 	return f.withDO(f.DO.Not(conds...))
 }
 
-func (f fileMenuDo) Or(conds ...gen.Condition) IFileMenuDo {
+func (f fileMenuDo) Or(conds ...gen.Condition) *fileMenuDo {
 	return f.withDO(f.DO.Or(conds...))
 }
 
-func (f fileMenuDo) Select(conds ...field.Expr) IFileMenuDo {
+func (f fileMenuDo) Select(conds ...field.Expr) *fileMenuDo {
 	return f.withDO(f.DO.Select(conds...))
 }
 
-func (f fileMenuDo) Where(conds ...gen.Condition) IFileMenuDo {
+func (f fileMenuDo) Where(conds ...gen.Condition) *fileMenuDo {
 	return f.withDO(f.DO.Where(conds...))
 }
 
-func (f fileMenuDo) Order(conds ...field.Expr) IFileMenuDo {
+func (f fileMenuDo) Order(conds ...field.Expr) *fileMenuDo {
 	return f.withDO(f.DO.Order(conds...))
 }
 
-func (f fileMenuDo) Distinct(cols ...field.Expr) IFileMenuDo {
+func (f fileMenuDo) Distinct(cols ...field.Expr) *fileMenuDo {
 	return f.withDO(f.DO.Distinct(cols...))
 }
 
-func (f fileMenuDo) Omit(cols ...field.Expr) IFileMenuDo {
+func (f fileMenuDo) Omit(cols ...field.Expr) *fileMenuDo {
 	return f.withDO(f.DO.Omit(cols...))
 }
 
-func (f fileMenuDo) Join(table schema.Tabler, on ...field.Expr) IFileMenuDo {
+func (f fileMenuDo) Join(table schema.Tabler, on ...field.Expr) *fileMenuDo {
 	return f.withDO(f.DO.Join(table, on...))
 }
 
-func (f fileMenuDo) LeftJoin(table schema.Tabler, on ...field.Expr) IFileMenuDo {
+func (f fileMenuDo) LeftJoin(table schema.Tabler, on ...field.Expr) *fileMenuDo {
 	return f.withDO(f.DO.LeftJoin(table, on...))
 }
 
-func (f fileMenuDo) RightJoin(table schema.Tabler, on ...field.Expr) IFileMenuDo {
+func (f fileMenuDo) RightJoin(table schema.Tabler, on ...field.Expr) *fileMenuDo {
 	return f.withDO(f.DO.RightJoin(table, on...))
 }
 
-func (f fileMenuDo) Group(cols ...field.Expr) IFileMenuDo {
+func (f fileMenuDo) Group(cols ...field.Expr) *fileMenuDo {
 	return f.withDO(f.DO.Group(cols...))
 }
 
-func (f fileMenuDo) Having(conds ...gen.Condition) IFileMenuDo {
+func (f fileMenuDo) Having(conds ...gen.Condition) *fileMenuDo {
 	return f.withDO(f.DO.Having(conds...))
 }
 
-func (f fileMenuDo) Limit(limit int) IFileMenuDo {
+func (f fileMenuDo) Limit(limit int) *fileMenuDo {
 	return f.withDO(f.DO.Limit(limit))
 }
 
-func (f fileMenuDo) Offset(offset int) IFileMenuDo {
+func (f fileMenuDo) Offset(offset int) *fileMenuDo {
 	return f.withDO(f.DO.Offset(offset))
 }
 
-func (f fileMenuDo) Scopes(funcs ...func(gen.Dao) gen.Dao) IFileMenuDo {
+func (f fileMenuDo) Scopes(funcs ...func(gen.Dao) gen.Dao) *fileMenuDo {
 	return f.withDO(f.DO.Scopes(funcs...))
 }
 
-func (f fileMenuDo) Unscoped() IFileMenuDo {
+func (f fileMenuDo) Unscoped() *fileMenuDo {
 	return f.withDO(f.DO.Unscoped())
 }
 
@@ -310,22 +246,22 @@ func (f fileMenuDo) FindInBatches(result *[]*model.FileMenu, batchSize int, fc f
 	return f.DO.FindInBatches(result, batchSize, fc)
 }
 
-func (f fileMenuDo) Attrs(attrs ...field.AssignExpr) IFileMenuDo {
+func (f fileMenuDo) Attrs(attrs ...field.AssignExpr) *fileMenuDo {
 	return f.withDO(f.DO.Attrs(attrs...))
 }
 
-func (f fileMenuDo) Assign(attrs ...field.AssignExpr) IFileMenuDo {
+func (f fileMenuDo) Assign(attrs ...field.AssignExpr) *fileMenuDo {
 	return f.withDO(f.DO.Assign(attrs...))
 }
 
-func (f fileMenuDo) Joins(fields ...field.RelationField) IFileMenuDo {
+func (f fileMenuDo) Joins(fields ...field.RelationField) *fileMenuDo {
 	for _, _f := range fields {
 		f = *f.withDO(f.DO.Joins(_f))
 	}
 	return &f
 }
 
-func (f fileMenuDo) Preload(fields ...field.RelationField) IFileMenuDo {
+func (f fileMenuDo) Preload(fields ...field.RelationField) *fileMenuDo {
 	for _, _f := range fields {
 		f = *f.withDO(f.DO.Preload(_f))
 	}
