@@ -214,12 +214,15 @@ const tableDel = async (row) => {
 
 //批量删除
 const batchDel = async () => {
-  const confirmRes = await ElMessageBox.confirm(`确定删除选中的 ${state.selection.length} 项吗？`, '提示', {
-    type: 'warning',
-    confirmButtonText: '删除',
-    confirmButtonClass: 'el-button--danger'
-  })
-  if (!confirmRes) return false
+  try{
+    await ElMessageBox.confirm(`确定删除选中的 ${state.selection.length} 项吗？`, '提示', {
+      type: 'warning',
+      confirmButtonText: '删除',
+      confirmButtonClass: 'el-button--danger'
+    })
+  }catch (e) {
+    return
+  }
 
   const ids = state.selection.map(v => v.id)
   const res = await systemApi.role.delete.post({ids})

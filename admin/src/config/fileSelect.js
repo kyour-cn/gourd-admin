@@ -5,7 +5,8 @@ export default {
   apiObj: systemApi.file.upload,
   menuApiObj: systemApi.file.menu,
   listApiObj: systemApi.file.list,
-  successCode: 200,
+  deleteApiObj: systemApi.file.delete,
+  successCode: 0,
   maxSize: 10,
   max: 99,
   uploadParseData: function (res) {
