@@ -1,17 +1,8 @@
-<!--
- * @Descripttion: 资源文件选择器
- * @version: 1.0
- * @Author: sakuya
- * @Date: 2021年10月11日16:01:40
- * @LastEditors:
- * @LastEditTime:
--->
-
 <template>
 	<div class="sc-file-select">
-		<div class="sc-file-select__side" v-loading="menuLoading">
+		<div class="sc-file-select__side" v-loading="state.menuLoading">
 			<div class="sc-file-select__side-menu">
-				<el-tree ref="group" class="menu" :data="menu" :node-key="treeProps.key" :props="treeProps" :current-node-key="menu.length>0?menu[0][treeProps.key]:''" highlight-current @node-click="groupClick">
+				<el-tree ref="group" class="menu" :data="state.menu" :node-key="state.treeProps.key" :props="state.treeProps" :current-node-key="state.menu.length>0?state.menu[0][state.treeProps.key]:''" highlight-current @node-click="groupClick">
 					<template #default="{ node }">
 						<span class="el-tree-node__label">
 							<el-icon class="icon"><el-icon-folder /></el-icon>{{node.label}}
@@ -19,26 +10,26 @@
 					</template>
 				</el-tree>
 			</div>
-			<div class="sc-file-select__side-msg" v-if="multiple">
-				已选择 <b>{{value.length}}</b> / <b>{{max}}</b> 项
+			<div class="sc-file-select__side-msg" v-if="props.multiple">
+				已选择 <b>{{state.value.length}}</b> / <b>{{props.max}}</b> 项
 			</div>
 		</div>
-		<div class="sc-file-select__files" v-loading="listLoading">
+		<div class="sc-file-select__files" v-loading="state.listLoading">
 			<div class="sc-file-select__top">
 				<div class="upload" v-if="!hideUpload">
-					<el-upload class="sc-file-select__upload" action="" multiple :show-file-list="false" :accept="accept" :on-change="uploadChange" :before-upload="uploadBefore" :on-progress="uploadProcess" :on-success="uploadSuccess" :on-error="uploadError" :http-request="uploadRequest">
+					<el-upload class="sc-file-select__upload" action="" multiple :show-file-list="false" :accept="props.accept" :on-change="uploadChange" :before-upload="uploadBefore" :on-progress="uploadProcess" :on-success="uploadSuccess" :on-error="uploadError" :http-request="uploadRequest">
 						<el-button type="primary" icon="el-icon-upload">本地上传</el-button>
 					</el-upload>
-					<span class="tips"><el-icon><el-icon-warning /></el-icon>大小不超过{{maxSize}}MB</span>
+					<span class="tips"><el-icon><el-icon-warning /></el-icon>大小不超过{{props.maxSize}}MB</span>
 				</div>
 				<div class="keyword">
-					<el-input v-model="keyword" prefix-icon="el-icon-search" placeholder="文件名搜索" clearable @keyup.enter="search" @clear="search"></el-input>
+					<el-input v-model="state.keyword" prefix-icon="el-icon-search" placeholder="文件名搜索" clearable @keyup.enter="search" @clear="search"></el-input>
 				</div>
 			</div>
 			<div class="sc-file-select__list">
 				<el-scrollbar ref="scrollbar">
-					<el-empty v-if="fileList.length==0 && data.length==0" description="无数据" :image-size="80"></el-empty>
-					<div v-for="(file, index) in fileList" :key="index" class="sc-file-select__item">
+					<el-empty v-if="state.fileList.length==0 && state.data.length==0" description="无数据" :image-size="80"></el-empty>
+					<div v-for="(file, index) in state.fileList" :key="index" class="sc-file-select__item">
 						<div class="sc-file-select__item__file">
 							<div class="sc-file-select__item__upload">
 								<el-progress type="circle" :percentage="file.progress" :width="70"></el-progress>
@@ -47,7 +38,7 @@
 						</div>
 						<p>{{file.name}}</p>
 					</div>
-					<div v-for="item in data" :key="item[fileProps.key]" class="sc-file-select__item" :class="{active: value.includes(item[fileProps.url]) }" @click="select(item)">
+					<div v-for="item in state.data" :key="item[state.fileProps.key]" class="sc-file-select__item" :class="{active: state.value.includes(item[state.fileProps.url]) }" @click="select(item)">
 						<div class="sc-file-select__item__file">
 							<div class="sc-file-select__item__checkbox" v-if="multiple">
 								<el-icon><el-icon-check /></el-icon>
@@ -56,205 +47,207 @@
 								<el-icon><el-icon-check /></el-icon>
 							</div>
 							<div class="sc-file-select__item__box"></div>
-							<el-image v-if="_isImg(item[fileProps.url])" :src="tool.resUrl(item[fileProps.url])" fit="contain" lazy></el-image>
+							<el-image v-if="_isImg(item[state.fileProps.url])" :src="tool.resUrl(item[state.fileProps.url])" fit="contain" lazy></el-image>
 							<div v-else class="item-file item-file-doc">
-								<i v-if="files[_getExt(item[fileProps.url])]" :class="files[_getExt(item[fileProps.url])].icon" :style="{color:files[_getExt(item[fileProps.url])].color}"></i>
+								<i v-if="state.files[_getExt(item[state.fileProps.url])]" :class="state.files[_getExt(item[state.fileProps.url])].icon" :style="{color:state.files[_getExt(item[state.fileProps.url])].color}"></i>
 								<i v-else class="sc-icon-file-list-fill" style="color: #999;"></i>
 							</div>
 						</div>
-						<p :title="item[fileProps.fileName]">{{item[fileProps.fileName]}}</p>
+						<p :title="item[state.fileProps.fileName]">{{item[state.fileProps.fileName]}}</p>
 					</div>
 				</el-scrollbar>
 			</div>
 			<div class="sc-file-select__pagination">
-				<el-pagination small background layout="prev, pager, next" :total="total" :page-size="pageSize" v-model:currentPage="currentPage" @current-change="reload"></el-pagination>
+				<el-pagination size="small" background layout="prev, pager, next" :total="state.total" :page-size="state.pageSize" v-model:currentPage="state.currentPage" @current-change="reload"></el-pagination>
 			</div>
 			<div class="sc-file-select__do">
 				<slot name="do"></slot>
-				<el-button type="primary" :disabled="value.length<=0" @click="submit">确 定</el-button>
+				<el-button type="primary" :disabled="state.value.length<=0" @click="submit">确 定</el-button>
 			</div>
 		</div>
 	</div>
 </template>
 
-<script>
-	import config from "@/config/fileSelect"
-  import tool from "@/utils/tool.js";
+<script setup>
+import config from "@/config/fileSelect"
+import tool from "@/utils/tool.js";
+import {onMounted, reactive, ref, watch} from "vue";
+import {ElNotification} from "element-plus";
 
-	export default {
-    computed: {
-      tool() {
-        return tool
-      }
-    },
-		props: {
-			modelValue: null,
-			hideUpload: { type: Boolean, default: false },
-			multiple: { type: Boolean, default: false },
-			max: {type: Number, default: config.max},
-			onlyImage: { type: Boolean, default: false },
-			maxSize: {type: Number, default: config.maxSize},
-		},
-		data() {
-			return {
-				keyword: null,
-				pageSize: 20,
-				total: 0,
-				currentPage: 1,
-				data: [],
-				menu: [{
-          id: 0,
-          name: '全部'
-        }],
-				menuId: 0,
-				value: this.multiple ? [] : '',
-				fileList: [],
-				accept: this.onlyImage ? "image/gif, image/jpeg, image/png" : "",
-				listLoading: false,
-				menuLoading: false,
-				treeProps: config.menuProps,
-				fileProps: config.fileProps,
-				files: config.files
-			}
-		},
-		watch: {
-			multiple(){
-				this.value = this.multiple ? [] : ''
-				this.$emit('update:modelValue', JSON.parse(JSON.stringify(this.value)));
-			}
-		},
-		mounted() {
-			this.getMenu()
-			this.getData()
-		},
-		methods: {
-			//获取分类数据
-			async getMenu(){
-				this.menuLoading = true
-        const res = await config.menuApiObj.get();
+const scrollbar = ref(null)
 
-        // 保留第一个，追加接口返回数据
-        this.menu.splice(1, this.menu.length-1)
-        res.data.forEach(item => {
-          this.menu.push(item)
-        })
-        // this.menu = res.data
-				this.menuLoading = false
-			},
-			//获取列表数据
-			async getData(){
-				this.listLoading = true
-        const reqData = {
-          [config.request.menuKey]: this.menuId,
-          [config.request.page]: this.currentPage,
-          [config.request.pageSize]: this.pageSize,
-          [config.request.keyword]: this.keyword
-        };
-        if(this.onlyImage){
-					reqData.type = 'image'
-				}
-        const res = await config.listApiObj.get(reqData);
-        const parseData = config.listParseData(res);
-        this.data = parseData.rows
-				this.total = parseData.total
-				this.listLoading = false
-				this.$refs.scrollbar.setScrollTop(0)
-			},
-			//树点击事件
-			groupClick(data){
-				this.menuId = data.id
-				this.currentPage = 1
-				this.keyword = null
-				this.getData()
-			},
-			//分页刷新表格
-			reload(){
-				this.getData()
-			},
-			search(){
-				this.currentPage = 1
-				this.getData()
-			},
-			select(item){
-				const itemUrl = item[this.fileProps.url]
-				if(this.multiple){
-					if(this.value.includes(itemUrl)){
-						this.value.splice(this.value.findIndex(f => f === itemUrl), 1)
-					}else{
-						this.value.push(itemUrl)
-					}
-				}else{
-					if(this.value.includes(itemUrl)){
-						this.value = ''
-					}else{
-						this.value = itemUrl
-					}
-				}
-			},
-			submit(){
-				const value = JSON.parse(JSON.stringify(this.value))
-				this.$emit('update:modelValue', value);
-				this.$emit('submit', value);
-			},
-			//上传处理
-			uploadChange(file, fileList){
-				file.tempImg = URL.createObjectURL(file.raw);
-				this.fileList = fileList
-			},
-			uploadBefore(file){
-				const maxSize = file.size / 1024 / 1024 < this.maxSize;
-				if (!maxSize) {
-					this.$message.warning(`上传文件大小不能超过 ${this.maxSize}MB!`);
-					return false;
-				}
-			},
-			uploadRequest(param){
-        const apiObj = config.apiObj;
-        const data = new FormData();
-				data.append("file", param.file);
-				data.append([config.request.menuKey], this.menuId);
-				apiObj.post(data, {
-					onUploadProgress: e => {
-						param.onProgress(e)
-					}
-				}).then(res => {
-					param.onSuccess(res)
-				}).catch(err => {
-					param.onError(err)
-				})
-			},
-			uploadProcess(event, file){
-				file.progress = Number((event.loaded / event.total * 100).toFixed(2))
-			},
-			uploadSuccess(res, file){
-				this.fileList.splice(this.fileList.findIndex(f => f.uid === file.uid), 1)
-        const response = config.uploadParseData(res);
-        this.data.unshift({
-					[this.fileProps.key]: response.id,
-					[this.fileProps.fileName]: response.fileName,
-					[this.fileProps.url]: response.url
-				})
-				if(!this.multiple){
-					this.value = response.url
-				}
-			},
-			uploadError(err){
-				this.$notify.error({
-					title: '上传文件错误',
-					message: err
-				})
-			},
-			//内置函数
-			_isImg(fileUrl){
-				const imgExt = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
-				const fileExt = fileUrl.substring(fileUrl.lastIndexOf("."))
-				return imgExt.indexOf(fileExt) !== -1
-			},
-			_getExt(fileUrl){
-				return fileUrl.substring(fileUrl.lastIndexOf(".") + 1)
-			}
-		}
-	}
+const props = defineProps({
+  modelValue: null,
+  hideUpload: {type: Boolean, default: false},
+  multiple: {type: Boolean, default: false},
+  max: {type: Number, default: config.max},
+  onlyImage: {type: Boolean, default: false},
+})
+
+const state = reactive({
+  keyword: null,
+  pageSize: 20,
+  total: 0,
+  currentPage: 1,
+  data: [],
+  menu: [{
+    id: 0,
+    name: '全部'
+  }],
+  menuId: 0,
+  value: props.multiple ? [] : '',
+  fileList: [],
+  accept: props.onlyImage ? "image/gif, image/jpeg, image/png" : "",
+  listLoading: false,
+  menuLoading: false,
+  treeProps: config.menuProps,
+  fileProps: config.fileProps,
+  files: config.files
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+// 监听器
+watch(() => props.multiple, () => {
+  state.value = props.multiple ? [] : ''
+  emit('update:modelValue', JSON.parse(JSON.stringify(state.value)));
+})
+
+// 生命周期
+onMounted(() => {
+  getMenu()
+  getData()
+})
+
+const getMenu = async () => {
+  state.menuLoading = true
+  const res = await config.menuApiObj.get();
+
+  // 保留第一个，追加接口返回数据
+  state.menu.splice(1, state.menu.length - 1)
+  res.data.forEach(item => {
+    state.menu.push(item)
+  })
+  // this.menu = res.data
+  state.menuLoading = false
+}
+
+const getData = async () => {
+  state.listLoading = true
+  const reqData = {
+    [config.request.menuKey]: state.menuId,
+    [config.request.page]: state.currentPage,
+    [config.request.pageSize]: state.pageSize,
+    [config.request.keyword]: state.keyword
+  };
+  if (props.onlyImage) {
+    reqData.type = 'image'
+  }
+  const res = await config.listApiObj.get(reqData);
+  const parseData = config.listParseData(res);
+  state.data = parseData.rows
+  state.total = parseData.total
+  state.listLoading = false
+  scrollbar.value?.setScrollTop(0)
+}
+
+const groupClick = (data) => {
+  state.menuId = data.id
+  state.currentPage = 1
+  state.keyword = null
+  getData()
+}
+
+const reload = () => {
+  getData()
+}
+
+const search = () => {
+  state.currentPage = 1
+  getData()
+}
+const select = (item) => {
+  const itemUrl = item[state.fileProps.url]
+  if (props.multiple) {
+    if (state.value.includes(itemUrl)) {
+      state.value.splice(state.value.findIndex(f => f === itemUrl), 1)
+    } else {
+      state.value.push(itemUrl)
+    }
+  } else {
+    state.value = itemUrl
+  }
+  emit('update:modelValue', JSON.parse(JSON.stringify(state.value)));
+}
+
+const submit = () => {
+  const value = JSON.parse(JSON.stringify(state.value))
+  emit('update:modelValue', value);
+  emit('submit', value);
+}
+
+const uploadChange = (file, fileList) => {
+  file.tempImg = URL.createObjectURL(file.raw);
+  state.fileList = fileList
+}
+
+const uploadBefore = (file) => {
+  const maxSize = file.size / 1024 / 1024 < state.maxSize;
+  if (!maxSize) {
+    ElNotification.warning(`上传文件大小不能超过 ${state.maxSize}MB!`);
+    return false;
+  }
+}
+
+const uploadRequest = (param) => {
+  const apiObj = config.apiObj;
+  const data = new FormData();
+  data.append("file", param.file);
+  data.append([config.request.menuKey], this.menuId);
+  apiObj.post(data, {
+    onUploadProgress: e => {
+      param.onProgress(e)
+    }
+  }).then(res => {
+    param.onSuccess(res)
+  }).catch(err => {
+    param.onError(err)
+  })
+}
+
+const uploadProcess = (event, file) => {
+  file.progress = Number((event.loaded / event.total * 100).toFixed(2))
+}
+
+const uploadSuccess = (res, file) => {
+  state.fileList.splice(state.fileList.findIndex(f => f.uid === file.uid), 1)
+  const response = config.uploadParseData(res);
+  state.data.unshift({
+    [state.fileProps.key]: response.id,
+    [state.fileProps.fileName]: response.fileName,
+    [state.fileProps.url]: response.url
+  })
+  if (!props.multiple) {
+    state.value = response.url
+  }
+}
+
+const uploadError = (err) => {
+  ElNotification.error({
+    title: '上传文件错误',
+    message: err
+  })
+}
+
+const _isImg = (fileUrl) => {
+  const imgExt = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
+  const fileExt = fileUrl.substring(fileUrl.lastIndexOf("."))
+  return imgExt.indexOf(fileExt) !== -1
+}
+const _getExt = (fileUrl) => {
+  return fileUrl.substring(fileUrl.lastIndexOf(".") + 1)
+}
+
 </script>
 
 <style scoped>

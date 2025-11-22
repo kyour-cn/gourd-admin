@@ -10,6 +10,7 @@ import (
 type FileListReq struct {
 	Page     int    `form:"page" validate:"gte=1"`
 	PageSize int    `form:"page_size" validate:"gte=1,lte=500"`
+	MenuID   int64  `form:"menu_id"`
 	Keyword  string `form:"keyword"`
 }
 

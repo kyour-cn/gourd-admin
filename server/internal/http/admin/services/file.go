@@ -32,7 +32,12 @@ func (s *FileService) GetList(req *dto.FileListReq) (*dto.PageListReq, error) {
 
 	// 关键词搜索
 	if req.Keyword != "" {
-		//conds = append(conds, q.Name.Like("%"+req.Keyword+"%"))
+		conds = append(conds, q.FileName.Like("%"+req.Keyword+"%"))
+	}
+
+	// 菜单ID搜索
+	if req.MenuID > 0 {
+		conds = append(conds, q.MenuID.Eq(req.MenuID))
 	}
 
 	list, count, err := q.WithContext(s.ctx).

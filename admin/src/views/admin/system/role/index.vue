@@ -32,7 +32,7 @@
         stripe
       >
         <el-table-column type="selection" width="50"/>
-        <el-table-column label="#" type="index" width="50"/>
+        <el-table-column label="ID" prop="id" width="100"/>
         <el-table-column label="角色名称" prop="name" width="150"/>
         <el-table-column label="管理员" prop="status" width="70">
           <template #default="scope">
