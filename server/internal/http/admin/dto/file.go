@@ -7,6 +7,10 @@ import (
 	"app/internal/orm/model"
 )
 
+type FileMenuAddReq struct {
+	Name string `json:"name" validate:"required"`
+}
+
 type FileListReq struct {
 	Page     int    `form:"page" validate:"gte=1"`
 	PageSize int    `form:"page_size" validate:"gte=1,lte=500"`

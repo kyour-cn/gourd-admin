@@ -1,95 +1,121 @@
 <template>
   <div class="sc-file-select">
-    <div class="sc-file-select__side" v-loading="state.menuLoading">
-      <div class="sc-file-select__side-menu">
-        <el-tree ref="group" class="menu" :data="state.menu" :node-key="state.treeProps.key" :props="state.treeProps"
-                 :current-node-key="state.menu.length>0?state.menu[0][state.treeProps.key]:''" highlight-current
-                 @node-click="groupClick">
-          <template #default="{ node }">
-            <span class="el-tree-node__label">
-              <el-icon class="icon"><el-icon-folder/></el-icon>{{ node.label }}
-            </span>
-          </template>
-        </el-tree>
-      </div>
-      <div class="sc-file-select__side-msg" v-if="props.multiple">
-        已选择 <b>{{state.value.length}}</b> / <b>{{props.max}}</b> 项
-      </div>
-    </div>
-    <div class="sc-file-select__files" v-loading="state.listLoading">
-      <div class="sc-file-select__top">
-        <div class="upload" v-if="!hideUpload">
-          <el-upload class="sc-file-select__upload" action="" multiple :show-file-list="false" :accept="props.accept"
-                     :on-change="uploadChange" :before-upload="uploadBefore" :on-progress="uploadProcess"
-                     :on-success="uploadSuccess" :on-error="uploadError" :http-request="uploadRequest">
-            <el-button type="primary" icon="el-icon-upload">本地上传</el-button>
-          </el-upload>
-          <span class="tips"><el-icon><el-icon-warning /></el-icon>大小不超过{{props.maxSize}}MB</span>
-        </div>
-        <div class="keyword">
-          <el-input v-model="state.keyword" prefix-icon="el-icon-search" placeholder="文件名搜索" clearable
-                    @keyup.enter="search" @clear="search"></el-input>
-        </div>
-        <div v-if="props.mode === 'manage'" class="multiple-toggle">
-          <el-switch
-            v-model="multiple"
-            active-text="多选"
-            inactive-text="单选"
-          />
-        </div>
-      </div>
-      <div class="sc-file-select__list">
-        <el-scrollbar ref="scrollbar">
-          <el-empty v-if="state.fileList.length===0 && state.data.length===0" description="无数据" :image-size="80"/>
-          <div v-for="(file, index) in state.fileList" :key="index" class="sc-file-select__item">
-            <div class="sc-file-select__item__file">
-              <div class="sc-file-select__item__upload">
-                <el-progress type="circle" :percentage="file.progress" :width="70"></el-progress>
-              </div>
-              <el-image :src="file.tempImg" fit="contain"></el-image>
-            </div>
-            <p>{{file.name}}</p>
+    <el-aside width="220px" v-loading="state.menuLoading">
+      <el-container>
+        <el-main class="nopadding">
+          <el-tree ref="group" class="menu" :data="state.menu" :node-key="state.treeProps.key" :props="state.treeProps"
+                   :current-node-key="state.menu.length>0?state.menu[0][state.treeProps.key]:''" highlight-current
+                   @node-click="groupClick">
+            <template #default="{ node }">
+              <span class="el-tree-node__label">
+                <el-icon class="icon"><el-icon-folder/></el-icon>{{ node.label }}
+              </span>
+            </template>
+          </el-tree>
+        </el-main>
+        <el-footer style="height:51px;">
+          <el-button type="primary" size="small" icon="el-icon-plus" @click="addMenu()"/>
+          <el-button v-if="state.menuId > 0" type="danger" size="small" plain icon="el-icon-delete" @click="delMenu"/>
+        </el-footer>
+      </el-container>
+    </el-aside>
+    <el-container v-loading="state.listLoading">
+      <el-main class="nopadding sc-file-select__right" style="padding:20px;" ref="mainRef">
+        <div class="sc-file-select__top">
+          <div class="upload" v-if="!hideUpload">
+            <el-upload class="sc-file-select__upload" action="" multiple :show-file-list="false" :accept="props.accept"
+                       :on-change="uploadChange" :before-upload="uploadBefore" :on-progress="uploadProcess"
+                       :on-success="uploadSuccess" :on-error="uploadError" :http-request="uploadRequest">
+              <el-button type="primary" icon="el-icon-upload">本地上传</el-button>
+            </el-upload>
+            <span class="tips"><el-icon><el-icon-warning /></el-icon>大小不超过{{props.maxSize}}MB</span>
           </div>
-          <div v-for="item in state.data" :key="item[state.fileProps.key]" class="sc-file-select__item"
-               :class="{active: state.value.includes(item) }" @click="select(item)">
-            <div class="sc-file-select__item__file">
-              <div class="sc-file-select__item__checkbox" v-if="multiple">
-                <el-icon><el-icon-check/></el-icon>
-              </div>
-              <div class="sc-file-select__item__select" v-else>
-                <el-icon><el-icon-check/></el-icon>
-              </div>
-              <div class="sc-file-select__item__box"></div>
-              <el-image v-if="_isImg(item[state.fileProps.url])" :src="tool.resUrl(item[state.fileProps.url])"
-                        fit="contain" lazy/>
-              <div v-else class="item-file item-file-doc">
-                <i v-if="state.files[_getExt(item[state.fileProps.url])]"
-                   :class="state.files[_getExt(item[state.fileProps.url])].icon"
-                   :style="{color:state.files[_getExt(item[state.fileProps.url])].color}"/>
-                <i v-else class="sc-icon-file-list-fill" style="color: #999;"/>
-              </div>
+          <div class="header-right">
+            <div class="keyword">
+              <el-input v-model="state.keyword" prefix-icon="el-icon-search" placeholder="文件名搜索" clearable
+                        @keyup.enter="search" @clear="search"></el-input>
             </div>
-            <p :title="item[state.fileProps.fileName]">{{item[state.fileProps.fileName]}}</p>
+            <div v-if="props.mode === 'manage'" class="multiple-toggle">
+              <el-switch
+                v-model="multiple"
+                active-text="多选"
+                inactive-text="单选"
+              />
+            </div>
           </div>
-        </el-scrollbar>
-      </div>
-      <div class="sc-file-select__pagination">
-        <el-pagination size="small" background layout="prev, pager, next" :total="state.total"
-                       :page-size="state.pageSize" v-model:currentPage="state.currentPage" @current-change="reload"/>
-      </div>
-      <div class="sc-file-select__do">
-        <slot name="do"></slot>
-<!--        <el-button v-if="props.mode === 'manage' && state.value.length === 1" type="primary" @click="rename">-->
-<!--          重命名-->
-<!--        </el-button>-->
-        <el-button v-if="props.mode === 'manage'" type="danger" :disabled="state.value.length<=0" @click="deleteFile">
-          删 除
-        </el-button>
-        <el-button v-if="props.mode === 'select'" type="primary" :disabled="state.value.length<=0" @click="submit">
-          确 定
-        </el-button>
-      </div>
-    </div>
+        </div>
+        <div class="sc-file-select__list">
+          <el-scrollbar ref="scrollbar">
+            <el-empty v-if="state.fileList.length===0 && state.data.length===0" description="无数据" :image-size="80"/>
+            <div v-for="(file, index) in state.fileList" :key="index" class="sc-file-select__item">
+              <div class="sc-file-select__item__file">
+                <div class="sc-file-select__item__upload">
+                  <el-progress type="circle" :percentage="file.progress" :width="70"></el-progress>
+                </div>
+                <el-image :src="file.tempImg" fit="contain"></el-image>
+              </div>
+              <p>{{file.name}}</p>
+            </div>
+            <div v-for="item in state.data" :key="item[state.fileProps.key]" class="sc-file-select__item"
+                 :class="{active: state.value.includes(item) }" @click="select(item)">
+              <div class="sc-file-select__item__file">
+                <div class="sc-file-select__item__checkbox" v-if="multiple">
+                  <el-icon><el-icon-check/></el-icon>
+                </div>
+                <div class="sc-file-select__item__select" v-else>
+                  <el-icon><el-icon-check/></el-icon>
+                </div>
+                <div class="sc-file-select__item__box"></div>
+                <el-image v-if="_isImg(item[state.fileProps.url])" :src="tool.resUrl(item[state.fileProps.url])"
+                          fit="contain" lazy/>
+                <div v-else class="item-file item-file-doc">
+                  <i v-if="state.files[_getExt(item[state.fileProps.url])]"
+                     :class="state.files[_getExt(item[state.fileProps.url])].icon"
+                     :style="{color:state.files[_getExt(item[state.fileProps.url])].color}"/>
+                  <i v-else class="sc-icon-file-list-fill" style="color: #999;"/>
+                </div>
+              </div>
+              <p :title="item[state.fileProps.fileName]">{{item[state.fileProps.fileName]}}</p>
+            </div>
+          </el-scrollbar>
+        </div>
+        <div class="sc-file-select__bottom">
+          <div class="sc-file-select__pagination">
+            <el-pagination size="small" background layout="prev, pager, next" :total="state.total"
+                           :page-size="state.pageSize" v-model:currentPage="state.currentPage" @current-change="reload"/>
+          </div>
+
+          <div class="sc-file-select__side-msg" v-if="props.multiple">
+            已选择 <b>{{state.value.length}}</b> / <b>{{props.max}}</b> 项
+          </div>
+          <div class="sc-file-select__do">
+            <slot name="do"></slot>
+            <!--        <el-button v-if="props.mode === 'manage' && state.value.length === 1" type="primary" @click="rename">-->
+            <!--          重命名-->
+            <!--        </el-button>-->
+            <el-button v-if="props.mode === 'manage'" type="danger" :disabled="state.value.length<=0" @click="deleteFile">
+              删 除
+            </el-button>
+            <el-button v-if="props.mode === 'select'" type="primary" :disabled="state.value.length<=0" @click="submit">
+              确 定
+            </el-button>
+          </div>
+        </div>
+
+      </el-main>
+    </el-container>
+
+    <el-dialog v-model="state.dialogMenuVisible" title="添加文件夹" width="500">
+        <el-input v-model="state.dialogMenuName" autocomplete="off" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="state.dialogMenuVisible = false">取消</el-button>
+          <el-button type="primary" @click="addMenuConfirm">
+            确定
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,7 +155,9 @@ const state = reactive({
   menuLoading: false,
   treeProps: config.menuProps,
   fileProps: config.fileProps,
-  files: config.files
+  files: config.files,
+  dialogMenuVisible: false,
+  dialogMenuName: ''
 })
 
 const emit = defineEmits(['update:modelValue', 'update:multiple'])
@@ -164,6 +192,50 @@ const getMenu = async () => {
     state.menu.push(item)
   })
   state.menuLoading = false
+}
+
+const addMenu = () => {
+  state.dialogMenuVisible = true
+}
+const delMenu = async () => {
+  try {
+    await ElMessageBox.confirm(`确定删除文件夹 ${state.menu[state.menuId].name} 吗？`, '提示', {
+      type: 'warning',
+      confirmButtonText: '删除',
+      confirmButtonClass: 'el-button--danger'
+    })
+    // 调用删除接口
+    const res = await config.deleteMenuApiObj.post({
+      id: state.menu[state.menuId].id
+    })
+    if (res.code !== config.successCode) {
+      ElNotification.error(res.message || '删除失败')
+      return
+    }
+    ElNotification.success('删除成功')
+    // 刷新文件夹列表
+    await getMenu()
+  }catch (e) {
+  }
+}
+
+const addMenuConfirm = async () => {
+  if (!state.dialogMenuName) {
+    ElNotification.error('请输入文件夹名称')
+    return
+  }
+  state.dialogMenuVisible = false
+  // 调用添加接口
+  const res = await config.addMenuApiObj.post({
+    name: state.dialogMenuName
+  })
+  if (res.code !== config.successCode) {
+    ElNotification.error(res.message || '添加失败')
+    return
+  }
+  ElNotification.success('添加成功')
+  // 刷新文件夹列表
+  await getMenu()
 }
 
 const getData = async () => {
@@ -258,10 +330,6 @@ const deleteFile = async () =>  {
   state.total = state.total - state.value.length
 }
 
-const rename = () => {
-  // TODO 重命名
-}
-
 const submit = () => {
   const value = JSON.parse(JSON.stringify(state.value))
   emit('update:modelValue', value);
@@ -333,42 +401,246 @@ const _getExt = (fileUrl) => {
 </script>
 
 <style scoped lang="scss">
-  .sc-file-select {display: flex;}
-  .sc-file-select__files {flex: 1;}
+  // 变量定义
+  $item-width: 110px;
+  $item-margin: 0 15px 25px 0;
+  $checkbox-size: 20px;
+  $border-radius: 0;
+  $success-color: var(--el-color-success);
 
-  //.sc-file-select__list {height:500px;}
-  .sc-file-select__item {display: inline-block;float: left;margin:0 15px 25px 0;width:110px;cursor: pointer;}
-  .sc-file-select__item__file {width:110px;height:110px;position: relative;}
-  .sc-file-select__item__file .el-image {width:110px;height:110px;}
-  .sc-file-select__item__box {position: absolute;top:0;right:0;bottom:0;left:0;border: 2px solid var(--el-color-success);z-index: 1;display: none;}
-  .sc-file-select__item__box::before {content: '';position: absolute;top:0;right:0;bottom:0;left:0;background: var(--el-color-success);opacity: 0.2;display: none;}
-  .sc-file-select__item:hover .sc-file-select__item__box {display: block;}
-  .sc-file-select__item.active .sc-file-select__item__box {display: block;}
-  .sc-file-select__item.active .sc-file-select__item__box::before {display: block;}
-  .sc-file-select__item p {margin-top: 10px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;-webkit-text-overflow:ellipsis;text-align: center;}
-  .sc-file-select__item__checkbox {position: absolute;width: 20px;height: 20px;top:7px;right:7px;z-index: 2;background: rgba(0,0,0,0.2);border: 1px solid #fff;display: flex;flex-direction: column;align-items: center;justify-content: center;}
-  .sc-file-select__item__checkbox i {font-size: 14px;color: #fff;font-weight: bold;display: none;}
-  .sc-file-select__item__select {position: absolute;width: 20px;height: 20px;top:0px;right:0px;z-index: 2;background: var(--el-color-success);display: none;flex-direction: column;align-items: center;justify-content: center;}
-  .sc-file-select__item__select i {font-size: 14px;color: #fff;font-weight: bold;}
-  .sc-file-select__item.active .sc-file-select__item__checkbox {background: var(--el-color-success);}
-  .sc-file-select__item.active .sc-file-select__item__checkbox i {display: block;}
-  .sc-file-select__item.active .sc-file-select__item__select {display: flex;}
-  .sc-file-select__item__file .item-file {width:110px;height:110px;display: flex;flex-direction: column;align-items: center;justify-content: center;}
-  .sc-file-select__item__file .item-file i {font-size: 40px;}
-  .sc-file-select__item__file .item-file.item-file-doc {color: #409eff;}
+  // 混合器
+  @mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-  .sc-file-select__item__upload {position: absolute;top:0;right:0;bottom:0;left:0;z-index: 1;background: rgba(255,255,255,0.7);display: flex;flex-direction: column;align-items: center;justify-content: center;}
+  @mixin absolute-fill {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
 
-  .sc-file-select__side {width: 200px;margin-right: 15px;border-right: 1px solid rgba(128,128,128,0.2);display: flex;flex-flow: column;}
-  .sc-file-select__side-menu {flex: 1;}
-  .sc-file-select__side-msg {height:32px;line-height: 32px;}
+  @mixin text-ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 
-  .sc-file-select__top {margin-bottom: 15px;display: flex;justify-content: space-between;align-items: center;}
-  .sc-file-select__upload {display: inline-block;}
-  .sc-file-select__top .tips {font-size: 12px;margin-left: 10px;color: #999;}
-  .sc-file-select__top .tips i {font-size: 14px;margin-right: 5px;position: relative;bottom: -0.125em;}
-  .sc-file-select__top .multiple-toggle {margin-left: 20px;}
-  .sc-file-select__pagination {margin:15px 0;}
+  // 主容器
+  .sc-file-select {
+    display: flex;
+  }
 
-  .sc-file-select__do {text-align: right;}
+  // 右侧内容区
+  .sc-file-select__right {
+    display: flex;
+    flex-direction: column;
+
+    .sc-file-select__list {
+      flex: 1;
+    }
+
+    .sc-file-select__bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  // 头部右侧区域
+  .header-right {
+    display: flex;
+    align-items: center;
+  }
+
+  // 文件项基础样式
+  .sc-file-select__item {
+    display: inline-block;
+    float: left;
+    margin: $item-margin;
+    width: $item-width;
+    cursor: pointer;
+
+    // 文件容器
+    &__file {
+      width: $item-width;
+      height: $item-width;
+      position: relative;
+
+      .el-image {
+        width: $item-width;
+        height: $item-width;
+      }
+    }
+
+    // 选择框
+    &__box {
+      @include absolute-fill;
+      border: 2px solid $success-color;
+      z-index: 1;
+      display: none;
+
+      &::before {
+        content: '';
+        @include absolute-fill;
+        background: $success-color;
+        opacity: 0.2;
+        display: none;
+      }
+    }
+
+    // 文件名
+    p {
+      margin-top: 10px;
+      @include text-ellipsis;
+      text-align: center;
+    }
+
+    // 复选框
+    &__checkbox {
+      position: absolute;
+      width: $checkbox-size;
+      height: $checkbox-size;
+      top: 7px;
+      right: 7px;
+      z-index: 2;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid #fff;
+      @include flex-center;
+
+      i {
+        font-size: 14px;
+        color: #fff;
+        font-weight: bold;
+        display: none;
+      }
+    }
+
+    // 单选框
+    &__select {
+      position: absolute;
+      width: $checkbox-size;
+      height: $checkbox-size;
+      top: 0;
+      right: 0;
+      z-index: 2;
+      background: $success-color;
+      @include flex-center;
+      display: none;
+
+      i {
+        font-size: 14px;
+        color: #fff;
+        font-weight: bold;
+      }
+    }
+
+    // 文件图标
+    .item-file {
+      width: $item-width;
+      height: $item-width;
+      @include flex-center;
+
+      i {
+        font-size: 40px;
+      }
+
+      &.item-file-doc {
+        color: #409eff;
+      }
+    }
+
+    // 悬停和激活状态
+    &:hover &__box {
+      display: block;
+    }
+
+    &.active {
+      .sc-file-select__item__box {
+        display: block;
+
+        &::before {
+          display: block;
+        }
+      }
+
+      .sc-file-select__item__checkbox {
+        background: $success-color;
+
+        i {
+          display: block;
+        }
+      }
+
+      .sc-file-select__item__select {
+        display: flex;
+      }
+    }
+  }
+
+  // 上传进度
+  .sc-file-select__item__upload {
+    @include absolute-fill;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.7);
+    @include flex-center;
+  }
+
+  // 侧边栏
+  .sc-file-select__side {
+    width: 200px;
+    margin-right: 15px;
+    border-right: 1px solid rgba(128, 128, 128, 0.2);
+    display: flex;
+    flex-flow: column;
+
+    &-menu {
+      flex: 1;
+    }
+
+    &-msg {
+      height: 32px;
+      line-height: 32px;
+    }
+  }
+
+  // 顶部操作区
+  .sc-file-select__top {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .tips {
+      font-size: 12px;
+      margin-left: 10px;
+      color: #999;
+
+      i {
+        font-size: 14px;
+        margin-right: 5px;
+        position: relative;
+        bottom: -0.125em;
+      }
+    }
+
+    .multiple-toggle {
+      margin-left: 20px;
+    }
+  }
+
+  .sc-file-select__upload {
+    display: inline-block;
+  }
+
+  .sc-file-select__pagination {
+    margin: 15px 0;
+  }
+
+  .sc-file-select__do {
+    text-align: right;
+  }
 </style>

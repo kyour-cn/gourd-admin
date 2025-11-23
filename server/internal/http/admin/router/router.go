@@ -96,6 +96,8 @@ func Router(r chi.Router) {
 			r.Post("/delete", c.Delete)
 
 			r.Get("/menuList", c.MenuList)
+			r.Post("/menuAdd", c.MenuAdd)
+			r.Post("/menuDelete", c.MenuDelete)
 		})
 	})
 

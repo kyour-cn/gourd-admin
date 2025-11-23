@@ -16,13 +16,46 @@ type File struct {
 }
 
 func (c *File) MenuList(w http.ResponseWriter, r *http.Request) {
-
 	service := services.NewFileService(r.Context())
 	res, err := service.GetMenuList()
 	if err != nil {
 		_ = c.Fail(w, 500, "获取列表失败", err.Error())
 	}
 	_ = c.Success(w, "", res)
+}
+
+func (c *File) MenuAdd(w http.ResponseWriter, r *http.Request) {
+	req := &dto.FileMenuAddReq{}
+	if err := c.JsonReqUnmarshal(r, req); err != nil {
+		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		return
+	}
+
+	service := services.NewFileService(r.Context())
+	err := service.AddMenu(req)
+	if err != nil {
+		_ = c.Fail(w, 1, "添加失败", err.Error())
+		return
+	}
+	_ = c.Success(w, "success", nil)
+}
+
+func (c *File) MenuDelete(w http.ResponseWriter, r *http.Request) {
+	req := struct {
+		ID int32 `json:"id"`
+	}{}
+	if err := c.JsonReqUnmarshal(r, &req); err != nil {
+		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		return
+	}
+
+	service := services.NewFileService(r.Context())
+	err := service.DeleteMenu(req.ID)
+	if err != nil {
+		_ = c.Fail(w, 1, "删除失败", err.Error())
+		return
+	}
+	_ = c.Success(w, "success", nil)
 }
 
 func (c *File) List(w http.ResponseWriter, r *http.Request) {

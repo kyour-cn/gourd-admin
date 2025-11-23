@@ -26,6 +26,27 @@ func (s *FileService) GetMenuList() ([]*model.FileMenu, error) {
 	return query.FileMenu.WithContext(s.ctx).Find()
 }
 
+func (s *FileService) AddMenu(req *dto.FileMenuAddReq) error {
+	menu := &model.FileMenu{
+		Name: req.Name,
+	}
+	err := query.FileMenu.WithContext(s.ctx).Create(menu)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *FileService) DeleteMenu(id int32) error {
+	_, err := query.FileMenu.WithContext(s.ctx).
+		Where(query.FileMenu.ID.Eq(id)).
+		Delete()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *FileService) GetList(req *dto.FileListReq) (*dto.PageListReq, error) {
 	q := query.File
 	var conds []gen.Condition

@@ -4,6 +4,8 @@ import systemApi from "@/api/admin/system.js";
 export default {
   apiObj: systemApi.file.upload,
   menuApiObj: systemApi.file.menu,
+  addMenuApiObj: systemApi.file.addMenu,
+  deleteMenuApiObj: systemApi.file.deleteMenu,
   listApiObj: systemApi.file.list,
   deleteApiObj: systemApi.file.delete,
   successCode: 0,

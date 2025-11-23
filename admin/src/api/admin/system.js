@@ -162,9 +162,23 @@ export default {
   file: {
     menu: {
       url: `${config.API_URL}/admin/system/file/menuList`,
-      name: "文件菜单",
+      name: "文件夹列表",
       get: async function (params = {}) {
         return await http.get(this.url, params);
+      }
+    },
+    addMenu: {
+      url: `${config.API_URL}/admin/system/file/menuAdd`,
+      name: "添加文件夹",
+      post: async function (data = {}) {
+        return await http.post(this.url, data);
+      }
+    },
+    deleteMenu: {
+      url: `${config.API_URL}/admin/system/file/menuDelete`,
+      name: "删除文件夹",
+      post: async function (data = {}) {
+        return await http.post(this.url, data);
       }
     },
     upload: {
