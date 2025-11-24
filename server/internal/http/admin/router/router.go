@@ -5,27 +5,27 @@ import (
 
 	"app/internal/http/admin/controller/system"
 	common "app/internal/http/common/controller"
-	middleware2 "app/internal/http/common/middleware"
+	"app/internal/http/common/middleware"
 )
 
 // Router 注册路由组
 func Router(r chi.Router) {
 
 	// 跨域中间件
-	r.Use(middleware2.CorsMiddleware)
+	r.Use(middleware.CorsMiddleware)
 
 	// 登录相关路由
 	r.Route("/auth", func(r chi.Router) {
 		c := common.Auth{}
 		r.HandleFunc("/captcha", c.Captcha)
 		r.HandleFunc("/login", c.Login)
-		r.With(middleware2.AuthJwtMiddleware).
+		r.With(middleware.AuthJwtMiddleware).
 			HandleFunc("/menu", c.GetMenu)
 	})
 
 	// 上传相关路由
 	r.Route("/upload", func(r chi.Router) {
-		r.Use(middleware2.AuthJwtMiddleware)
+		r.Use(middleware.AuthJwtMiddleware)
 		c := common.Upload{}
 		r.Post("/image", c.Image) // 上传图片
 		r.Post("/file", c.File)   // 上传文件
@@ -33,7 +33,7 @@ func Router(r chi.Router) {
 
 	// 用户
 	r.Route("/user", func(r chi.Router) {
-		r.Use(middleware2.AuthJwtMiddleware)
+		r.Use(middleware.AuthJwtMiddleware)
 		c := common.User{}
 		r.HandleFunc("/info", c.Info)        // 用户信息
 		r.Post("/password", c.ResetPassword) // 修改密码
@@ -42,7 +42,7 @@ func Router(r chi.Router) {
 
 	// 系统相关路由
 	r.Route("/system", func(r chi.Router) {
-		r.Use(middleware2.AuthJwtMiddleware)
+		r.Use(middleware.AuthJwtMiddleware)
 		// app相关路由
 		r.Route("/app", func(r chi.Router) {
 			c := system.App{}

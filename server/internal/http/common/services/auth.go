@@ -282,7 +282,7 @@ func (s *AuthService) CheckPath(claims dto.UserClaims, r *http.Request) bool {
 
 	apis, err := query.MenuAPI.
 		Where(query.MenuAPI.Path.Eq(url)).
-		Select(query.MenuAPI.ID).
+		Select(query.MenuAPI.ID, query.MenuAPI.AppID).
 		Find()
 	if err == nil && len(apis) == 0 {
 		// 路由未定义，不限制
@@ -291,13 +291,14 @@ func (s *AuthService) CheckPath(claims dto.UserClaims, r *http.Request) bool {
 		return false
 	}
 
-	uq := query.User
+	u := query.User
 
-	userInfo, err := uq.WithContext(r.Context()).
-		Preload(uq.UserRole, uq.UserRole.Role).
+	// 查询用户角色
+	userInfo, err := u.WithContext(r.Context()).
+		Preload(u.UserRole, u.UserRole.Role).
 		Where(
-			uq.ID.Eq(claims.Sub),
-			uq.Status.Eq(1),
+			u.ID.Eq(claims.Sub),
+			u.Status.Eq(1),
 		).
 		First()
 	if err != nil {
@@ -310,15 +311,20 @@ func (s *AuthService) CheckPath(claims dto.UserClaims, r *http.Request) bool {
 	for _, v := range userInfo.UserRole {
 		// 管理员角色拥有所有权限
 		if v.Role.IsAdmin == 1 {
-			return true
+			for _, api := range apis {
+				if api.AppID == v.Role.AppID {
+					return true
+				}
+			}
 		}
+		// 普通角色根据规则匹配权限
 		for _, ruleIDStr := range strings.Split(v.Role.Rules, ",") {
 			ruleID, _ := strconv.Atoi(ruleIDStr)
 			ruleSet[int64(ruleID)] = true
 		}
 	}
 
-	// 判断是否有交集
+	// 判断是否有匹配的权限
 	for _, api := range apis {
 		if ruleSet[api.ID] {
 			return true

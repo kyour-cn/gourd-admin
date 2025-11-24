@@ -31,7 +31,11 @@
         </el-table-column>
         <el-table-column label="登录账号" prop="username" width="150" column-key="filterUserName"/>
         <el-table-column label="昵称" prop="nickname" width="150"/>
-        <el-table-column label="所属角色" prop="role_id" width="200"/>
+        <el-table-column label="所属角色" prop="role_id" width="200">
+          <template #default="scope">
+            <span class="role-name" v-for="item in scope.row.user_role" :key="item.role_id">{{item.role.name}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="注册时间" prop="created_at" width="170"/>
         <el-table-column label="操作" fixed="right" align="right" width="165">
           <template #default="scope">
@@ -191,3 +195,10 @@ const handleSaveSuccess = () => {
 }
 
 </script>
+
+<style scoped>
+.role-name {
+  display: inline-block;
+  margin-right: 5px;
+}
+</style>
