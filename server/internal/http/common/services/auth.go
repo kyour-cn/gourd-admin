@@ -280,11 +280,17 @@ func (s *AuthService) GenerateToken(claims dto.UserClaims) (string, error) {
 func (s *AuthService) CheckPath(claims dto.UserClaims, r *http.Request) bool {
 	url := r.URL.Path
 
-	apis, err := query.MenuAPI.
-		Where(query.MenuAPI.Path.Eq(url)).
-		Select(query.MenuAPI.ID, query.MenuAPI.AppID).
+	m := query.Menu
+	ma := query.MenuAPI
+
+	// 查询菜单ID (根据路由地址查询菜单ID)
+	menus, err := m.WithContext(s.ctx).
+		Where(
+			gen.Exists(ma.Select(ma.ID).Where(ma.MenuID.EqCol(m.ID), ma.Path.Eq(url))),
+		).
+		Select(m.ID, m.AppID).
 		Find()
-	if err == nil && len(apis) == 0 {
+	if err == nil && len(menus) == 0 {
 		// 路由未定义，不限制
 		return true
 	} else if err != nil {
@@ -292,40 +298,44 @@ func (s *AuthService) CheckPath(claims dto.UserClaims, r *http.Request) bool {
 	}
 
 	u := query.User
+	ur := query.UserRole
 
-	// 查询用户角色
-	userInfo, err := u.WithContext(r.Context()).
-		Preload(u.UserRole, u.UserRole.Role).
+	// 查询用户关联的角色(根据用户ID查询所有角色ID)
+	roles, err := query.Role.WithContext(s.ctx).
+		Select(query.Role.ID, query.Role.AppID, query.Role.IsAdmin, query.Role.Rules).
 		Where(
-			u.ID.Eq(claims.Sub),
-			u.Status.Eq(1),
+			gen.Exists(ur.Select(ur.RoleID).
+				Where(
+					gen.Exists(u.Select(u.ID).Where(u.ID.EqCol(ur.UserID), u.ID.Eq(claims.Sub), u.Status.Eq(1))),
+					ur.RoleID.EqCol(query.Role.ID),
+				),
+			),
 		).
-		First()
+		Find()
 	if err != nil {
-		// 用户状态已失效
 		return false
 	}
 
 	// 权限匹配
 	ruleSet := make(map[int64]bool)
-	for _, v := range userInfo.UserRole {
+	for _, v := range roles {
 		// 管理员角色拥有所有权限
-		if v.Role.IsAdmin == 1 {
-			for _, api := range apis {
-				if api.AppID == v.Role.AppID {
+		if v.IsAdmin == 1 {
+			for _, api := range menus {
+				if api.AppID == v.AppID {
 					return true
 				}
 			}
 		}
 		// 普通角色根据规则匹配权限
-		for _, ruleIDStr := range strings.Split(v.Role.Rules, ",") {
+		for _, ruleIDStr := range strings.Split(v.Rules, ",") {
 			ruleID, _ := strconv.Atoi(ruleIDStr)
 			ruleSet[int64(ruleID)] = true
 		}
 	}
 
 	// 判断是否有匹配的权限
-	for _, api := range apis {
+	for _, api := range menus {
 		if ruleSet[api.ID] {
 			return true
 		}
