@@ -94,15 +94,15 @@ const state = reactive({
       {required: true, message: '请输入昵称'}
     ],
     // mobile: [
-    // 	{
-    // 		validator: (_, value, callback) => {
-    // 			if (value === '') return callback()
-    // 			const regMobile = /^1\d{10}$/
-    // 			if (regMobile.test(value)) return callback()
-    // 			callback(new Error('请输入合法的手机号'))
-    // 		},
-    // 		trigger: 'blur'
-    // 	}
+    //   {
+    //     validator: (_, value, callback) => {
+    //       if (value === '') return callback()
+    //       const regMobile = /^1\d{10}$/
+    //       if (regMobile.test(value)) return callback()
+    //       callback(new Error('请输入合法的手机号'))
+    //     },
+    //     trigger: 'blur'
+    //   }
     // ],
     password: [
       {required: true, message: '请输入登录密码'},

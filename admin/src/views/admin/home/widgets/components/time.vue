@@ -1,10 +1,10 @@
 <template>
-	<el-card shadow="hover" header="时钟" class="item-background">
-		<div class="time">
-			<h2>{{ time }}</h2>
-			<p>{{ day }}</p>
-		</div>
-	</el-card>
+  <el-card shadow="hover" header="时钟" class="item-background">
+    <div class="time">
+      <h2>{{ time }}</h2>
+      <p>{{ day }}</p>
+    </div>
+  </el-card>
 </template>
 
 <script>
@@ -36,7 +36,7 @@ export default {
 </script>
 
 <style scoped>
-	.item-background {background: linear-gradient(to right, #8E54E9, #4776E6);color: #fff;}
-	.time h2 {font-size: 40px;}
-	.time p {font-size: 14px;margin-top: 13px;opacity: 0.7;}
+  .item-background {background: linear-gradient(to right, #8E54E9, #4776E6);color: #fff;}
+  .time h2 {font-size: 40px;}
+  .time p {font-size: 14px;margin-top: 13px;opacity: 0.7;}
 </style>

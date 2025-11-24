@@ -12,16 +12,16 @@
         @current-change="handleCurrentChange"
       >
         <template #default="{node, data}">
-					<span class="custom-tree-node">
+          <span class="custom-tree-node">
             <sc-status-indicator
               v-if="data.color"
               type="success"
               :style="{background: data.color, marginRight: '5px'}"
             />
-						<span class="label">
-							{{ data.name }}
-						</span>
-					</span>
+            <span class="label">
+              {{ data.name }}
+            </span>
+          </span>
         </template>
       </el-tree>
     </el-aside>

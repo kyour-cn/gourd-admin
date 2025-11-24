@@ -120,7 +120,7 @@
                 </el-main>
                 <el-footer style="height: 51px">
                     <el-button @click="backDefaul()">恢复默认</el-button>
-                    <!--					<el-button type="primary" @click="save">保存</el-button>-->
+                    <!--          <el-button type="primary" @click="save">保存</el-button>-->
                 </el-footer>
             </el-container>
         </div>

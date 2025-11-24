@@ -1,22 +1,22 @@
 <template>
 
-	<el-main style="padding:0 20px;">
-		<el-descriptions :column="1" border size="small">
-			<el-descriptions-item label="标题">{{ state.data.title }}</el-descriptions-item>
-			<el-descriptions-item label="日志类型">{{ state.data.type_name }}</el-descriptions-item>
-			<el-descriptions-item label="请求来源">{{ state.data.request_source }}</el-descriptions-item>
-			<el-descriptions-item label="操作人">{{ state.data.request_user }} （{{ state.data.request_user_id }}）</el-descriptions-item>
-			<el-descriptions-item label="请求ip">{{ state.data.request_ip }}</el-descriptions-item>
-			<el-descriptions-item label="请求时间">{{ state.data.created_at }}</el-descriptions-item>
-		</el-descriptions>
-		<el-collapse v-model="state.activeNames" style="margin-top: 20px;">
-			<el-collapse-item title="记录内容" name="1">
-				<div class="code">
-					{{state.data.value}}
-				</div>
-			</el-collapse-item>
-		</el-collapse>
-	</el-main>
+  <el-main style="padding:0 20px;">
+    <el-descriptions :column="1" border size="small">
+      <el-descriptions-item label="标题">{{ state.data.title }}</el-descriptions-item>
+      <el-descriptions-item label="日志类型">{{ state.data.type_name }}</el-descriptions-item>
+      <el-descriptions-item label="请求来源">{{ state.data.request_source }}</el-descriptions-item>
+      <el-descriptions-item label="操作人">{{ state.data.request_user }} （{{ state.data.request_user_id }}）</el-descriptions-item>
+      <el-descriptions-item label="请求ip">{{ state.data.request_ip }}</el-descriptions-item>
+      <el-descriptions-item label="请求时间">{{ state.data.created_at }}</el-descriptions-item>
+    </el-descriptions>
+    <el-collapse v-model="state.activeNames" style="margin-top: 20px;">
+      <el-collapse-item title="记录内容" name="1">
+        <div class="code">
+          {{state.data.value}}
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+  </el-main>
 </template>
 
 <script setup>
@@ -55,14 +55,14 @@ defineExpose({
 
 <style scoped>
 :deep(.is-bordered-label) {
-	min-width: 6em;
+  min-width: 6em;
 }
 
 .code {
-	background: #848484;
-	padding: 15px;
-	color: #fff;
-	font-size: 12px;
-	border-radius: 4px;
+  background: #848484;
+  padding: 15px;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 4px;
 }
 </style>

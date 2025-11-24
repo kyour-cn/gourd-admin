@@ -4,12 +4,12 @@
     <el-form-item prop="user">
       <el-input v-model="state.form.user" prefix-icon="el-icon-user" clearable
                 :placeholder="$t('login.userPlaceholder')">
-        <!--				<template #append>-->
-        <!--					<el-select v-model="userType" style="width: 130px;">-->
-        <!--						<el-option :label="$t('login.admin')" value="admin"></el-option>-->
-        <!--						<el-option :label="$t('login.user')" value="user"></el-option>-->
-        <!--					</el-select>-->
-        <!--				</template>-->
+        <!--        <template #append>-->
+        <!--          <el-select v-model="userType" style="width: 130px;">-->
+        <!--            <el-option :label="$t('login.admin')" value="admin"></el-option>-->
+        <!--            <el-option :label="$t('login.user')" value="user"></el-option>-->
+        <!--          </el-select>-->
+        <!--        </template>-->
       </el-input>
     </el-form-item>
 

@@ -36,14 +36,14 @@
             @node-drop="nodeDrop"
           >
             <template #default="{node, data}">
-							<span class="custom-tree-node">
-								<span class="label">
-									{{ node.label }}
-								</span>
-								<span class="do">
-									<el-button icon="el-icon-plus" size="small" @click.stop="add(node, data)"/>
-								</span>
-						</span>
+              <span class="custom-tree-node">
+                <span class="label">
+                  {{ node.label }}
+                </span>
+                <span class="do">
+                  <el-button icon="el-icon-plus" size="small" @click.stop="add(node, data)"/>
+                </span>
+            </span>
             </template>
           </el-tree>
         </el-main>
