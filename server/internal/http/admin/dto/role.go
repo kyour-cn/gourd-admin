@@ -5,6 +5,7 @@ type RoleListReq struct {
 	PageSize int    `form:"page_size" validate:"gte=1,lte=500"`
 	AppId    int64  `form:"app_id"`
 	Ids      string `form:"ids"` // 逗号分隔的ID列表
+	Name     string `form:"name"`
 }
 
 type RoleCreateReq struct {

@@ -47,7 +47,7 @@ func (s *FileService) DeleteMenu(id int32) error {
 	return nil
 }
 
-func (s *FileService) GetList(req *dto.FileListReq) (*dto.PageListReq, error) {
+func (s *FileService) GetList(req *dto.FileListReq) (*dto.PageListRes, error) {
 	q := query.File
 	var conds []gen.Condition
 
@@ -69,7 +69,7 @@ func (s *FileService) GetList(req *dto.FileListReq) (*dto.PageListReq, error) {
 		return nil, err
 	}
 
-	return &dto.PageListReq{
+	return &dto.PageListRes{
 		Rows:     list,
 		Total:    count,
 		Page:     req.Page,

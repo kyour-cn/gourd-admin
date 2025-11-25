@@ -19,7 +19,7 @@ type AppService struct {
 	ctx context.Context
 }
 
-func (s *AppService) GetList(req *dto.AppListReq) (*dto.PageListReq, error) {
+func (s *AppService) GetList(req *dto.AppListReq) (*dto.PageListRes, error) {
 	q := query.App
 	var conds []gen.Condition
 
@@ -35,7 +35,7 @@ func (s *AppService) GetList(req *dto.AppListReq) (*dto.PageListReq, error) {
 		return nil, err
 	}
 
-	return &dto.PageListReq{
+	return &dto.PageListRes{
 		Rows:     list,
 		Total:    count,
 		Page:     req.Page,

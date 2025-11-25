@@ -2,12 +2,21 @@ package dto
 
 import (
 	"github.com/golang-jwt/jwt/v5"
+
+	"app/internal/orm/model"
 )
 
 type UserClaims struct {
 	jwt.RegisteredClaims
 	Sub  int64  `json:"sub"`
 	Name string `json:"name"`
+}
+
+type UserLoginRes struct {
+	Token    string      `json:"token"`
+	UserInfo *model.User `json:"userInfo"`
+	Expire   int64       `json:"expire"`
+	Apps     any         `json:"apps"`
 }
 
 type UserResetPasswordReq struct {

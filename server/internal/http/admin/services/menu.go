@@ -22,7 +22,7 @@ type MenuService struct {
 	ctx context.Context
 }
 
-func (s *MenuService) GetList(req *dto.MenuListReq) (*dto.PageListReq, error) {
+func (s *MenuService) GetList(req *dto.MenuListReq) (*dto.PageListRes, error) {
 	q := query.Menu
 	var conds []gen.Condition
 
@@ -38,7 +38,7 @@ func (s *MenuService) GetList(req *dto.MenuListReq) (*dto.PageListReq, error) {
 		return nil, err
 	}
 
-	return &dto.PageListReq{
+	return &dto.PageListRes{
 		Rows:     list,
 		Total:    count,
 		Page:     req.Page,

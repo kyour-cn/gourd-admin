@@ -216,7 +216,7 @@ func (s *AuthService) GetPermission(userInfo *model.User, appId int64) ([]string
 }
 
 // LoginUser 登录用户
-func (s *AuthService) LoginUser(username string, password string) (*model.User, error) {
+func (s *AuthService) LoginUser(username string, password string) (*dto.UserLoginRes, error) {
 	// 登录频率限制锁 10秒
 	key := "login_lock:" + username
 	val, ok := cache.Get(key)
@@ -229,16 +229,16 @@ func (s *AuthService) LoginUser(username string, password string) (*model.User, 
 		return nil, errors.New("登录失败次数过多，请稍后再试")
 	}
 
-	uq := query.User
+	u := query.User
 
 	// 查询用户
-	userModel, err := uq.WithContext(s.ctx).
-		Preload(uq.UserRole, uq.UserRole.Role, uq.UserRole.Role.App).
+	userData, err := u.WithContext(s.ctx).
+		Preload(u.UserRole, u.UserRole.Role, u.UserRole.Role.App).
 		Where(
-			uq.Username.Eq(username),
-			uq.Password.Eq(password),
+			u.Username.Eq(username),
+			u.Password.Eq(password),
 		).
-		Select(uq.ID, uq.Nickname, uq.Username, uq.Avatar, uq.CreatedAt, uq.Status).
+		Select(u.ID, u.Nickname, u.Username, u.Avatar, u.CreatedAt, u.Status).
 		First()
 	if err != nil {
 		// 登录失败次数+1
@@ -247,14 +247,46 @@ func (s *AuthService) LoginUser(username string, password string) (*model.User, 
 	}
 	cache.Delete(key)
 
+	if userData.Status != 1 {
+		return nil, errors.New("账号异常或被锁定")
+	}
+
+	// 取出用户关联的应用
+	apps := make(map[int64]model.App)
+	for _, ur := range userData.UserRole {
+		apps[ur.Role.App.ID] = ur.Role.App
+	}
+
+	// 获取jwt配置
+	jwtConf, err := config.GetJwtConfig()
+	if err != nil {
+		return nil, errors.New("token配置异常,请联系管理员")
+	}
+	// 生成token
+	claims := dto.UserClaims{
+		Sub:  userData.ID,
+		Name: userData.Nickname,
+	}
+	token, err := s.GenerateToken(claims)
+	if err != nil {
+		return nil, errors.New("生成token失败")
+	}
+
 	// 更新登录时间
-	_, _ = uq.WithContext(s.ctx).
-		Where(uq.ID.Eq(userModel.ID)).
+	_, _ = u.WithContext(s.ctx).
+		Where(u.ID.Eq(userData.ID)).
 		Updates(&model.User{
 			LoginTime: time.Now(),
 		})
 
-	return userModel, nil
+	userData.UserRole = nil
+
+	return &dto.UserLoginRes{
+		Token:    token,
+		UserInfo: userData,
+		Expire:   jwtConf.Expire,
+		Apps:     apps,
+	}, nil
 }
 
 // GenerateToken 生成token

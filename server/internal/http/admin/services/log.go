@@ -21,7 +21,7 @@ type LogTypeService struct {
 	ctx context.Context
 }
 
-func (s *LogTypeService) GetTypeList(req *dto.LogTypeListReq) (*dto.PageListReq, error) {
+func (s *LogTypeService) GetTypeList(req *dto.LogTypeListReq) (*dto.PageListRes, error) {
 	q := query.LogType
 	var conds []gen.Condition
 
@@ -32,7 +32,7 @@ func (s *LogTypeService) GetTypeList(req *dto.LogTypeListReq) (*dto.PageListReq,
 		return nil, err
 	}
 
-	return &dto.PageListReq{
+	return &dto.PageListRes{
 		Rows:     list,
 		Total:    count,
 		Page:     req.Page,
@@ -40,7 +40,7 @@ func (s *LogTypeService) GetTypeList(req *dto.LogTypeListReq) (*dto.PageListReq,
 	}, nil
 }
 
-func (s *LogTypeService) GetList(req *dto.LogListReq) (*dto.PageListReq, error) {
+func (s *LogTypeService) GetList(req *dto.LogListReq) (*dto.PageListRes, error) {
 	q := query.Log
 	var conds []gen.Condition
 
@@ -67,7 +67,7 @@ func (s *LogTypeService) GetList(req *dto.LogListReq) (*dto.PageListReq, error) 
 		return nil, err
 	}
 
-	return &dto.PageListReq{
+	return &dto.PageListRes{
 		Rows:     list,
 		Total:    count,
 		Page:     req.Page,

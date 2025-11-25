@@ -21,9 +21,14 @@ type RoleService struct {
 	ctx context.Context
 }
 
-func (s *RoleService) GetList(req *dto.RoleListReq) (*dto.PageListReq, error) {
+func (s *RoleService) GetList(req *dto.RoleListReq) (*dto.PageListRes, error) {
 	q := query.Role
 	var conds []gen.Condition
+
+	// 关键词搜索
+	if req.Name != "" {
+		conds = append(conds, q.Name.Like("%"+req.Name+"%"))
+	}
 
 	if req.AppId > 0 {
 		conds = append(conds, q.AppID.Eq(req.AppId))
@@ -51,7 +56,7 @@ func (s *RoleService) GetList(req *dto.RoleListReq) (*dto.PageListReq, error) {
 		return nil, err
 	}
 
-	return &dto.PageListReq{
+	return &dto.PageListRes{
 		Rows:     list,
 		Total:    count,
 		Page:     req.Page,

@@ -21,7 +21,7 @@ type UserService struct {
 	ctx context.Context
 }
 
-func (s *UserService) GetList(req *dto.UserListReq) (*dto.PageListReq, error) {
+func (s *UserService) GetList(req *dto.UserListReq) (*dto.PageListRes, error) {
 	q := query.User
 	var conds []gen.Condition
 
@@ -44,7 +44,7 @@ func (s *UserService) GetList(req *dto.UserListReq) (*dto.PageListReq, error) {
 		return nil, err
 	}
 
-	return &dto.PageListReq{
+	return &dto.PageListRes{
 		Rows:     list,
 		Total:    count,
 		Page:     req.Page,

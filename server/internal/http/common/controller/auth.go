@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"app/internal/config"
-	"app/internal/http/common/dto"
 	"app/internal/http/common/services"
 	"app/internal/modules/common/dblog"
 	"app/internal/orm/model"
@@ -62,57 +60,20 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	serv := services.NewAuthService(r.Context())
 
 	// 登录
-	userData, err := serv.LoginUser(req.Username, req.Password)
+	res, err := serv.LoginUser(req.Username, req.Password)
 	if err != nil {
 		_ = c.Fail(w, 103, "登录失败："+err.Error(), "")
-		return
-	}
-	if userData.Status != 1 {
-		_ = c.Fail(w, 104, "账号异常或被锁定", err)
-		return
-	}
-
-	apps := make(map[int64]model.App)
-	for _, ur := range userData.UserRole {
-		apps[ur.Role.App.ID] = ur.Role.App
-	}
-
-	// 创建token
-	jwtConf, err := config.GetJwtConfig()
-	if err != nil {
-		_ = c.Fail(w, 104, "token配置异常,请联系管理员", err)
-	}
-	// 生成token
-	claims := dto.UserClaims{
-		Sub:  userData.ID,
-		Name: userData.Nickname,
-	}
-	token, err := serv.GenerateToken(claims)
-	if err != nil {
-		_ = c.Fail(w, 105, "生成token失败", err.Error())
 		return
 	}
 
 	// 记录登录日志
 	_ = dblog.New("login").
 		WithModel(&model.Log{
-			RequestUserID: userData.ID,
-			RequestUser:   userData.Nickname,
+			RequestUserID: res.UserInfo.ID,
+			RequestUser:   res.UserInfo.Nickname,
 		}).
 		WithRequest(r).
 		Write("登录后台", "")
-
-	res := struct {
-		Token    string      `json:"token"`
-		UserInfo *model.User `json:"userInfo"`
-		Expire   int64       `json:"expire"`
-		Apps     any         `json:"apps"`
-	}{
-		Token:    token,
-		UserInfo: userData,
-		Expire:   jwtConf.Expire,
-		Apps:     apps,
-	}
 
 	_ = c.Success(w, "", res)
 }
