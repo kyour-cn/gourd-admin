@@ -40,6 +40,7 @@ html.dark {
     background: var(--el-bg-color-overlay);
     border-color: var(--el-border-color-light);
     box-shadow:inset 0 15px 15px -15px #111;
+    border-left: 1px solid #141414;
   }
   .adminui-main {background: var(--el-bg-color);}
   .drawerBG {background: var(--el-bg-color);}
