@@ -38,6 +38,7 @@ type MenuMate struct {
 	Type             string `json:"type"`
 	FullPage         bool   `json:"fullPage"`
 	Tag              string `json:"tag"`
+	Affix            bool   `json:"affix"`
 	Hidden           bool   `json:"hidden"`
 	HiddenBreadcrumb bool   `json:"hiddenBreadcrumb"`
 }

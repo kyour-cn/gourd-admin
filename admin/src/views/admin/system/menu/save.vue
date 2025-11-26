@@ -53,7 +53,8 @@
           <el-form-item label="是否隐藏" prop="meta.hidden">
             <el-checkbox v-model="state.form.meta.hidden">隐藏菜单</el-checkbox>
             <el-checkbox v-model="state.form.meta.hiddenBreadcrumb">隐藏面包屑</el-checkbox>
-            <div class="el-form-item-msg">菜单不显示在导航中，但用户依然可以访问，例如详情页</div>
+            <el-checkbox v-model="state.form.meta.affix">固定标签</el-checkbox>
+            <div class="el-form-item-msg">菜单不显示在导航中，但用户依然可以访问，例如详情页，固定标签后标签不可关闭</div>
           </el-form-item>
           <el-form-item label="整页路由" prop="fullPage">
             <el-switch v-model="state.form.meta.fullPage"/>
@@ -119,7 +120,8 @@ const state = reactive({
       fullPage: false,
       tag: "",
       hidden: false,
-      hiddenBreadcrumb: false
+      hiddenBreadcrumb: false,
+      affix: false
     },
     apiList: []
   },
