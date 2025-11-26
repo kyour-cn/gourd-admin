@@ -2,6 +2,7 @@
 /dist
 /logs/
 /go.sum
-*.exe
+/*.exe
+/*_linux
 
 /web/uploads/
