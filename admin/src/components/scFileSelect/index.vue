@@ -305,7 +305,7 @@ const deleteFile = async () =>  {
     ElNotification.error(res.message || '删除失败')
     return
   }
-  ElNotification.success(res.message || '删除成功')
+  ElNotification.success('删除成功')
 
   // 删除选中的文件
   for (const item of state.value) {
@@ -342,9 +342,9 @@ const uploadChange = (file, fileList) => {
 }
 
 const uploadBefore = (file) => {
-  const maxSize = file.size / 1024 / 1024 < state.maxSize;
+  const maxSize = file.size / 1024 / 1024 < props.maxSize;
   if (!maxSize) {
-    ElNotification.warning(`上传文件大小不能超过 ${state.maxSize}MB!`);
+    ElNotification.warning(`上传文件大小不能超过 ${props.maxSize}MB!`);
     return false;
   }
 }
@@ -353,7 +353,7 @@ const uploadRequest = (param) => {
   const apiObj = config.apiObj;
   const data = new FormData();
   data.append("file", param.file);
-  data.append([config.request.menuKey], this.menuId);
+  data.append([config.request.menuKey], state.menuId);
   apiObj.post(data, {
     onUploadProgress: e => {
       param.onProgress(e)
