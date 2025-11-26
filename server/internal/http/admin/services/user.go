@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 
 	"gorm.io/gen"
 	"gorm.io/gen/field"
@@ -58,34 +59,32 @@ func (s *UserService) Create(req *dto.UserCreateReq) error {
 		hash := md5.Sum([]byte(req.Password))
 		req.Password = hex.EncodeToString(hash[:])
 	}
-	tx := query.Q.Begin()
 
-	err := tx.User.WithContext(s.ctx).Create(&req.User)
-	if err != nil {
-		if err := tx.Rollback(); err != nil {
+	// 查询用户是否存在
+	_, err := query.User.WithContext(s.ctx).
+		Where(query.User.Username.Eq(req.Username)).
+		First()
+	if err == nil {
+		return errors.New("用户名已存在")
+	}
+
+	return query.Q.Transaction(func(tx *query.Query) error {
+		err = tx.User.WithContext(s.ctx).Create(&req.User)
+		if err != nil {
 			return err
 		}
-		return err
-	}
 
-	// 新增用户角色
-	err = s.updateRole(tx, req.ID, req.Roles)
-	if err != nil {
-		if err := tx.Rollback(); err != nil {
+		// 新增用户角色
+		err = s.updateRole(tx, req.ID, req.Roles)
+		if err != nil {
 			return err
 		}
-		return err
-	}
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-	return nil
+		return nil
+	})
 }
 
 func (s *UserService) Update(req *dto.UserUpdateReq) (any, error) {
 	qu := query.User
-
-	tx := query.Q.Begin()
 
 	fields := []field.Expr{
 		qu.Nickname, qu.Username, qu.Avatar, qu.Status,
@@ -97,28 +96,27 @@ func (s *UserService) Update(req *dto.UserUpdateReq) (any, error) {
 		fields = append(fields, qu.Password)
 	}
 
-	res, err := tx.User.WithContext(s.ctx).
-		Where(qu.ID.Eq(req.ID)).
-		Select(fields...).
-		Updates(req.User)
-	if err != nil {
-		if err := tx.Rollback(); err != nil {
-			return nil, err
-		}
-		return res, err
-	}
+	var res gen.ResultInfo
 
-	// 更新用户角色
-	if err := s.updateRole(tx, req.ID, req.Roles); err != nil {
-		if err := tx.Rollback(); err != nil {
-			return nil, err
+	// 更新用户信息
+	err := query.Q.Transaction(func(tx *query.Query) (err error) {
+		res, err = tx.User.WithContext(s.ctx).
+			Where(qu.ID.Eq(req.ID)).
+			Select(fields...).
+			Updates(req.User)
+		if err != nil {
+			return err
 		}
-		return res, err
-	}
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-	return res, nil
+
+		// 更新用户角色
+		err = s.updateRole(tx, req.ID, req.Roles)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	return res, err
 }
 
 func (s *UserService) Delete(ids []int64) (gen.ResultInfo, error) {
@@ -128,7 +126,7 @@ func (s *UserService) Delete(ids []int64) (gen.ResultInfo, error) {
 }
 
 // updateRole 差异更新用户角色
-func (s *UserService) updateRole(tx *query.QueryTx, userID int64, roleIDs []int64) error {
+func (s *UserService) updateRole(tx *query.Query, userID int64, roleIDs []int64) error {
 	q := query.UserRole
 
 	// 原有角色

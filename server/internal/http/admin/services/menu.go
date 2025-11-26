@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"gorm.io/gen"
-
 	"app/internal/http/admin/dto"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
@@ -20,30 +18,6 @@ func NewMenuService(ctx context.Context) *MenuService {
 
 type MenuService struct {
 	ctx context.Context
-}
-
-func (s *MenuService) GetList(req *dto.MenuListReq) (*dto.PageListRes, error) {
-	q := query.Menu
-	var conds []gen.Condition
-
-	// 关键词搜索
-	if req.Keyword != "" {
-		conds = append(conds, q.Name.Like("%"+req.Keyword+"%"))
-	}
-
-	list, count, err := q.WithContext(s.ctx).
-		Where(conds...).
-		FindByPage((req.Page-1)*req.PageSize, req.PageSize)
-	if err != nil {
-		return nil, err
-	}
-
-	return &dto.PageListRes{
-		Rows:     list,
-		Total:    count,
-		Page:     req.Page,
-		PageSize: req.PageSize,
-	}, nil
 }
 
 func (s *MenuService) Create(req *dto.MenuCreateReq) (*model.Menu, error) {
