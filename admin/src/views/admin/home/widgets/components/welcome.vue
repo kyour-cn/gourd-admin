@@ -26,22 +26,17 @@
   </el-card>
 </template>
 
-<script>
-  export default {
-    title: "欢迎",
-    icon: "el-icon-present",
-    description: "项目特色以及文档链接",
-    data() {
-      return {
+<script setup>
 
-      }
-    },
-    methods: {
-      godoc(){
-        window.open("https://lolicode.gitee.io/scui-doc/")
-      }
-    }
-  }
+defineOptions({
+  title: "欢迎",
+  icon: "el-icon-present",
+  description: "项目特色以及文档链接",
+})
+
+const godoc = () => {
+  window.open("https://gitee.com/kyour/gourd-admin")
+}
 </script>
 
 <style scoped>
