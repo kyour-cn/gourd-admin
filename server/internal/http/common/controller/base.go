@@ -1,18 +1,14 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
-	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/go-playground/form"
-	"github.com/go-playground/locales/zh"
-	ut "github.com/go-playground/universal-translator"
-	"github.com/go-playground/validator/v10"
-	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
-	jsoniter "github.com/json-iterator/go"
+	"github.com/gookit/validate"
+	"github.com/gookit/validate/locales/zhcn"
 
 	"app/internal/http/common/dto"
 )
@@ -28,23 +24,8 @@ type Response struct {
 }
 
 var (
-	validate      *validator.Validate
-	validateTrans ut.Translator
-	decoder       = form.NewDecoder()
+	decoder = form.NewDecoder()
 )
-
-func init() {
-	// 创建验证器和翻译器
-	validate = validator.New()
-	zhCh := zh.New()
-	uni := ut.New(zhCh, zhCh)
-	validateTrans, _ = uni.GetTranslator("zh")
-	// 注册中文翻译器到 validator
-	err := zhtranslations.RegisterDefaultTranslations(validate, validateTrans)
-	if err != nil {
-		slog.Error("注册中文翻译器失败", slog.String("error", err.Error()))
-	}
-}
 
 // Success 成功时响应
 func (*Base) Success(w http.ResponseWriter, message string, data any) (err error) {
@@ -58,7 +39,7 @@ func (*Base) Success(w http.ResponseWriter, message string, data any) (err error
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	str, _ := jsoniter.Marshal(res)
+	str, _ := json.Marshal(res)
 	_, err = w.Write(str)
 	return
 }
@@ -75,7 +56,7 @@ func (*Base) Fail(w http.ResponseWriter, code int, message string, data any) (er
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	str, _ := jsoniter.Marshal(res)
+	str, _ := json.Marshal(res)
 	_, err = w.Write(str)
 	return
 }
@@ -83,17 +64,22 @@ func (*Base) Fail(w http.ResponseWriter, code int, message string, data any) (er
 // JsonReqUnmarshal 解析json请求参数
 func (*Base) JsonReqUnmarshal(r *http.Request, req any) error {
 	// 解析json参数
-	if err := jsoniter.NewDecoder(r.Body).Decode(req); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		return err
 	}
 
-	// 校验参数
-	if err := validate.Struct(req); err != nil {
-		var errs validator.ValidationErrors
-		errors.As(err, &errs)
-		for _, e := range errs {
-			// 输出中文错误提示 第一个
-			return fmt.Errorf(e.Translate(validateTrans))
+	v := validate.Struct(req)
+	zhcn.Register(v)
+
+	// 执行验证
+	if v.Validate() {
+		return nil
+	}
+
+	// 校验参数失败 并返回第一个错误
+	for _, errs := range v.Errors.All() {
+		for _, err := range errs {
+			return errors.New(err)
 		}
 	}
 	return nil
@@ -108,13 +94,18 @@ func (*Base) QueryReqUnmarshal(r *http.Request, req any) error {
 		return err
 	}
 
-	// 校验参数
-	if err := validate.Struct(req); err != nil {
-		var errs validator.ValidationErrors
-		errors.As(err, &errs)
-		for _, e := range errs {
-			// 输出中文错误提示 第一个
-			return fmt.Errorf(e.Translate(validateTrans))
+	v := validate.Struct(req)
+	zhcn.Register(v)
+
+	// 执行验证
+	if v.Validate() {
+		return nil
+	}
+
+	// 校验参数失败 并返回第一个错误
+	for _, errs := range v.Errors.All() {
+		for _, err := range errs {
+			return errors.New(err)
 		}
 	}
 	return nil

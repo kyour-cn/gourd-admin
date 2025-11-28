@@ -20,13 +20,13 @@ type UserLoginRes struct {
 }
 
 type UserResetPasswordReq struct {
-	UserPassword       string `json:"user_password" validate:"required,min=6,max=32"`
-	NewPassword        string `json:"new_password" validate:"required,min=6,max=32"`
-	ConfirmNewPassword string `json:"confirm_new_password" validate:"required,min=6,max=32"`
+	UserPassword       string `json:"user_password" validate:"required|minLen:6|maxLen:32"`
+	NewPassword        string `json:"new_password" validate:"required|minLen:6|maxLen:32"`
+	ConfirmNewPassword string `json:"confirm_new_password" validate:"required|minLen:6|maxLen:32"`
 	Claims             *UserClaims
 }
 
 type UserUpdateNameReq struct {
-	Nickname string `json:"nickname" validate:"required,min=2,max=20"`
+	Nickname string `json:"nickname" validate:"required|minLen:2|maxLen:20"`
 	Claims   *UserClaims
 }

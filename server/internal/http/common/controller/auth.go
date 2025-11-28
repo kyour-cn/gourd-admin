@@ -32,8 +32,8 @@ func (c *Auth) Captcha(w http.ResponseWriter, _ *http.Request) {
 // Login 登录
 func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Username   string `json:"username" validate:"required,min=5,max=20"`
-		Password   string `json:"password" validate:"required,min=6,max=32"`
+		Username   string `json:"username" validate:"required|minLen:5|maxLen:20"`
+		Password   string `json:"password" validate:"required|minLen:6|maxLen:32"`
 		CaptchaKey string `json:"captcha_key" validate:"required"`
 		Md5        bool   `json:"md5"`
 		Point      struct {
