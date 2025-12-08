@@ -4,12 +4,14 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 
 	"gorm.io/gen"
 	"gorm.io/gen/field"
 
 	"app/internal/http/admin/dto"
+	comDto "app/internal/http/common/dto"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 )
@@ -51,6 +53,28 @@ func (s *UserService) GetList(req *dto.UserListReq) (*dto.PageListRes, error) {
 		Page:     req.Page,
 		PageSize: req.PageSize,
 	}, nil
+}
+
+func (s *UserService) Export(req *dto.UserExportReq) error {
+	jwtValue := s.ctx.Value("jwt")
+	if _, ok := jwtValue.(comDto.UserClaims); !ok {
+		return errors.New("获取登录信息失败")
+	}
+	claims := jwtValue.(comDto.UserClaims)
+
+	content, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	return query.Task.WithContext(s.ctx).Create(&model.Task{
+		Title:   "用户列表导出",
+		Group_:  "user",
+		Label:   "user",
+		UserID:  claims.Sub,
+		Type:    "export",
+		Content: string(content),
+	})
 }
 
 func (s *UserService) Create(req *dto.UserCreateReq) error {

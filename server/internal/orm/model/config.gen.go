@@ -8,7 +8,7 @@ import jsoniter "github.com/json-iterator/go"
 
 const TableNameConfig = "config"
 
-// Config mapped from table <config>
+// Config 配置
 type Config struct {
 	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name   string `gorm:"column:name;not null;comment:名称" json:"name"`     // 名称

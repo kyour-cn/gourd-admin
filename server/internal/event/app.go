@@ -1,11 +1,13 @@
 package event
 
 import (
-	"app/internal/initialize"
 	"context"
 	"log/slog"
 
 	"github.com/go-gourd/gourd/event"
+
+	"app/internal/initialize"
+	"app/internal/modules/task"
 )
 
 // AppEvent 事件注册
@@ -16,25 +18,22 @@ func AppEvent(_ context.Context) {
 		slog.Debug("boot event.")
 
 		// 初始化一些全局配置、工具等
-		initialize.InitCommon(ctx)
-
-		// 初始化数据库
-		err := initialize.InitDatabase()
+		err := initialize.InitCommon(ctx)
 		if err != nil {
 			panic(err)
 		}
-
-		// 初始化命令行
-		initialize.InitCmd()
 	})
 
 	// Init事件(应用) -初始化完成执行
 	event.Listen("app.init", func(context.Context) {
 		slog.Debug("init event.")
+
+		// 初始化命令行并解析参数
+		initialize.InitCmd()
 	})
 
 	// Start事件(应用) -启动后执行
-	event.Listen("app.start", func(context.Context) {
+	event.Listen("app.start", func(ctx context.Context) {
 		slog.Debug("start event.")
 
 		// 初始化定时任务
@@ -42,6 +41,9 @@ func AppEvent(_ context.Context) {
 
 		// 初始化Http服务
 		initialize.InitHttpServer()
+
+		// 初始化异步任务
+		task.Init(ctx)
 	})
 
 	// Stop事件(应用) -停止时执行

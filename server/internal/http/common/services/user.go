@@ -82,6 +82,7 @@ func (s *UserService) GetTaskList(claims *dto.UserClaims) ([]*model.Task, error)
 	q := query.Task
 	return q.WithContext(s.ctx).
 		Where(q.UserID.Eq(claims.Sub)).
-		Select(q.ID, q.Title, q.Content, q.Status, q.StatusName, q.Type, q.CreatedAt, q.UpdatedAt).
+		Order(q.ID.Desc()).
+		//Select(q.ID, q.Title, q.Content, q.Status, q.Type, q.CreatedAt, q.UpdatedAt, q.Result).
 		Find()
 }

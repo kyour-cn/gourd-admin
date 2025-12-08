@@ -39,6 +39,7 @@ func newConfig(db *gorm.DB, opts ...gen.DOOption) config {
 	return _config
 }
 
+// config 配置
 type config struct {
 	configDo
 

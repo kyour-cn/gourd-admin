@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
@@ -9,6 +8,7 @@ import (
 	"github.com/go-playground/form"
 	"github.com/gookit/validate"
 	"github.com/gookit/validate/locales/zhcn"
+	json "github.com/json-iterator/go"
 
 	"app/internal/http/common/dto"
 )

@@ -35,6 +35,7 @@ func newFileMenu(db *gorm.DB, opts ...gen.DOOption) fileMenu {
 	return _fileMenu
 }
 
+// fileMenu 文件分组
 type fileMenu struct {
 	fileMenuDo
 

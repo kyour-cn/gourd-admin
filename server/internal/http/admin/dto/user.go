@@ -8,6 +8,10 @@ type UserListReq struct {
 	Keyword  string `form:"keyword"`
 }
 
+type UserExportReq struct {
+	Keyword string `form:"keyword"`
+}
+
 type UserCreateReq struct {
 	model.User
 	Roles []int64 `json:"roles"`

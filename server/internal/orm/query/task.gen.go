@@ -32,10 +32,10 @@ func newTask(db *gorm.DB, opts ...gen.DOOption) task {
 	_task.Group_ = field.NewString(tableName, "group")
 	_task.UserID = field.NewInt64(tableName, "user_id")
 	_task.Type = field.NewString(tableName, "type")
+	_task.Label = field.NewString(tableName, "label")
 	_task.Content = field.NewString(tableName, "content")
 	_task.Result = field.NewString(tableName, "result")
 	_task.Status = field.NewInt32(tableName, "status")
-	_task.StatusName = field.NewString(tableName, "status_name")
 	_task.CreatedAt = field.NewTime(tableName, "created_at")
 	_task.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_task.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -49,19 +49,19 @@ func newTask(db *gorm.DB, opts ...gen.DOOption) task {
 type task struct {
 	taskDo
 
-	ALL        field.Asterisk
-	ID         field.Int32
-	Title      field.String // 任务标题
-	Group_     field.String // 分组
-	UserID     field.Int64  // 关联用户ID
-	Type       field.String // 任务类型
-	Content    field.String // 任务内容
-	Result     field.String // 任务结果
-	Status     field.Int32  // 状态 0=待处理 1=处理中 2=已完成 -1=失败
-	StatusName field.String // 状态名称
-	CreatedAt  field.Time   // 创建时间
-	UpdatedAt  field.Time   // 更新时间
-	DeletedAt  field.Field  // 删除时间
+	ALL       field.Asterisk
+	ID        field.Int32
+	Title     field.String // 任务标题
+	Group_    field.String // 分组
+	UserID    field.Int64  // 关联用户ID
+	Type      field.String // 任务类型
+	Label     field.String // 任务标识，用于区分业务
+	Content   field.String // 任务内容
+	Result    field.String // 任务结果
+	Status    field.Int32  // 状态 0=待处理 1=处理中 2=已完成 -1=失败
+	CreatedAt field.Time   // 创建时间
+	UpdatedAt field.Time   // 更新时间
+	DeletedAt field.Field  // 删除时间
 
 	fieldMap map[string]field.Expr
 }
@@ -83,10 +83,10 @@ func (t *task) updateTableName(table string) *task {
 	t.Group_ = field.NewString(table, "group")
 	t.UserID = field.NewInt64(table, "user_id")
 	t.Type = field.NewString(table, "type")
+	t.Label = field.NewString(table, "label")
 	t.Content = field.NewString(table, "content")
 	t.Result = field.NewString(table, "result")
 	t.Status = field.NewInt32(table, "status")
-	t.StatusName = field.NewString(table, "status_name")
 	t.CreatedAt = field.NewTime(table, "created_at")
 	t.UpdatedAt = field.NewTime(table, "updated_at")
 	t.DeletedAt = field.NewField(table, "deleted_at")
@@ -112,10 +112,10 @@ func (t *task) fillFieldMap() {
 	t.fieldMap["group"] = t.Group_
 	t.fieldMap["user_id"] = t.UserID
 	t.fieldMap["type"] = t.Type
+	t.fieldMap["label"] = t.Label
 	t.fieldMap["content"] = t.Content
 	t.fieldMap["result"] = t.Result
 	t.fieldMap["status"] = t.Status
-	t.fieldMap["status_name"] = t.StatusName
 	t.fieldMap["created_at"] = t.CreatedAt
 	t.fieldMap["updated_at"] = t.UpdatedAt
 	t.fieldMap["deleted_at"] = t.DeletedAt

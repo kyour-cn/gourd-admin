@@ -1,6 +1,8 @@
 package excel
 
 import (
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/xuri/excelize/v2"
@@ -53,20 +55,35 @@ func (e *Excel) Close() error {
 
 // Save to file
 func (e *Excel) Save(sheetName string) error {
+	// 创建目录
+	dir := filepath.Dir(sheetName)
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		return err
+	}
 	return e.File.SaveAs(sheetName)
 }
 
-func (e *Excel) SetCols(cols []string, line int) error {
+type Column struct {
+	Name  string
+	Width float64
+}
+
+func (e *Excel) SetCols(cols []Column, line int) error {
 	colsIndex := e.MakeColumns(len(cols))
 	if line != 0 {
 		e.CurrentRow = line
 	}
 
-	currentCol := 0
-	for _, colName := range cols {
-		cell := colsIndex[currentCol] + strconv.Itoa(line)
-		currentCol++
-		err := e.Write(cell, colName)
+	for i, col := range cols {
+		cell := colsIndex[i] + strconv.Itoa(line)
+		err := e.Write(cell, col.Name)
+		if err != nil {
+			return err
+		}
+
+		// 设置列宽
+		err = e.File.SetColWidth(e.CurrentSheet, colsIndex[i], colsIndex[i], col.Width)
 		if err != nil {
 			return err
 		}
@@ -86,6 +103,7 @@ func (e *Excel) WriteLine(line int, vals []any) error {
 			return err
 		}
 	}
+	e.CurrentRow++
 	return nil
 }
 

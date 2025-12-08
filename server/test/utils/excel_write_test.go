@@ -11,10 +11,10 @@ func TestExcelWrite(t *testing.T) {
 
 	e := excel.NewExcel()
 
-	err := e.SetCols([]string{
-		"ID",
-		"Name",
-		"Age",
+	err := e.SetCols([]excel.Column{
+		{Name: "ID", Width: 10},
+		{Name: "Name", Width: 20},
+		{Name: "Age", Width: 10},
 	}, 1)
 	if err != nil {
 		t.Error(err)
@@ -26,8 +26,8 @@ func TestExcelWrite(t *testing.T) {
 		{"3", "王五", 20},
 		{"4", "赵六", 21},
 	}
-	for i, row := range data {
-		err := e.WriteLine(i+2, row)
+	for _, row := range data {
+		err := e.WriteLine(e.CurrentRow, row)
 		if err != nil {
 			t.Error(err)
 		}

@@ -16,7 +16,7 @@
           <div class="taskMain">
             <div class="title">
               <h2>{{ task.title }}</h2>
-              <p><span v-time.tip="task.created_at"></span> 创建</p>
+              <p><span :title="task.created_at" v-time.tip="task.created_at"></span> 创建</p>
             </div>
             <div class="bottom">
               <div class="state">
@@ -26,7 +26,13 @@
                 <el-tag v-if="task.status===2">完成</el-tag>
               </div>
               <div class="handler">
-                <el-button v-if="task.status===2" type="primary" circle icon="el-icon-download" @click="download(task)"></el-button>
+                <el-button
+                  v-if="task.status===2 && task.type==='export'"
+                  type="primary"
+                  circle
+                  icon="el-icon-download"
+                  @click="download(task)"
+                />
               </div>
             </div>
           </div>
@@ -42,6 +48,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import userApi from "@/api/common/user.js";
+import sysConfig from "@/config";
+import {ElMessageBox} from "element-plus";
 
 // 响应式数据
 const loading = ref(false)
@@ -60,10 +68,12 @@ const refresh = () => {
 }
 
 const download = (row) => {
+  const result = JSON.parse(row.result)
+
   const a = document.createElement("a")
   a.style = "display: none"
   a.target = "_blank"
-  a.href = row.result
+  a.href = sysConfig.API_URL + '/' + result.file
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
