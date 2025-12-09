@@ -5,12 +5,18 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/go-gourd/gourd/event"
+
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 )
 
 func Init(ctx context.Context) {
 	go func() {
+		// 监听任务运行事件
+		event.Listen("task.run", func(ctx context.Context) {
+			go Run(ctx)
+		})
 		for {
 			select {
 			case <-ctx.Done():
@@ -18,16 +24,29 @@ func Init(ctx context.Context) {
 				return
 			default:
 				Run(ctx)
-				// 间隔1秒执行
-				time.Sleep(time.Second)
+				// 间隔执行
+				time.Sleep(time.Second * 10)
 			}
 		}
 	}()
 }
 
+var runLock = make(chan struct{}, 1)
+
 // Run 运行任务
 func Run(ctx context.Context) {
+	// 加锁，防止并发执行
+	select {
+	case runLock <- struct{}{}:
+	default:
+		return
+	}
+
 	defer func() {
+		// 解锁
+		<-runLock
+
+		// 处理panic
 		if err := recover(); err != nil {
 			slog.Error("task run error.", "err", err)
 		}
@@ -55,10 +74,10 @@ func Run(ctx context.Context) {
 func handleTask(ctx context.Context, task *model.Task) error {
 	q := query.Task
 	// 更新任务状态为处理中
-	_, err := q.WithContext(ctx).
+	res, err := q.WithContext(ctx).
 		Where(q.ID.Eq(task.ID)).
 		Update(q.Status, 1)
-	if err != nil {
+	if err != nil && res.RowsAffected == 0 {
 		return err
 	}
 
@@ -68,7 +87,7 @@ func handleTask(ctx context.Context, task *model.Task) error {
 		err := ExportTask(ctx, task)
 		if err != nil {
 			// 导出任务失败，更新任务状态为失败
-			_, _ = q.WithContext(ctx).
+			_, err = q.WithContext(ctx).
 				Where(q.ID.Eq(task.ID)).
 				Updates(&model.Task{
 					Status: -1,
@@ -78,12 +97,15 @@ func handleTask(ctx context.Context, task *model.Task) error {
 		}
 	default:
 		// 未知类型，改为失败
-		_, _ = q.WithContext(ctx).
+		_, err = q.WithContext(ctx).
 			Where(q.ID.Eq(task.ID)).
 			Updates(&model.Task{
 				Status: -1,
 				Result: "未知类型",
 			})
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

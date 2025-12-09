@@ -189,6 +189,7 @@ func (s *AuthService) GetPermission(userInfo *model.User, appId int64) ([]string
 	qma := query.MenuAPI
 	conds := []gen.Condition{
 		qma.AppID.Eq(appId),
+		qma.Tag.Neq(""),
 	}
 
 	// 判断是否管理员
@@ -202,6 +203,7 @@ func (s *AuthService) GetPermission(userInfo *model.User, appId int64) ([]string
 	// 查询菜单的全部接口权限
 	list, err := query.MenuAPI.
 		Where(conds...).
+		Distinct(qma.Tag).
 		Select(query.MenuAPI.ID, query.MenuAPI.Tag).
 		Find()
 	if err != nil {

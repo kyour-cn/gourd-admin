@@ -75,6 +75,16 @@ func (e *Excel) SetCols(cols []Column, line int) error {
 		e.CurrentRow = line
 	}
 
+	// 冻结表头
+	if err := e.File.SetPanes(e.CurrentSheet, &excelize.Panes{
+		Freeze:      true,
+		YSplit:      e.CurrentRow,                       // 冻结
+		TopLeftCell: "A" + strconv.Itoa(e.CurrentRow+1), // 活动单元格位置
+		//ActivePane: "bottomLeft", // 激活底部窗格
+	}); err != nil {
+		return err
+	}
+
 	for i, col := range cols {
 		cell := colsIndex[i] + strconv.Itoa(line)
 		err := e.Write(cell, col.Name)
@@ -111,30 +121,16 @@ func (e *Excel) Write(cell string, value any) error {
 	return e.File.SetCellValue(e.CurrentSheet, cell, value)
 }
 
-// GetColumn converts a 1-based column index to an Excel column name (A, B, ..., Z, AA, AB, ...).
-func (e *Excel) GetColumn(index int) string {
-	if index <= 0 {
-		return ""
-	}
-	result := ""
-	for index > 0 {
-		index-- // Excel columns are 1-based
-		char := rune('A' + (index % 26))
-		result = string(char) + result
-		index /= 26
-	}
-	return result
-}
-
 // MakeColumns returns a list of Excel column
 // names from A to the column at the given 1-based index (e.g., A, B, ..., Z, AA, AB...).
 func (e *Excel) MakeColumns(max int) []string {
-	if max <= 0 {
-		return nil
-	}
 	cols := make([]string, max)
 	for i := 1; i <= max; i++ {
-		cols[i-1] = e.GetColumn(i)
+		c, err := excelize.ColumnNumberToName(i)
+		if err != nil {
+			break
+		}
+		cols[i-1] = c
 	}
 	return cols
 }

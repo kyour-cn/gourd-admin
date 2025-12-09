@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/go-gourd/gourd/event"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
 
@@ -67,7 +68,7 @@ func (s *UserService) Export(req *dto.UserExportReq) error {
 		return err
 	}
 
-	return query.Task.WithContext(s.ctx).Create(&model.Task{
+	err = query.Task.WithContext(s.ctx).Create(&model.Task{
 		Title:   "用户列表导出",
 		Group_:  "user",
 		Label:   "user",
@@ -75,6 +76,11 @@ func (s *UserService) Export(req *dto.UserExportReq) error {
 		Type:    "export",
 		Content: string(content),
 	})
+
+	// 触发任务运行事件
+	event.Trigger("task.run", context.Background())
+
+	return err
 }
 
 func (s *UserService) Create(req *dto.UserCreateReq) error {
