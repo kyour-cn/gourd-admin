@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"log/slog"
 
+	"gorm.io/gen"
+
 	"app/internal/http/admin/dto"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"app/internal/util/excel"
-
-	"gorm.io/gen"
 )
 
 func UserExport(ctx context.Context, task *model.Task) error {
@@ -27,6 +27,13 @@ func UserExport(ctx context.Context, task *model.Task) error {
 		_ = e.Close()
 	}(e)
 
+	// 启用流式写入
+	err = e.StreamWriteBegin(e.CurrentSheet)
+	if err != nil {
+		return err
+	}
+
+	// 设置表头
 	err = e.SetCols([]excel.Column{
 		{Name: "ID", Width: 10},
 		{Name: "昵称", Width: 20},
@@ -34,7 +41,7 @@ func UserExport(ctx context.Context, task *model.Task) error {
 		{Name: "状态", Width: 10},
 		{Name: "注册时间", Width: 20},
 		{Name: "最后登录时间", Width: 20},
-	}, 1)
+	}, 1, true)
 	if err != nil {
 		return err
 	}
@@ -51,7 +58,7 @@ func UserExport(ctx context.Context, task *model.Task) error {
 	}
 
 	// 分页查询用户数据
-	pageSize := 1000
+	pageSize := 5000
 	page := 1
 
 	// 分页处理数据，直到没有更多数据
@@ -102,6 +109,10 @@ func UserExport(ctx context.Context, task *model.Task) error {
 	}
 
 	err = e.Save("web/" + fileName)
+	if err != nil {
+		return err
+	}
+	err = e.Close()
 	if err != nil {
 		return err
 	}

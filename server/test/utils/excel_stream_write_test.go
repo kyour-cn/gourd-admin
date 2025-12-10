@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func TestExcelWrite(t *testing.T) {
+func TestExcelStreamWrite(t *testing.T) {
 
-	fileName := "Book1S.xlsx"
+	fileName := "BookStream.xlsx"
 
 	e := excel.NewExcel()
 
@@ -38,7 +38,7 @@ func TestExcelWrite(t *testing.T) {
 			t.Error(err)
 		}
 	}
-	err = e.Write("A7", "测试内容")
+	err = e.WriteLine(7, []any{"测试", nil, "测试"})
 	if err != nil {
 		t.Error(err)
 	}
