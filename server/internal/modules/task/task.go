@@ -14,7 +14,7 @@ import (
 func Init(ctx context.Context) {
 	go func() {
 		// 监听任务运行事件
-		event.Listen("task.run", func(ctx context.Context) {
+		event.Listen("task.run", func(_ context.Context) {
 			go Run(ctx)
 		})
 		for {

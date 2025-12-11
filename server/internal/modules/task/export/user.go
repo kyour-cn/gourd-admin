@@ -78,7 +78,7 @@ func UserExport(ctx context.Context, task *model.Task) error {
 			break
 		}
 
-		slog.Debug("export user page", "page", page, "count", len(users))
+		slog.Debug("task export user page", "page", page, "count", len(users))
 
 		// 写入当前页的用户数据
 		for _, user := range users {
@@ -131,6 +131,8 @@ func UserExport(ctx context.Context, task *model.Task) error {
 	if err != nil {
 		return err
 	}
+
+	slog.Debug("task export user complete", "id", task.ID)
 
 	// 用户导出任务
 	return nil
