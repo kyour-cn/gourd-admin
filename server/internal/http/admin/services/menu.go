@@ -97,10 +97,10 @@ func (s *MenuService) Update(req *dto.MenuUpdateReq) error {
 }
 
 // 递归获取所有子分类ID
-func (s *MenuService) getAllSubMenuIDs(ids []int64) ([]int64, error) {
+func (s *MenuService) getAllSubMenuIDs(ids []int32) ([]int32, error) {
 	q := query.Menu
-	var allIDs = make([]int64, 0)
-	var stack = make([]int64, len(ids))
+	var allIDs = make([]int32, 0)
+	var stack = make([]int32, len(ids))
 	copy(stack, ids)
 	for len(stack) > 0 {
 		currentID := stack[0]
@@ -118,7 +118,7 @@ func (s *MenuService) getAllSubMenuIDs(ids []int64) ([]int64, error) {
 	return allIDs, nil
 }
 
-func (s *MenuService) Delete(ids []int64) error {
+func (s *MenuService) Delete(ids []int32) error {
 	q := query.Menu
 
 	// 递归查找所有需要删除的分类ID（包括子分类）

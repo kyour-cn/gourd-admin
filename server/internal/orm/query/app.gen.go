@@ -27,7 +27,7 @@ func newApp(db *gorm.DB, opts ...gen.DOOption) app {
 
 	tableName := _app.appDo.TableName()
 	_app.ALL = field.NewAsterisk(tableName)
-	_app.ID = field.NewInt64(tableName, "id")
+	_app.ID = field.NewInt32(tableName, "id")
 	_app.Name = field.NewString(tableName, "name")
 	_app.Key = field.NewString(tableName, "key")
 	_app.Remark = field.NewString(tableName, "remark")
@@ -44,7 +44,7 @@ type app struct {
 	appDo
 
 	ALL    field.Asterisk
-	ID     field.Int64
+	ID     field.Int32
 	Name   field.String // 应用名称
 	Key    field.String // 应用KEY 别名
 	Remark field.String // 备注
@@ -66,7 +66,7 @@ func (a app) As(alias string) *app {
 
 func (a *app) updateTableName(table string) *app {
 	a.ALL = field.NewAsterisk(table)
-	a.ID = field.NewInt64(table, "id")
+	a.ID = field.NewInt32(table, "id")
 	a.Name = field.NewString(table, "name")
 	a.Key = field.NewString(table, "key")
 	a.Remark = field.NewString(table, "remark")

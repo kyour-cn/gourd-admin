@@ -100,7 +100,7 @@ func (s *FileService) Upload(req *dto.FileUploadReq) (*model.File, error) {
 		StorageKey: output.Storage,
 		HashMd5:    output.Hash,
 		UserID:     req.Claims.Sub,
-		MenuID:     req.MenuId,
+		MenuID:     req.MenuID,
 	}
 
 	err = q.WithContext(s.ctx).Create(file)
@@ -116,7 +116,7 @@ func (s *FileService) Upload(req *dto.FileUploadReq) (*model.File, error) {
 //		Updates(&req.File)
 //}
 
-func (s *FileService) Delete(ids []int64) (gen.ResultInfo, error) {
+func (s *FileService) Delete(ids []int32) (gen.ResultInfo, error) {
 	q := query.File
 
 	return q.WithContext(s.ctx).

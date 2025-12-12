@@ -15,9 +15,9 @@ const TableNameUserRole = "user_role"
 
 // UserRole 用户角色
 type UserRole struct {
-	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	UserID    int64          `gorm:"column:user_id;not null;comment:用户ID" json:"user_id"`                      // 用户ID
-	RoleID    int64          `gorm:"column:role_id;not null;comment:角色ID" json:"role_id"`                      // 角色ID
+	ID        int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	UserID    int32          `gorm:"column:user_id;not null;comment:用户ID" json:"user_id"`                      // 用户ID
+	RoleID    int32          `gorm:"column:role_id;not null;comment:角色ID" json:"role_id"`                      // 角色ID
 	CreatedAt time.Time      `gorm:"column:created_at;not null;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间" json:"deleted_at"`                         // 删除时间
 	Role      Role           `gorm:"foreignKey:role_id;references:id" json:"role"`

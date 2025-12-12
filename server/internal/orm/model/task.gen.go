@@ -18,7 +18,7 @@ type Task struct {
 	ID        int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Title     string         `gorm:"column:title;not null;comment:任务标题" json:"title"`                          // 任务标题
 	Group_    string         `gorm:"column:group;not null;default:system;comment:分组" json:"group"`             // 分组
-	UserID    int64          `gorm:"column:user_id;not null;comment:关联用户ID" json:"user_id"`                    // 关联用户ID
+	UserID    int32          `gorm:"column:user_id;not null;comment:关联用户ID" json:"user_id"`                    // 关联用户ID
 	Type      string         `gorm:"column:type;not null;comment:任务类型" json:"type"`                            // 任务类型
 	Label     string         `gorm:"column:label;not null;comment:任务标识，用于区分业务" json:"label"`                   // 任务标识，用于区分业务
 	Content   string         `gorm:"column:content;comment:任务内容" json:"content"`                               // 任务内容

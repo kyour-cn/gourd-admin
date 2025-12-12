@@ -27,8 +27,8 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 
 	tableName := _role.roleDo.TableName()
 	_role.ALL = field.NewAsterisk(tableName)
-	_role.ID = field.NewInt64(tableName, "id")
-	_role.AppID = field.NewInt64(tableName, "app_id")
+	_role.ID = field.NewInt32(tableName, "id")
+	_role.AppID = field.NewInt32(tableName, "app_id")
 	_role.Name = field.NewString(tableName, "name")
 	_role.Rules = field.NewString(tableName, "rules")
 	_role.RulesCheckd = field.NewString(tableName, "rules_checkd")
@@ -55,8 +55,8 @@ type role struct {
 	roleDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	AppID       field.Int64  // 应用ID
+	ID          field.Int32
+	AppID       field.Int32  // 应用ID
 	Name        field.String // 角色名称
 	Rules       field.String // 权限ID ,分割a
 	RulesCheckd field.String // 权限树选中的字节点ID
@@ -84,8 +84,8 @@ func (r role) As(alias string) *role {
 
 func (r *role) updateTableName(table string) *role {
 	r.ALL = field.NewAsterisk(table)
-	r.ID = field.NewInt64(table, "id")
-	r.AppID = field.NewInt64(table, "app_id")
+	r.ID = field.NewInt32(table, "id")
+	r.AppID = field.NewInt32(table, "app_id")
 	r.Name = field.NewString(table, "name")
 	r.Rules = field.NewString(table, "rules")
 	r.RulesCheckd = field.NewString(table, "rules_checkd")

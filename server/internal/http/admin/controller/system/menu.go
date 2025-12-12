@@ -66,7 +66,7 @@ func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 // Delete 删除分类
 func (c *Menu) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Ids []int64 `json:"ids"`
+		Ids []int32 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())

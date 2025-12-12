@@ -14,7 +14,7 @@ type FileMenuAddReq struct {
 type FileListReq struct {
 	Page     int    `form:"page" validate:"min:1" label:"分页"`
 	PageSize int    `form:"page_size" validate:"min:1|max:500" label:"每页数量"`
-	MenuID   int64  `form:"menu_id"`
+	MenuID   int32  `form:"menu_id"`
 	Keyword  string `form:"keyword"`
 }
 
@@ -22,10 +22,10 @@ type FileUploadReq struct {
 	Claims     *dto.UserClaims
 	File       multipart.File
 	FileHeader *multipart.FileHeader
-	MenuId     int64
+	MenuID     int32
 }
 
 type FileUpdateReq struct {
 	model.File
-	ID int64 `json:"id" validate:"gt:0"`
+	ID int32 `json:"id" validate:"gt:0"`
 }

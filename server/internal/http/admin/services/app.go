@@ -59,7 +59,7 @@ func (s *AppService) Update(req *dto.AppUpdateReq) (gen.ResultInfo, error) {
 		Updates(&req.App)
 }
 
-func (s *AppService) Delete(ids []int64) (gen.ResultInfo, error) {
+func (s *AppService) Delete(ids []int32) (gen.ResultInfo, error) {
 	q := query.App
 
 	return q.WithContext(s.ctx).

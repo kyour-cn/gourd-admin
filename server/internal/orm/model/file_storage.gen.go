@@ -10,7 +10,7 @@ const TableNameFileStorage = "file_storage"
 
 // FileStorage 文件存储
 type FileStorage struct {
-	ID        int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	ID        int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name      string `gorm:"column:name;not null;comment:名称" json:"name"`               // 名称
 	Key       string `gorm:"column:key;not null;comment:唯一标识" json:"key"`               // 唯一标识
 	Config    string `gorm:"column:config;comment:配置" json:"config"`                    // 配置

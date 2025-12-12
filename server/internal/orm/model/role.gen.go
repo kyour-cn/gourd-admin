@@ -15,8 +15,8 @@ const TableNameRole = "role"
 
 // Role 用户角色
 type Role struct {
-	ID          int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	AppID       int64          `gorm:"column:app_id;not null;comment:应用ID" json:"app_id"`                        // 应用ID
+	ID          int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	AppID       int32          `gorm:"column:app_id;not null;comment:应用ID" json:"app_id"`                        // 应用ID
 	Name        string         `gorm:"column:name;not null;comment:角色名称" json:"name"`                            // 角色名称
 	Rules       string         `gorm:"column:rules;not null;comment:权限ID ,分割a" json:"rules"`                     // 权限ID ,分割a
 	RulesCheckd string         `gorm:"column:rules_checkd;not null;comment:权限树选中的字节点ID" json:"rules_checkd"`     // 权限树选中的字节点ID

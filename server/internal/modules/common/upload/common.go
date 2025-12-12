@@ -32,7 +32,7 @@ type Output struct {
 	FileName  string `json:"fileName"`  // 文件名（带后缀）
 	Hash      string `json:"hash"`      // 文件hash（如md5）
 	Storage   string `json:"storage"`   // 存储类型
-	StorageID int64  `json:"storageID"` // 存储类型
+	StorageID int32  `json:"storageID"` // 存储类型
 }
 
 // Uploader 接口定义了上传和删除文件的方法

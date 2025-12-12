@@ -149,14 +149,14 @@ func (s *UserService) Update(req *dto.UserUpdateReq) (any, error) {
 	return res, err
 }
 
-func (s *UserService) Delete(ids []int64) (gen.ResultInfo, error) {
+func (s *UserService) Delete(ids []int32) (gen.ResultInfo, error) {
 	return query.User.WithContext(s.ctx).
 		Where(query.User.ID.In(ids...)).
 		Delete()
 }
 
 // updateRole 差异更新用户角色
-func (s *UserService) updateRole(tx *query.Query, userID int64, roleIDs []int64) error {
+func (s *UserService) updateRole(tx *query.Query, userID int32, roleIDs []int32) error {
 	q := query.UserRole
 
 	// 原有角色
@@ -167,11 +167,11 @@ func (s *UserService) updateRole(tx *query.Query, userID int64, roleIDs []int64)
 		return err
 	}
 
-	oldRoleMap := make(map[int64]bool)
+	oldRoleMap := make(map[int32]bool)
 	for _, role := range oldRoles {
 		oldRoleMap[role.RoleID] = true
 	}
-	newRoleMap := make(map[int64]bool)
+	newRoleMap := make(map[int32]bool)
 	for _, roleID := range roleIDs {
 		newRoleMap[roleID] = true
 	}

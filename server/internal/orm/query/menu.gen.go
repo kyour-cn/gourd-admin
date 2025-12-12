@@ -27,15 +27,15 @@ func newMenu(db *gorm.DB, opts ...gen.DOOption) menu {
 
 	tableName := _menu.menuDo.TableName()
 	_menu.ALL = field.NewAsterisk(tableName)
-	_menu.ID = field.NewInt64(tableName, "id")
-	_menu.AppID = field.NewInt64(tableName, "app_id")
-	_menu.Pid = field.NewInt64(tableName, "pid")
+	_menu.ID = field.NewInt32(tableName, "id")
+	_menu.AppID = field.NewInt32(tableName, "app_id")
+	_menu.Pid = field.NewInt32(tableName, "pid")
 	_menu.Name = field.NewString(tableName, "name")
 	_menu.Title = field.NewString(tableName, "title")
 	_menu.Type = field.NewString(tableName, "type")
 	_menu.Path = field.NewString(tableName, "path")
 	_menu.Component = field.NewString(tableName, "component")
-	_menu.Sort = field.NewInt64(tableName, "sort")
+	_menu.Sort = field.NewInt32(tableName, "sort")
 	_menu.Meta = field.NewString(tableName, "meta")
 	_menu.MenuApi = menuHasManyMenuApi{
 		db: db.Session(&gorm.Session{}),
@@ -53,15 +53,15 @@ type menu struct {
 	menuDo
 
 	ALL       field.Asterisk
-	ID        field.Int64
-	AppID     field.Int64  // 应用ID
-	Pid       field.Int64  // 上级ID
+	ID        field.Int32
+	AppID     field.Int32  // 应用ID
+	Pid       field.Int32  // 上级ID
 	Name      field.String // 别名
 	Title     field.String // 显示名称
 	Type      field.String // 类型
 	Path      field.String // 路由地址
 	Component field.String // 组件地址
-	Sort      field.Int64  // 排序
+	Sort      field.Int32  // 排序
 	Meta      field.String // meta路由参数
 	MenuApi   menuHasManyMenuApi
 
@@ -80,15 +80,15 @@ func (m menu) As(alias string) *menu {
 
 func (m *menu) updateTableName(table string) *menu {
 	m.ALL = field.NewAsterisk(table)
-	m.ID = field.NewInt64(table, "id")
-	m.AppID = field.NewInt64(table, "app_id")
-	m.Pid = field.NewInt64(table, "pid")
+	m.ID = field.NewInt32(table, "id")
+	m.AppID = field.NewInt32(table, "app_id")
+	m.Pid = field.NewInt32(table, "pid")
 	m.Name = field.NewString(table, "name")
 	m.Title = field.NewString(table, "title")
 	m.Type = field.NewString(table, "type")
 	m.Path = field.NewString(table, "path")
 	m.Component = field.NewString(table, "component")
-	m.Sort = field.NewInt64(table, "sort")
+	m.Sort = field.NewInt32(table, "sort")
 	m.Meta = field.NewString(table, "meta")
 
 	m.fillFieldMap()

@@ -15,7 +15,7 @@ const TableNameUser = "user"
 
 // User 用户表
 type User struct {
-	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	ID        int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Nickname  string         `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`                      // 昵称
 	Username  string         `gorm:"column:username;not null;comment:用户名(登录账号)" json:"username"`               // 用户名(登录账号)
 	Avatar    string         `gorm:"column:avatar;not null;comment:头像" json:"avatar"`                          // 头像

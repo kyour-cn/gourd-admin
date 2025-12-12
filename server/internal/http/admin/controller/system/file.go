@@ -103,7 +103,8 @@ func (c *File) Upload(w http.ResponseWriter, r *http.Request) {
 		File:       file,
 		FileHeader: header,
 	}
-	req.MenuId, _ = strconv.ParseInt(r.FormValue("menu_id"), 10, 64)
+	menuID, _ := strconv.ParseInt(r.FormValue("menu_id"), 10, 32)
+	req.MenuID = int32(menuID)
 
 	service := services.NewFileService(r.Context())
 	res, err := service.Upload(req)
@@ -120,7 +121,7 @@ func (c *File) Upload(w http.ResponseWriter, r *http.Request) {
 
 func (c *File) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Ids []int64 `json:"ids"`
+		Ids []int32 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())

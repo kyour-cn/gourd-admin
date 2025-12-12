@@ -27,7 +27,7 @@ func newFileStorage(db *gorm.DB, opts ...gen.DOOption) fileStorage {
 
 	tableName := _fileStorage.fileStorageDo.TableName()
 	_fileStorage.ALL = field.NewAsterisk(tableName)
-	_fileStorage.ID = field.NewInt64(tableName, "id")
+	_fileStorage.ID = field.NewInt32(tableName, "id")
 	_fileStorage.Name = field.NewString(tableName, "name")
 	_fileStorage.Key = field.NewString(tableName, "key")
 	_fileStorage.Config = field.NewString(tableName, "config")
@@ -44,7 +44,7 @@ type fileStorage struct {
 	fileStorageDo
 
 	ALL       field.Asterisk
-	ID        field.Int64
+	ID        field.Int32
 	Name      field.String // 名称
 	Key       field.String // 唯一标识
 	Config    field.String // 配置
@@ -66,7 +66,7 @@ func (f fileStorage) As(alias string) *fileStorage {
 
 func (f *fileStorage) updateTableName(table string) *fileStorage {
 	f.ALL = field.NewAsterisk(table)
-	f.ID = field.NewInt64(table, "id")
+	f.ID = field.NewInt32(table, "id")
 	f.Name = field.NewString(table, "name")
 	f.Key = field.NewString(table, "key")
 	f.Config = field.NewString(table, "config")

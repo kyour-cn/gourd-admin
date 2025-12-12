@@ -27,18 +27,18 @@ func newFile(db *gorm.DB, opts ...gen.DOOption) file {
 
 	tableName := _file.fileDo.TableName()
 	_file.ALL = field.NewAsterisk(tableName)
-	_file.ID = field.NewInt64(tableName, "id")
+	_file.ID = field.NewInt32(tableName, "id")
 	_file.FileName = field.NewString(tableName, "file_name")
 	_file.FileType = field.NewString(tableName, "file_type")
 	_file.FileExt = field.NewString(tableName, "file_ext")
 	_file.FileSize = field.NewInt64(tableName, "file_size")
 	_file.URL = field.NewString(tableName, "url")
 	_file.FilePath = field.NewString(tableName, "file_path")
-	_file.MenuID = field.NewInt64(tableName, "menu_id")
-	_file.StorageID = field.NewInt64(tableName, "storage_id")
+	_file.MenuID = field.NewInt32(tableName, "menu_id")
+	_file.StorageID = field.NewInt32(tableName, "storage_id")
 	_file.StorageKey = field.NewString(tableName, "storage_key")
 	_file.HashMd5 = field.NewString(tableName, "hash_md5")
-	_file.UserID = field.NewInt64(tableName, "user_id")
+	_file.UserID = field.NewInt32(tableName, "user_id")
 	_file.Status = field.NewInt32(tableName, "status")
 	_file.CreatedAt = field.NewTime(tableName, "created_at")
 	_file.UpdatedAt = field.NewTime(tableName, "updated_at")
@@ -54,18 +54,18 @@ type file struct {
 	fileDo
 
 	ALL        field.Asterisk
-	ID         field.Int64
+	ID         field.Int32
 	FileName   field.String // 文件名
 	FileType   field.String // 文件类型（MIME类型，如 image/png）
 	FileExt    field.String // 文件后缀（如 .jpg/.pdf）文件后缀
 	FileSize   field.Int64  // 文件大小（字节）
 	URL        field.String // 链接地址
 	FilePath   field.String // 存储路径
-	MenuID     field.Int64
-	StorageID  field.Int64  // 存储方式id
+	MenuID     field.Int32
+	StorageID  field.Int32  // 存储方式id
 	StorageKey field.String // 储存方式key
 	HashMd5    field.String // 文件内容的MD5
-	UserID     field.Int64  // 上传用户id
+	UserID     field.Int32  // 上传用户id
 	Status     field.Int32  // 状态 1=正常 0=停用
 	CreatedAt  field.Time   // 创建时间
 	UpdatedAt  field.Time   // 更新时间
@@ -86,18 +86,18 @@ func (f file) As(alias string) *file {
 
 func (f *file) updateTableName(table string) *file {
 	f.ALL = field.NewAsterisk(table)
-	f.ID = field.NewInt64(table, "id")
+	f.ID = field.NewInt32(table, "id")
 	f.FileName = field.NewString(table, "file_name")
 	f.FileType = field.NewString(table, "file_type")
 	f.FileExt = field.NewString(table, "file_ext")
 	f.FileSize = field.NewInt64(table, "file_size")
 	f.URL = field.NewString(table, "url")
 	f.FilePath = field.NewString(table, "file_path")
-	f.MenuID = field.NewInt64(table, "menu_id")
-	f.StorageID = field.NewInt64(table, "storage_id")
+	f.MenuID = field.NewInt32(table, "menu_id")
+	f.StorageID = field.NewInt32(table, "storage_id")
 	f.StorageKey = field.NewString(table, "storage_key")
 	f.HashMd5 = field.NewString(table, "hash_md5")
-	f.UserID = field.NewInt64(table, "user_id")
+	f.UserID = field.NewInt32(table, "user_id")
 	f.Status = field.NewInt32(table, "status")
 	f.CreatedAt = field.NewTime(table, "created_at")
 	f.UpdatedAt = field.NewTime(table, "updated_at")
