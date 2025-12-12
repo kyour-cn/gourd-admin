@@ -8,13 +8,21 @@ import (
 	"os"
 	"path/filepath"
 
+	"app/internal/config"
 	"app/internal/orm/model"
 )
 
 func NewLocalUploader(storage *model.FileStorage) Uploader {
+	// 获取配置中静态文件目录
+	baseDir := "./web/"
+	conf, err := config.GetHttpConfig()
+	if err == nil {
+		baseDir = conf.Static
+	}
+
 	return &LocalUploader{
-		StoreKey: "local",  // 本地存储的唯一标识符
-		BaseDir:  "./web/", // 本地存储的基础目录
+		StoreKey: "local", // 本地存储的唯一标识符
+		BaseDir:  baseDir, // 本地存储的基础目录
 		storage:  storage,
 	}
 }
