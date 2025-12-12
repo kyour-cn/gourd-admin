@@ -1,15 +1,15 @@
 package upload
 
 import (
+	"app/internal/config"
+	"app/internal/orm/model"
 	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"io"
 	"os"
 	"path/filepath"
-
-	"app/internal/config"
-	"app/internal/orm/model"
+	"strings"
 )
 
 func NewLocalUploader(storage *model.FileStorage) Uploader {
@@ -18,6 +18,11 @@ func NewLocalUploader(storage *model.FileStorage) Uploader {
 	conf, err := config.GetHttpConfig()
 	if err == nil {
 		baseDir = conf.Static
+
+		// baseDir如果不是以/结尾，添加/
+		if len(baseDir) > 0 && !strings.HasSuffix(baseDir, "/") {
+			baseDir += "/"
+		}
 	}
 
 	return &LocalUploader{
