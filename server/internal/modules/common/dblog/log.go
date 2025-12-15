@@ -92,7 +92,7 @@ func (l *Log) Write(title string, value string) error {
 		l.Model.Title = title
 	}
 	if value != "" {
-		l.Model.Value = value
+		l.Model.Value = &value
 	}
 	// 关联类型
 	if l.Model.TypeID == 0 {

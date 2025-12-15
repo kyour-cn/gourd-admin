@@ -15,11 +15,11 @@ const TableNameUserRole = "user_role"
 
 // UserRole 用户角色
 type UserRole struct {
-	ID        int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	UserID    int32          `gorm:"column:user_id;not null;comment:用户ID" json:"user_id"`                      // 用户ID
-	RoleID    int32          `gorm:"column:role_id;not null;comment:角色ID" json:"role_id"`                      // 角色ID
-	CreatedAt time.Time      `gorm:"column:created_at;not null;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间" json:"deleted_at"`                         // 删除时间
+	ID        uint32         `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
+	UserID    uint32         `gorm:"column:user_id;type:int unsigned;not null;comment:用户ID" json:"user_id"`                  // 用户ID
+	RoleID    uint32         `gorm:"column:role_id;type:int unsigned;not null;comment:角色ID" json:"role_id"`                  // 角色ID
+	CreatedAt time.Time      `gorm:"column:created_at;type:datetime;not null;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:datetime;comment:删除时间" json:"deleted_at"`                         // 删除时间
 	Role      Role           `gorm:"foreignKey:role_id;references:id" json:"role"`
 }
 

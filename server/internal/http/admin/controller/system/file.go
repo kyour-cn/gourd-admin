@@ -42,7 +42,7 @@ func (c *File) MenuAdd(w http.ResponseWriter, r *http.Request) {
 
 func (c *File) MenuDelete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		ID int32 `json:"id"`
+		ID uint32 `json:"id"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())
@@ -104,7 +104,7 @@ func (c *File) Upload(w http.ResponseWriter, r *http.Request) {
 		FileHeader: header,
 	}
 	menuID, _ := strconv.ParseInt(r.FormValue("menu_id"), 10, 32)
-	req.MenuID = int32(menuID)
+	req.MenuID = uint32(menuID)
 
 	service := services.NewFileService(r.Context())
 	res, err := service.Upload(req)
@@ -121,7 +121,7 @@ func (c *File) Upload(w http.ResponseWriter, r *http.Request) {
 
 func (c *File) Delete(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Ids []int32 `json:"ids"`
+		Ids []uint32 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
 		_ = c.Fail(w, 101, "请求参数异常", err.Error())

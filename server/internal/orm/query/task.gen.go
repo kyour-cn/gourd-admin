@@ -27,10 +27,10 @@ func newTask(db *gorm.DB, opts ...gen.DOOption) task {
 
 	tableName := _task.taskDo.TableName()
 	_task.ALL = field.NewAsterisk(tableName)
-	_task.ID = field.NewInt32(tableName, "id")
+	_task.ID = field.NewUint32(tableName, "id")
 	_task.Title = field.NewString(tableName, "title")
 	_task.Group_ = field.NewString(tableName, "group")
-	_task.UserID = field.NewInt32(tableName, "user_id")
+	_task.UserID = field.NewUint32(tableName, "user_id")
 	_task.Type = field.NewString(tableName, "type")
 	_task.Label = field.NewString(tableName, "label")
 	_task.Content = field.NewString(tableName, "content")
@@ -50,10 +50,10 @@ type task struct {
 	taskDo
 
 	ALL       field.Asterisk
-	ID        field.Int32
+	ID        field.Uint32
 	Title     field.String // 任务标题
 	Group_    field.String // 分组
-	UserID    field.Int32  // 关联用户ID
+	UserID    field.Uint32 // 关联用户ID
 	Type      field.String // 任务类型
 	Label     field.String // 任务标识，用于区分业务
 	Content   field.String // 任务内容
@@ -78,10 +78,10 @@ func (t task) As(alias string) *task {
 
 func (t *task) updateTableName(table string) *task {
 	t.ALL = field.NewAsterisk(table)
-	t.ID = field.NewInt32(table, "id")
+	t.ID = field.NewUint32(table, "id")
 	t.Title = field.NewString(table, "title")
 	t.Group_ = field.NewString(table, "group")
-	t.UserID = field.NewInt32(table, "user_id")
+	t.UserID = field.NewUint32(table, "user_id")
 	t.Type = field.NewString(table, "type")
 	t.Label = field.NewString(table, "label")
 	t.Content = field.NewString(table, "content")

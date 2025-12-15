@@ -24,6 +24,7 @@ func (s *MenuService) Create(req *dto.MenuCreateReq) (*model.Menu, error) {
 	q := query.Menu
 
 	mate, _ := json.Marshal(req.Meta)
+	mateStr := string(mate)
 	menu := &model.Menu{
 		AppID:     req.AppId,
 		Pid:       req.Pid,
@@ -33,7 +34,7 @@ func (s *MenuService) Create(req *dto.MenuCreateReq) (*model.Menu, error) {
 		Path:      req.Path,
 		Component: req.Component,
 		Sort:      0,
-		Meta:      string(mate),
+		Meta:      &mateStr,
 	}
 
 	err := q.WithContext(s.ctx).Create(menu)
@@ -97,10 +98,10 @@ func (s *MenuService) Update(req *dto.MenuUpdateReq) error {
 }
 
 // 递归获取所有子分类ID
-func (s *MenuService) getAllSubMenuIDs(ids []int32) ([]int32, error) {
+func (s *MenuService) getAllSubMenuIDs(ids []uint32) ([]uint32, error) {
 	q := query.Menu
-	var allIDs = make([]int32, 0)
-	var stack = make([]int32, len(ids))
+	var allIDs = make([]uint32, 0)
+	var stack = make([]uint32, len(ids))
 	copy(stack, ids)
 	for len(stack) > 0 {
 		currentID := stack[0]
@@ -118,7 +119,7 @@ func (s *MenuService) getAllSubMenuIDs(ids []int32) ([]int32, error) {
 	return allIDs, nil
 }
 
-func (s *MenuService) Delete(ids []int32) error {
+func (s *MenuService) Delete(ids []uint32) error {
 	q := query.Menu
 
 	// 递归查找所有需要删除的分类ID（包括子分类）

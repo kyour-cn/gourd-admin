@@ -10,11 +10,11 @@ const TableNameMenuAPI = "menu_api"
 
 // MenuAPI 菜单权限接口
 type MenuAPI struct {
-	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	AppID  int32  `gorm:"column:app_id;not null;comment:应用ID" json:"app_id"`   // 应用ID
-	MenuID int32  `gorm:"column:menu_id;not null;comment:菜单ID" json:"menu_id"` // 菜单ID
-	Path   string `gorm:"column:path;not null;comment:API路由地址" json:"path"`    // API路由地址
-	Tag    string `gorm:"column:tag;not null;comment:标识" json:"tag"`           // 标识
+	ID     uint32 `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
+	AppID  uint32 `gorm:"column:app_id;type:int unsigned;not null;comment:应用ID" json:"app_id"`   // 应用ID
+	MenuID uint32 `gorm:"column:menu_id;type:int unsigned;not null;comment:菜单ID" json:"menu_id"` // 菜单ID
+	Path   string `gorm:"column:path;type:varchar(255);not null;comment:API路由地址" json:"path"`    // API路由地址
+	Tag    string `gorm:"column:tag;type:varchar(255);not null;comment:标识" json:"tag"`           // 标识
 }
 
 // MarshalBinary 支持json序列化

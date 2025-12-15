@@ -27,18 +27,18 @@ func newLog(db *gorm.DB, opts ...gen.DOOption) log {
 
 	tableName := _log.logDo.TableName()
 	_log.ALL = field.NewAsterisk(tableName)
-	_log.ID = field.NewInt32(tableName, "id")
-	_log.AppID = field.NewInt32(tableName, "app_id")
-	_log.TypeID = field.NewInt32(tableName, "type_id")
+	_log.ID = field.NewUint32(tableName, "id")
+	_log.AppID = field.NewUint32(tableName, "app_id")
+	_log.TypeID = field.NewUint32(tableName, "type_id")
 	_log.TypeName = field.NewString(tableName, "type_name")
 	_log.Title = field.NewString(tableName, "title")
 	_log.Value = field.NewString(tableName, "value")
 	_log.ValueType = field.NewString(tableName, "value_type")
 	_log.RequestSource = field.NewString(tableName, "request_source")
 	_log.RequestIP = field.NewString(tableName, "request_ip")
-	_log.RequestUserID = field.NewInt32(tableName, "request_user_id")
+	_log.RequestUserID = field.NewUint32(tableName, "request_user_id")
 	_log.RequestUser = field.NewString(tableName, "request_user")
-	_log.Status = field.NewInt32(tableName, "status")
+	_log.Status = field.NewUint32(tableName, "status")
 	_log.CreatedAt = field.NewTime(tableName, "created_at")
 	_log.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_log.LogType = logHasOneLogType{
@@ -57,18 +57,18 @@ type log struct {
 	logDo
 
 	ALL           field.Asterisk
-	ID            field.Int32
-	AppID         field.Int32  // 应用ID 0为未知
-	TypeID        field.Int32  // 日志级别 <10为系统日志
+	ID            field.Uint32
+	AppID         field.Uint32 // 应用ID 0为未知
+	TypeID        field.Uint32 // 日志级别 <10为系统日志
 	TypeName      field.String // 日志级别名称
 	Title         field.String // 标题
 	Value         field.String // 日志内容
 	ValueType     field.String // 日志类型  text,json,html
 	RequestSource field.String // 请求来源
 	RequestIP     field.String // 请求来源IP
-	RequestUserID field.Int32  // 操作人ID
+	RequestUserID field.Uint32 // 操作人ID
 	RequestUser   field.String // 操作人
-	Status        field.Int32  // 状态 0=未处理 1=已查看 2=已处理
+	Status        field.Uint32 // 状态 0=未处理 1=已查看 2=已处理
 	CreatedAt     field.Time   // 创建时间
 	UpdatedAt     field.Time   // 更新时间
 	LogType       logHasOneLogType
@@ -88,18 +88,18 @@ func (l log) As(alias string) *log {
 
 func (l *log) updateTableName(table string) *log {
 	l.ALL = field.NewAsterisk(table)
-	l.ID = field.NewInt32(table, "id")
-	l.AppID = field.NewInt32(table, "app_id")
-	l.TypeID = field.NewInt32(table, "type_id")
+	l.ID = field.NewUint32(table, "id")
+	l.AppID = field.NewUint32(table, "app_id")
+	l.TypeID = field.NewUint32(table, "type_id")
 	l.TypeName = field.NewString(table, "type_name")
 	l.Title = field.NewString(table, "title")
 	l.Value = field.NewString(table, "value")
 	l.ValueType = field.NewString(table, "value_type")
 	l.RequestSource = field.NewString(table, "request_source")
 	l.RequestIP = field.NewString(table, "request_ip")
-	l.RequestUserID = field.NewInt32(table, "request_user_id")
+	l.RequestUserID = field.NewUint32(table, "request_user_id")
 	l.RequestUser = field.NewString(table, "request_user")
-	l.Status = field.NewInt32(table, "status")
+	l.Status = field.NewUint32(table, "status")
 	l.CreatedAt = field.NewTime(table, "created_at")
 	l.UpdatedAt = field.NewTime(table, "updated_at")
 

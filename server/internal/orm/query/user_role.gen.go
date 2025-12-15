@@ -27,9 +27,9 @@ func newUserRole(db *gorm.DB, opts ...gen.DOOption) userRole {
 
 	tableName := _userRole.userRoleDo.TableName()
 	_userRole.ALL = field.NewAsterisk(tableName)
-	_userRole.ID = field.NewInt32(tableName, "id")
-	_userRole.UserID = field.NewInt32(tableName, "user_id")
-	_userRole.RoleID = field.NewInt32(tableName, "role_id")
+	_userRole.ID = field.NewUint32(tableName, "id")
+	_userRole.UserID = field.NewUint32(tableName, "user_id")
+	_userRole.RoleID = field.NewUint32(tableName, "role_id")
 	_userRole.CreatedAt = field.NewTime(tableName, "created_at")
 	_userRole.DeletedAt = field.NewField(tableName, "deleted_at")
 	_userRole.Role = userRoleHasOneRole{
@@ -53,11 +53,11 @@ type userRole struct {
 	userRoleDo
 
 	ALL       field.Asterisk
-	ID        field.Int32
-	UserID    field.Int32 // 用户ID
-	RoleID    field.Int32 // 角色ID
-	CreatedAt field.Time  // 创建时间
-	DeletedAt field.Field // 删除时间
+	ID        field.Uint32
+	UserID    field.Uint32 // 用户ID
+	RoleID    field.Uint32 // 角色ID
+	CreatedAt field.Time   // 创建时间
+	DeletedAt field.Field  // 删除时间
 	Role      userRoleHasOneRole
 
 	fieldMap map[string]field.Expr
@@ -75,9 +75,9 @@ func (u userRole) As(alias string) *userRole {
 
 func (u *userRole) updateTableName(table string) *userRole {
 	u.ALL = field.NewAsterisk(table)
-	u.ID = field.NewInt32(table, "id")
-	u.UserID = field.NewInt32(table, "user_id")
-	u.RoleID = field.NewInt32(table, "role_id")
+	u.ID = field.NewUint32(table, "id")
+	u.UserID = field.NewUint32(table, "user_id")
+	u.RoleID = field.NewUint32(table, "role_id")
 	u.CreatedAt = field.NewTime(table, "created_at")
 	u.DeletedAt = field.NewField(table, "deleted_at")
 

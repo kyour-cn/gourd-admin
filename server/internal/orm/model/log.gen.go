@@ -14,20 +14,20 @@ const TableNameLog = "log"
 
 // Log 日志表
 type Log struct {
-	ID            int32     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	AppID         int32     `gorm:"column:app_id;not null;comment:应用ID 0为未知" json:"app_id"`                                 // 应用ID 0为未知
-	TypeID        int32     `gorm:"column:type_id;not null;comment:日志级别 <10为系统日志" json:"type_id"`                           // 日志级别 <10为系统日志
-	TypeName      string    `gorm:"column:type_name;not null;comment:日志级别名称" json:"type_name"`                              // 日志级别名称
-	Title         string    `gorm:"column:title;not null;comment:标题" json:"title"`                                          // 标题
-	Value         string    `gorm:"column:value;comment:日志内容" json:"value"`                                                 // 日志内容
-	ValueType     string    `gorm:"column:value_type;not null;default:text;comment:日志类型  text,json,html" json:"value_type"` // 日志类型  text,json,html
-	RequestSource string    `gorm:"column:request_source;not null;comment:请求来源" json:"request_source"`                      // 请求来源
-	RequestIP     string    `gorm:"column:request_ip;not null;comment:请求来源IP" json:"request_ip"`                            // 请求来源IP
-	RequestUserID int32     `gorm:"column:request_user_id;not null;comment:操作人ID" json:"request_user_id"`                   // 操作人ID
-	RequestUser   string    `gorm:"column:request_user;not null;comment:操作人" json:"request_user"`                           // 操作人
-	Status        int32     `gorm:"column:status;not null;comment:状态 0=未处理 1=已查看 2=已处理" json:"status"`                      // 状态 0=未处理 1=已查看 2=已处理
-	CreatedAt     time.Time `gorm:"column:created_at;not null;autoCreateTime;comment:创建时间" json:"created_at"`               // 创建时间
-	UpdatedAt     time.Time `gorm:"column:updated_at;not null;autoUpdateTime;comment:更新时间" json:"updated_at"`               // 更新时间
+	ID            uint32    `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
+	AppID         uint32    `gorm:"column:app_id;type:int unsigned;not null;comment:应用ID 0为未知" json:"app_id"`                                // 应用ID 0为未知
+	TypeID        uint32    `gorm:"column:type_id;type:int unsigned;not null;comment:日志级别 <10为系统日志" json:"type_id"`                          // 日志级别 <10为系统日志
+	TypeName      string    `gorm:"column:type_name;type:varchar(32);not null;comment:日志级别名称" json:"type_name"`                              // 日志级别名称
+	Title         string    `gorm:"column:title;type:varchar(500);not null;comment:标题" json:"title"`                                         // 标题
+	Value         *string   `gorm:"column:value;type:text;comment:日志内容" json:"value"`                                                        // 日志内容
+	ValueType     string    `gorm:"column:value_type;type:varchar(32);not null;default:text;comment:日志类型  text,json,html" json:"value_type"` // 日志类型  text,json,html
+	RequestSource string    `gorm:"column:request_source;type:varchar(255);not null;comment:请求来源" json:"request_source"`                     // 请求来源
+	RequestIP     string    `gorm:"column:request_ip;type:varchar(64);not null;comment:请求来源IP" json:"request_ip"`                            // 请求来源IP
+	RequestUserID uint32    `gorm:"column:request_user_id;type:int unsigned;not null;comment:操作人ID" json:"request_user_id"`                  // 操作人ID
+	RequestUser   string    `gorm:"column:request_user;type:varchar(255);not null;comment:操作人" json:"request_user"`                          // 操作人
+	Status        uint32    `gorm:"column:status;type:tinyint unsigned;not null;comment:状态 0=未处理 1=已查看 2=已处理" json:"status"`                 // 状态 0=未处理 1=已查看 2=已处理
+	CreatedAt     time.Time `gorm:"column:created_at;type:datetime;not null;autoCreateTime;comment:创建时间" json:"created_at"`                  // 创建时间
+	UpdatedAt     time.Time `gorm:"column:updated_at;type:datetime;not null;autoUpdateTime;comment:更新时间" json:"updated_at"`                  // 更新时间
 	LogType       LogType   `gorm:"foreignKey:type_id;references:id" json:"log_type"`
 }
 

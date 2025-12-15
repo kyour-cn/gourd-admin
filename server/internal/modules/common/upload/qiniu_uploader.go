@@ -46,9 +46,12 @@ func (u QiniuUploader) GetStorageModel() *model.FileStorage {
 }
 
 func (u QiniuUploader) Upload(_ context.Context, input Input, savePath string) (*Output, error) {
+	if u.storage.Config == nil {
+		return nil, fmt.Errorf("七牛存储配置为空")
+	}
 	// 开始上传
 	conf := QiniuConfig{}
-	if err := json.Unmarshal([]byte(u.storage.Config), &conf); err != nil {
+	if err := json.Unmarshal([]byte(*u.storage.Config), &conf); err != nil {
 		return nil, fmt.Errorf("解析七牛配置失败: %w", err)
 	}
 	res, err := u.uploadFileToCloud(conf, input.Content, savePath)
@@ -67,9 +70,12 @@ func (u QiniuUploader) Upload(_ context.Context, input Input, savePath string) (
 }
 
 func (u QiniuUploader) Delete(_ context.Context, path string) error {
+	if u.storage.Config == nil {
+		return fmt.Errorf("七牛存储配置为空")
+	}
 	// 删除文件
 	conf := QiniuConfig{}
-	if err := json.Unmarshal([]byte(u.storage.Config), &conf); err != nil {
+	if err := json.Unmarshal([]byte(*u.storage.Config), &conf); err != nil {
 		return fmt.Errorf("解析七牛配置失败: %w", err)
 	}
 	err := u.deleteFile(conf, conf.Bucket, path)

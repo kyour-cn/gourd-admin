@@ -63,10 +63,11 @@ func (s *UserService) Export(req *dto.UserExportReq) error {
 	}
 	claims := jwtValue.(comDto.UserClaims)
 
-	content, err := json.Marshal(req)
+	_content, err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
+	content := string(_content)
 
 	err = query.Task.WithContext(s.ctx).Create(&model.Task{
 		Title:   "用户列表导出",
@@ -74,7 +75,7 @@ func (s *UserService) Export(req *dto.UserExportReq) error {
 		Label:   "user",
 		UserID:  claims.Sub,
 		Type:    "export",
-		Content: string(content),
+		Content: &content,
 	})
 
 	// 触发任务运行事件
@@ -149,14 +150,14 @@ func (s *UserService) Update(req *dto.UserUpdateReq) (any, error) {
 	return res, err
 }
 
-func (s *UserService) Delete(ids []int32) (gen.ResultInfo, error) {
+func (s *UserService) Delete(ids []uint32) (gen.ResultInfo, error) {
 	return query.User.WithContext(s.ctx).
 		Where(query.User.ID.In(ids...)).
 		Delete()
 }
 
 // updateRole 差异更新用户角色
-func (s *UserService) updateRole(tx *query.Query, userID int32, roleIDs []int32) error {
+func (s *UserService) updateRole(tx *query.Query, userID uint32, roleIDs []uint32) error {
 	q := query.UserRole
 
 	// 原有角色
@@ -167,11 +168,11 @@ func (s *UserService) updateRole(tx *query.Query, userID int32, roleIDs []int32)
 		return err
 	}
 
-	oldRoleMap := make(map[int32]bool)
+	oldRoleMap := make(map[uint32]bool)
 	for _, role := range oldRoles {
 		oldRoleMap[role.RoleID] = true
 	}
-	newRoleMap := make(map[int32]bool)
+	newRoleMap := make(map[uint32]bool)
 	for _, roleID := range roleIDs {
 		newRoleMap[roleID] = true
 	}

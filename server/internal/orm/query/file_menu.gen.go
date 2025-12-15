@@ -27,7 +27,7 @@ func newFileMenu(db *gorm.DB, opts ...gen.DOOption) fileMenu {
 
 	tableName := _fileMenu.fileMenuDo.TableName()
 	_fileMenu.ALL = field.NewAsterisk(tableName)
-	_fileMenu.ID = field.NewInt32(tableName, "id")
+	_fileMenu.ID = field.NewUint32(tableName, "id")
 	_fileMenu.Name = field.NewString(tableName, "name")
 
 	_fileMenu.fillFieldMap()
@@ -40,7 +40,7 @@ type fileMenu struct {
 	fileMenuDo
 
 	ALL  field.Asterisk
-	ID   field.Int32
+	ID   field.Uint32
 	Name field.String // 名称
 
 	fieldMap map[string]field.Expr
@@ -58,7 +58,7 @@ func (f fileMenu) As(alias string) *fileMenu {
 
 func (f *fileMenu) updateTableName(table string) *fileMenu {
 	f.ALL = field.NewAsterisk(table)
-	f.ID = field.NewInt32(table, "id")
+	f.ID = field.NewUint32(table, "id")
 	f.Name = field.NewString(table, "name")
 
 	f.fillFieldMap()

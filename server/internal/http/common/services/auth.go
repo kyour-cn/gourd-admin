@@ -43,21 +43,21 @@ type MenuMate struct {
 	HiddenBreadcrumb bool   `json:"hiddenBreadcrumb"`
 }
 type menuTree struct {
-	ParentId  int32           `json:"pid"`
-	Id        int32           `json:"id"`
+	ParentId  uint32          `json:"pid"`
+	Id        uint32          `json:"id"`
 	Name      string          `json:"name"`
 	Title     string          `json:"title"`
 	Path      string          `json:"path"`
 	Component string          `json:"component"`
-	Sort      int32           `json:"sort"`
+	Sort      uint32          `json:"sort"`
 	Meta      *MenuMate       `json:"meta"`
-	AppId     int32           `json:"appId"`
+	AppId     uint32          `json:"appId"`
 	Children  []menuTree      `json:"children"`
 	ApiList   []model.MenuAPI `json:"apiList"`
 }
 type MenuTreeArr []menuTree
 
-func (s *AuthService) GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, error) {
+func (s *AuthService) GetMenu(userInfo *model.User, appId uint32) (MenuTreeArr, error) {
 	if len(userInfo.UserRole) == 0 {
 		return nil, errors.New("用户角色不存在")
 	}
@@ -65,7 +65,7 @@ func (s *AuthService) GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, e
 	isAdmin := false
 
 	// 筛选指定appid的菜单列表
-	mIds := make([]int32, 0)
+	mIds := make([]uint32, 0)
 	for _, v := range userInfo.UserRole {
 		if v.Role.AppID != appId {
 			continue
@@ -76,7 +76,7 @@ func (s *AuthService) GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, e
 		}
 		for _, v := range strings.Split(v.Role.Rules, ",") {
 			i, _ := strconv.Atoi(v)
-			mIds = append(mIds, int32(i))
+			mIds = append(mIds, uint32(i))
 		}
 	}
 
@@ -108,15 +108,15 @@ func (s *AuthService) GetMenu(userInfo *model.User, appId int32) (MenuTreeArr, e
 }
 
 // RecursionMenu 递归菜单
-func (s *AuthService) RecursionMenu(menus []*model.Menu, parentId int32) MenuTreeArr {
+func (s *AuthService) RecursionMenu(menus []*model.Menu, parentId uint32) MenuTreeArr {
 	var arr MenuTreeArr
 	for _, menu := range menus {
 		if menu.Pid == parentId {
 			children := s.RecursionMenu(menus, menu.ID)
 
 			mate := &MenuMate{}
-			if menu.Meta != "" {
-				_ = json.Unmarshal([]byte(menu.Meta), mate)
+			if menu.Meta != nil && *menu.Meta != "" {
+				_ = json.Unmarshal([]byte(*menu.Meta), mate)
 			}
 
 			menuTree := menuTree{
@@ -145,7 +145,7 @@ func (s *AuthService) RecursionMenu(menus []*model.Menu, parentId int32) MenuTre
 }
 
 // GetMenuFormApp 获取指定应用的菜单
-func (s *AuthService) GetMenuFormApp(appId int32) (any, error) {
+func (s *AuthService) GetMenuFormApp(appId uint32) (any, error) {
 
 	qm := query.Menu
 	conds := []gen.Condition{
@@ -163,7 +163,7 @@ func (s *AuthService) GetMenuFormApp(appId int32) (any, error) {
 	return s.RecursionMenu(menu, 0), nil
 }
 
-func (s *AuthService) GetPermission(userInfo *model.User, appId int32) ([]string, error) {
+func (s *AuthService) GetPermission(userInfo *model.User, appId uint32) ([]string, error) {
 	if len(userInfo.UserRole) == 0 {
 		return nil, errors.New("用户角色不存在")
 	}
@@ -171,7 +171,7 @@ func (s *AuthService) GetPermission(userInfo *model.User, appId int32) ([]string
 	isAdmin := false
 
 	// 筛选指定appid的菜单列表
-	mIds := make([]int32, 0)
+	mIds := make([]uint32, 0)
 	for _, v := range userInfo.UserRole {
 		if v.Role.AppID != appId {
 			continue
@@ -182,7 +182,7 @@ func (s *AuthService) GetPermission(userInfo *model.User, appId int32) ([]string
 		}
 		for _, v := range strings.Split(v.Role.Rules, ",") {
 			i, _ := strconv.Atoi(v)
-			mIds = append(mIds, int32(i))
+			mIds = append(mIds, uint32(i))
 		}
 	}
 
@@ -255,7 +255,7 @@ func (s *AuthService) LoginUser(username string, password string) (*dto.UserLogi
 	}
 
 	// 取出用户关联的应用
-	apps := make(map[int32]model.App)
+	apps := make(map[uint32]model.App)
 	for _, ur := range userData.UserRole {
 		apps[ur.Role.App.ID] = ur.Role.App
 	}
@@ -276,10 +276,11 @@ func (s *AuthService) LoginUser(username string, password string) (*dto.UserLogi
 	}
 
 	// 更新登录时间
+	now := time.Now()
 	_, _ = u.WithContext(s.ctx).
 		Where(u.ID.Eq(userData.ID)).
 		Updates(&model.User{
-			LoginTime: time.Now(),
+			LoginTime: &now,
 		})
 
 	userData.UserRole = nil
@@ -352,7 +353,7 @@ func (s *AuthService) CheckPath(claims dto.UserClaims, r *http.Request) bool {
 	}
 
 	// 权限匹配
-	ruleSet := make(map[int32]bool)
+	ruleSet := make(map[uint32]bool)
 	for _, v := range roles {
 		// 管理员角色拥有所有权限
 		if v.IsAdmin == 1 {
@@ -365,7 +366,7 @@ func (s *AuthService) CheckPath(claims dto.UserClaims, r *http.Request) bool {
 		// 普通角色根据规则匹配权限
 		for _, ruleIDStr := range strings.Split(v.Rules, ",") {
 			ruleID, _ := strconv.Atoi(ruleIDStr)
-			ruleSet[int32(ruleID)] = true
+			ruleSet[uint32(ruleID)] = true
 		}
 	}
 

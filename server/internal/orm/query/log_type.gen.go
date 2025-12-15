@@ -27,8 +27,8 @@ func newLogType(db *gorm.DB, opts ...gen.DOOption) logType {
 
 	tableName := _logType.logTypeDo.TableName()
 	_logType.ALL = field.NewAsterisk(tableName)
-	_logType.ID = field.NewInt32(tableName, "id")
-	_logType.AppID = field.NewInt32(tableName, "app_id")
+	_logType.ID = field.NewUint32(tableName, "id")
+	_logType.AppID = field.NewUint32(tableName, "app_id")
 	_logType.Name = field.NewString(tableName, "name")
 	_logType.Label = field.NewString(tableName, "label")
 	_logType.Remark = field.NewString(tableName, "remark")
@@ -45,8 +45,8 @@ type logType struct {
 	logTypeDo
 
 	ALL    field.Asterisk
-	ID     field.Int32  // <10为系统日志
-	AppID  field.Int32  // 应用ID 0为通用
+	ID     field.Uint32 // <10为系统日志
+	AppID  field.Uint32 // 应用ID 0为通用
 	Name   field.String // 中文名称
 	Label  field.String // 英文别名
 	Remark field.String // 备注
@@ -68,8 +68,8 @@ func (l logType) As(alias string) *logType {
 
 func (l *logType) updateTableName(table string) *logType {
 	l.ALL = field.NewAsterisk(table)
-	l.ID = field.NewInt32(table, "id")
-	l.AppID = field.NewInt32(table, "app_id")
+	l.ID = field.NewUint32(table, "id")
+	l.AppID = field.NewUint32(table, "app_id")
 	l.Name = field.NewString(table, "name")
 	l.Label = field.NewString(table, "label")
 	l.Remark = field.NewString(table, "remark")

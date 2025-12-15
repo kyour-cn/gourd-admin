@@ -15,18 +15,18 @@ const TableNameTask = "task"
 
 // Task 任务
 type Task struct {
-	ID        int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Title     string         `gorm:"column:title;not null;comment:任务标题" json:"title"`                          // 任务标题
-	Group_    string         `gorm:"column:group;not null;default:system;comment:分组" json:"group"`             // 分组
-	UserID    int32          `gorm:"column:user_id;not null;comment:关联用户ID" json:"user_id"`                    // 关联用户ID
-	Type      string         `gorm:"column:type;not null;comment:任务类型" json:"type"`                            // 任务类型
-	Label     string         `gorm:"column:label;not null;comment:任务标识，用于区分业务" json:"label"`                   // 任务标识，用于区分业务
-	Content   string         `gorm:"column:content;comment:任务内容" json:"content"`                               // 任务内容
-	Result    string         `gorm:"column:result;comment:任务结果" json:"result"`                                 // 任务结果
-	Status    int32          `gorm:"column:status;not null;comment:状态 0=待处理 1=处理中 2=已完成 -1=失败" json:"status"`  // 状态 0=待处理 1=处理中 2=已完成 -1=失败
-	CreatedAt time.Time      `gorm:"column:created_at;not null;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间
-	UpdatedAt time.Time      `gorm:"column:updated_at;not null;autoUpdateTime;comment:更新时间" json:"updated_at"` // 更新时间
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间" json:"deleted_at"`                         // 删除时间
+	ID        uint32         `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
+	Title     string         `gorm:"column:title;type:varchar(255);not null;comment:任务标题" json:"title"`                       // 任务标题
+	Group_    string         `gorm:"column:group;type:enum('user','system');not null;default:system;comment:分组" json:"group"` // 分组
+	UserID    uint32         `gorm:"column:user_id;type:int unsigned;not null;comment:关联用户ID" json:"user_id"`                 // 关联用户ID
+	Type      string         `gorm:"column:type;type:varchar(255);not null;comment:任务类型" json:"type"`                         // 任务类型
+	Label     string         `gorm:"column:label;type:varchar(255);not null;comment:任务标识，用于区分业务" json:"label"`                // 任务标识，用于区分业务
+	Content   *string        `gorm:"column:content;type:longtext;comment:任务内容" json:"content"`                                // 任务内容
+	Result    *string        `gorm:"column:result;type:longtext;comment:任务结果" json:"result"`                                  // 任务结果
+	Status    int32          `gorm:"column:status;type:tinyint;not null;comment:状态 0=待处理 1=处理中 2=已完成 -1=失败" json:"status"`    // 状态 0=待处理 1=处理中 2=已完成 -1=失败
+	CreatedAt time.Time      `gorm:"column:created_at;type:datetime;not null;autoCreateTime;comment:创建时间" json:"created_at"`  // 创建时间
+	UpdatedAt time.Time      `gorm:"column:updated_at;type:datetime;not null;autoUpdateTime;comment:更新时间" json:"updated_at"`  // 更新时间
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:datetime;comment:删除时间" json:"deleted_at"`                          // 删除时间
 }
 
 // MarshalBinary 支持json序列化

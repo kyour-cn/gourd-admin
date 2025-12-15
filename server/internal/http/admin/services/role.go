@@ -35,13 +35,13 @@ func (s *RoleService) GetList(req *dto.RoleListReq) (*dto.PageListRes, error) {
 	}
 
 	if req.Ids != "" {
-		var idSlice []int32
+		var idSlice []uint32
 		for _, v := range strings.Split(req.Ids, ",") {
 			if v == "" {
 				continue
 			}
 			n, _ := strconv.Atoi(v)
-			idSlice = append(idSlice, int32(n))
+			idSlice = append(idSlice, uint32(n))
 		}
 		if len(idSlice) > 0 {
 			conds = append(conds, q.ID.In(idSlice...))
@@ -105,7 +105,7 @@ func (s *RoleService) Update(req *dto.RoleUpdateReq) (gen.ResultInfo, error) {
 		})
 }
 
-func (s *RoleService) Delete(ids []int32) (*gen.ResultInfo, error) {
+func (s *RoleService) Delete(ids []uint32) (*gen.ResultInfo, error) {
 	tx := query.Q.Begin()
 	re, err := tx.Role.WithContext(s.ctx).
 		Where(query.Role.ID.In(ids...)).

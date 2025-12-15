@@ -27,12 +27,12 @@ func newFileStorage(db *gorm.DB, opts ...gen.DOOption) fileStorage {
 
 	tableName := _fileStorage.fileStorageDo.TableName()
 	_fileStorage.ALL = field.NewAsterisk(tableName)
-	_fileStorage.ID = field.NewInt32(tableName, "id")
+	_fileStorage.ID = field.NewUint32(tableName, "id")
 	_fileStorage.Name = field.NewString(tableName, "name")
 	_fileStorage.Key = field.NewString(tableName, "key")
 	_fileStorage.Config = field.NewString(tableName, "config")
 	_fileStorage.IsDefault = field.NewInt32(tableName, "is_default")
-	_fileStorage.Status = field.NewInt32(tableName, "status")
+	_fileStorage.Status = field.NewUint32(tableName, "status")
 
 	_fileStorage.fillFieldMap()
 
@@ -44,12 +44,12 @@ type fileStorage struct {
 	fileStorageDo
 
 	ALL       field.Asterisk
-	ID        field.Int32
+	ID        field.Uint32
 	Name      field.String // 名称
 	Key       field.String // 唯一标识
 	Config    field.String // 配置
 	IsDefault field.Int32  // 是否默认
-	Status    field.Int32  // 状态 1=正常 0=停用
+	Status    field.Uint32 // 状态 1=正常 0=停用
 
 	fieldMap map[string]field.Expr
 }
@@ -66,12 +66,12 @@ func (f fileStorage) As(alias string) *fileStorage {
 
 func (f *fileStorage) updateTableName(table string) *fileStorage {
 	f.ALL = field.NewAsterisk(table)
-	f.ID = field.NewInt32(table, "id")
+	f.ID = field.NewUint32(table, "id")
 	f.Name = field.NewString(table, "name")
 	f.Key = field.NewString(table, "key")
 	f.Config = field.NewString(table, "config")
 	f.IsDefault = field.NewInt32(table, "is_default")
-	f.Status = field.NewInt32(table, "status")
+	f.Status = field.NewUint32(table, "status")
 
 	f.fillFieldMap()
 

@@ -86,22 +86,24 @@ func handleTask(ctx context.Context, task *model.Task) error {
 		// 导出任务
 		err := ExportTask(ctx, task)
 		if err != nil {
+			result := err.Error()
 			// 导出任务失败，更新任务状态为失败
 			_, err = q.WithContext(ctx).
 				Where(q.ID.Eq(task.ID)).
 				Updates(&model.Task{
 					Status: -1,
-					Result: err.Error(),
+					Result: &result,
 				})
 			return err
 		}
 	default:
+		result := "未知类型"
 		// 未知类型，改为失败
 		_, err = q.WithContext(ctx).
 			Where(q.ID.Eq(task.ID)).
 			Updates(&model.Task{
 				Status: -1,
-				Result: "未知类型",
+				Result: &result,
 			})
 		if err != nil {
 			return err

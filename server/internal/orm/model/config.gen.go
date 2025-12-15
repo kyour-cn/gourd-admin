@@ -10,12 +10,12 @@ const TableNameConfig = "config"
 
 // Config 配置
 type Config struct {
-	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Name   string `gorm:"column:name;not null;comment:名称" json:"name"`     // 名称
-	Group_ string `gorm:"column:group;not null;comment:分组" json:"group"`   // 分组
-	Title  string `gorm:"column:title;not null;comment:变量标题" json:"title"` // 变量标题
-	Type   string `gorm:"column:type;not null;comment:数据类型" json:"type"`   // 数据类型
-	Value  string `gorm:"column:value;comment:变量值" json:"value"`           // 变量值
+	ID     uint32  `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
+	Name   string  `gorm:"column:name;type:varchar(30);not null;comment:名称" json:"name"`     // 名称
+	Group_ string  `gorm:"column:group;type:varchar(30);not null;comment:分组" json:"group"`   // 分组
+	Title  string  `gorm:"column:title;type:varchar(50);not null;comment:变量标题" json:"title"` // 变量标题
+	Type   string  `gorm:"column:type;type:varchar(30);not null;comment:数据类型" json:"type"`   // 数据类型
+	Value  *string `gorm:"column:value;type:longtext;comment:变量值" json:"value"`              // 变量值
 }
 
 // MarshalBinary 支持json序列化

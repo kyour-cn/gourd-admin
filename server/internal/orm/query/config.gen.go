@@ -27,7 +27,7 @@ func newConfig(db *gorm.DB, opts ...gen.DOOption) config {
 
 	tableName := _config.configDo.TableName()
 	_config.ALL = field.NewAsterisk(tableName)
-	_config.ID = field.NewInt32(tableName, "id")
+	_config.ID = field.NewUint32(tableName, "id")
 	_config.Name = field.NewString(tableName, "name")
 	_config.Group_ = field.NewString(tableName, "group")
 	_config.Title = field.NewString(tableName, "title")
@@ -44,7 +44,7 @@ type config struct {
 	configDo
 
 	ALL    field.Asterisk
-	ID     field.Int32
+	ID     field.Uint32
 	Name   field.String // 名称
 	Group_ field.String // 分组
 	Title  field.String // 变量标题
@@ -66,7 +66,7 @@ func (c config) As(alias string) *config {
 
 func (c *config) updateTableName(table string) *config {
 	c.ALL = field.NewAsterisk(table)
-	c.ID = field.NewInt32(table, "id")
+	c.ID = field.NewUint32(table, "id")
 	c.Name = field.NewString(table, "name")
 	c.Group_ = field.NewString(table, "group")
 	c.Title = field.NewString(table, "title")

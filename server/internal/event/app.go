@@ -15,13 +15,13 @@ func AppEvent(_ context.Context) {
 
 	// Boot事件(应用) -初始化应用时执行
 	event.Listen("app.boot", func(ctx context.Context) {
-		slog.Debug("boot event.")
-
 		// 初始化一些全局配置、工具等
 		err := initialize.InitCommon(ctx)
 		if err != nil {
 			panic(err)
 		}
+
+		slog.Debug("boot event.")
 	})
 
 	// Init事件(应用) -初始化完成执行

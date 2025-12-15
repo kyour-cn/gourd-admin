@@ -10,13 +10,13 @@ const TableNameLogType = "log_type"
 
 // LogType 日志级别
 type LogType struct {
-	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true;comment:<10为系统日志" json:"id"` // <10为系统日志
-	AppID  int32  `gorm:"column:app_id;not null;comment:应用ID 0为通用" json:"app_id"`             // 应用ID 0为通用
-	Name   string `gorm:"column:name;not null;comment:中文名称" json:"name"`                      // 中文名称
-	Label  string `gorm:"column:label;not null;comment:英文别名" json:"label"`                    // 英文别名
-	Remark string `gorm:"column:remark;not null;comment:备注" json:"remark"`                    // 备注
-	Status int32  `gorm:"column:status;not null;default:1;comment:日志开启状态" json:"status"`      // 日志开启状态
-	Color  string `gorm:"column:color;not null;comment:日志颜色 #ff0000" json:"color"`            // 日志颜色 #ff0000
+	ID     uint32 `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true;comment:<10为系统日志" json:"id"` // <10为系统日志
+	AppID  uint32 `gorm:"column:app_id;type:int unsigned;not null;comment:应用ID 0为通用" json:"app_id"`             // 应用ID 0为通用
+	Name   string `gorm:"column:name;type:char(32);not null;comment:中文名称" json:"name"`                          // 中文名称
+	Label  string `gorm:"column:label;type:char(32);not null;comment:英文别名" json:"label"`                        // 英文别名
+	Remark string `gorm:"column:remark;type:varchar(255);not null;comment:备注" json:"remark"`                    // 备注
+	Status int32  `gorm:"column:status;type:tinyint;not null;default:1;comment:日志开启状态" json:"status"`           // 日志开启状态
+	Color  string `gorm:"column:color;type:varchar(255);not null;comment:日志颜色 #ff0000" json:"color"`            // 日志颜色 #ff0000
 }
 
 // MarshalBinary 支持json序列化

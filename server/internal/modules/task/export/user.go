@@ -16,7 +16,7 @@ import (
 
 func UserExport(ctx context.Context, task *model.Task) error {
 	params := &dto.UserExportReq{}
-	err := json.Unmarshal([]byte(task.Content), params)
+	err := json.Unmarshal([]byte(*task.Content), params)
 	if err != nil {
 		return err
 	}
@@ -117,16 +117,17 @@ func UserExport(ctx context.Context, task *model.Task) error {
 		return err
 	}
 
-	result, err := json.Marshal(map[string]string{
+	_result, err := json.Marshal(map[string]string{
 		"file": fileName,
 	})
+	result := string(_result)
 
 	// 更新任务状态为完成
 	_, err = query.Task.WithContext(ctx).
 		Where(query.Task.ID.Eq(task.ID)).
 		Updates(&model.Task{
 			Status: 2,
-			Result: string(result),
+			Result: &result,
 		})
 	if err != nil {
 		return err

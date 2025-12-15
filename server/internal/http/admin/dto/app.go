@@ -10,10 +10,10 @@ type AppListReq struct {
 
 type AppCreateReq struct {
 	model.App
-	ID int32 `json:"id" validate:"eq:0"`
+	ID uint32 `json:"id" validate:"eq:0"`
 }
 
 type AppUpdateReq struct {
 	model.App
-	ID int32 `json:"id" validate:"gt:0"`
+	ID uint32 `json:"id" validate:"gt:0"`
 }

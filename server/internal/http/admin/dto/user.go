@@ -14,11 +14,11 @@ type UserExportReq struct {
 
 type UserCreateReq struct {
 	model.User
-	Roles []int32 `json:"roles"`
+	Roles []uint32 `json:"roles"`
 }
 
 type UserUpdateReq struct {
 	model.User
-	ID    int32   `json:"id" validate:"gt:0"`
-	Roles []int32 `json:"roles"`
+	ID    uint32   `json:"id" validate:"gt:0"`
+	Roles []uint32 `json:"roles"`
 }

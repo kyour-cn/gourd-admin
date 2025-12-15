@@ -10,8 +10,8 @@ const TableNameFileMenu = "file_menu"
 
 // FileMenu 文件分组
 type FileMenu struct {
-	ID   int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Name string `gorm:"column:name;not null;comment:名称" json:"name"` // 名称
+	ID   uint32 `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
+	Name string `gorm:"column:name;type:varchar(255);not null;comment:名称" json:"name"` // 名称
 }
 
 // MarshalBinary 支持json序列化

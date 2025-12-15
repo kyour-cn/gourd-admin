@@ -10,12 +10,12 @@ const TableNameApp = "app"
 
 // App 应用列表
 type App struct {
-	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Name   string `gorm:"column:name;not null;comment:应用名称" json:"name"`   // 应用名称
-	Key    string `gorm:"column:key;not null;comment:应用KEY 别名" json:"key"` // 应用KEY 别名
-	Remark string `gorm:"column:remark;not null;comment:备注" json:"remark"` // 备注
-	Status int32  `gorm:"column:status;not null;comment:状态" json:"status"` // 状态
-	Sort   int32  `gorm:"column:sort;not null;comment:排序 ASC" json:"sort"` // 排序 ASC
+	ID     uint32 `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
+	Name   string `gorm:"column:name;type:varchar(255);not null;comment:应用名称" json:"name"`   // 应用名称
+	Key    string `gorm:"column:key;type:varchar(255);not null;comment:应用KEY 别名" json:"key"` // 应用KEY 别名
+	Remark string `gorm:"column:remark;type:varchar(255);not null;comment:备注" json:"remark"` // 备注
+	Status int32  `gorm:"column:status;type:tinyint;not null;comment:状态" json:"status"`      // 状态
+	Sort   int32  `gorm:"column:sort;type:int;not null;comment:排序 ASC" json:"sort"`          // 排序 ASC
 }
 
 // MarshalBinary 支持json序列化

@@ -37,7 +37,7 @@ func (s *FileService) AddMenu(req *dto.FileMenuAddReq) error {
 	return nil
 }
 
-func (s *FileService) DeleteMenu(id int32) error {
+func (s *FileService) DeleteMenu(id uint32) error {
 	_, err := query.FileMenu.WithContext(s.ctx).
 		Where(query.FileMenu.ID.Eq(id)).
 		Delete()
@@ -116,7 +116,7 @@ func (s *FileService) Upload(req *dto.FileUploadReq) (*model.File, error) {
 //		Updates(&req.File)
 //}
 
-func (s *FileService) Delete(ids []int32) (gen.ResultInfo, error) {
+func (s *FileService) Delete(ids []uint32) (gen.ResultInfo, error) {
 	q := query.File
 
 	return q.WithContext(s.ctx).

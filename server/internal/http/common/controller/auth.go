@@ -117,13 +117,13 @@ func (c *Auth) GetMenu(w http.ResponseWriter, r *http.Request) {
 
 	serv := services.NewAuthService(r.Context())
 
-	menus, err := serv.GetMenu(userInfo, int32((appId)))
+	menus, err := serv.GetMenu(userInfo, uint32(appId))
 	if err != nil {
 		_ = c.Fail(w, 102, "获取菜单失败", err.Error())
 		return
 	}
 
-	permissions, err := serv.GetPermission(userInfo, int32(appId))
+	permissions, err := serv.GetPermission(userInfo, uint32(appId))
 	if err != nil {
 		_ = c.Fail(w, 102, "获取权限失败", err.Error())
 		return
