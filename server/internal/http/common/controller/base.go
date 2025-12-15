@@ -13,6 +13,8 @@ import (
 	"app/internal/http/common/dto"
 )
 
+var formDecoder = form.NewDecoder()
+
 // Base 基础控制器
 // 所有控制器都应继承此控制器，可以在此控制器中定义公共方法
 type Base struct{}
@@ -22,10 +24,6 @@ type Response struct {
 	Data    any    `json:"data"`
 	Message string `json:"message"`
 }
-
-var (
-	decoder = form.NewDecoder()
-)
 
 // Success 成功时响应
 func (*Base) Success(w http.ResponseWriter, message string, data any) (err error) {
@@ -90,7 +88,7 @@ func (*Base) QueryReqUnmarshal(r *http.Request, req any) error {
 	if err := r.ParseForm(); err != nil {
 		return err
 	}
-	if err := decoder.Decode(req, r.Form); err != nil {
+	if err := formDecoder.Decode(req, r.Form); err != nil {
 		return err
 	}
 

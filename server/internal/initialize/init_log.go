@@ -19,16 +19,20 @@ func InitLog() error {
 		return err
 	}
 
+	var writers []io.Writer
+
 	// 日志文件输出
-	output := &lumberjack.Logger{
-		Filename:  conf.LogFile,
-		MaxSize:   conf.MaxSize, // megabytes
-		LocalTime: true,
+	if conf.LogFile != "" {
+		output := &lumberjack.Logger{
+			Filename:  conf.LogFile,
+			MaxSize:   conf.MaxSize, // megabytes
+			LocalTime: true,
+		}
+		writers = append(writers, output)
 	}
 
-	writers := []io.Writer{output}
+	// 控制台输出
 	if conf.Console {
-		// 日志是否输出到控制台
 		writers = append(writers, os.Stdout)
 	}
 	logWriter := io.MultiWriter(writers...)
