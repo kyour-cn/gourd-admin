@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-playground/form"
+	"github.com/go-playground/form/v4"
 	"github.com/gookit/validate"
 	"github.com/gookit/validate/locales/zhcn"
 	json "github.com/json-iterator/go"
