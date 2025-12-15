@@ -43,6 +43,9 @@ func (conf DbConfig) GenerateDsn() string {
 	} else if conf.Type == "oracle" {
 		dsnF := "%s/%s@%s:%d/%s"
 		dsn = fmt.Sprintf(dsnF, conf.User, conf.Pass, conf.Host, conf.Port, conf.Database)
+	} else if conf.Type == "sqlite" {
+		dsnF := "%s?parseTime=true&loc=Local"
+		dsn = fmt.Sprintf(dsnF, conf.Database)
 	}
 
 	return dsn
@@ -82,7 +85,6 @@ func SetDBConfigAll(conf *DbConfigMap) error {
 
 // GetDBConfig 获取指定数据库配置
 func GetDBConfig(name string) (*DbConfig, error) {
-
 	all, err := GetDBConfigAll()
 	if err != nil {
 		return nil, err
@@ -100,7 +102,6 @@ func GetDBConfig(name string) (*DbConfig, error) {
 
 // SetDBConfig 设置指定数据库配置
 func SetDBConfig(name string, conf *DbConfig) error {
-
 	all, err := GetDBConfigAll()
 	if err != nil {
 		return err

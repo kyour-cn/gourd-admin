@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"gorm.io/driver/mysql"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
@@ -25,9 +25,9 @@ func (w dbLogWriter) Printf(format string, args ...any) {
 func InitDatabase() error {
 
 	// 连接数据库
-	dbConf, err := config.GetDBConfig("main")
+	dbConf, err := config.GetDBConfig("sqlite")
 	if err != nil {
-		return errors.New("database.main config is nil")
+		return errors.New("database.sqlite config is nil")
 	}
 
 	// 连接数据库
@@ -45,8 +45,8 @@ func InitDatabase() error {
 
 	var mainDb *gorm.DB
 
-	if dbConf.Type == "mysql" {
-		mainDb, err = gorm.Open(mysql.Open(dbConf.GenerateDsn()), gormConfig)
+	if dbConf.Type == "sqlite" {
+		mainDb, err = gorm.Open(sqlite.Open(dbConf.GenerateDsn()), gormConfig)
 		if err != nil {
 			return err
 		}

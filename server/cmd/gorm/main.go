@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gorm.io/driver/mysql"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
@@ -14,12 +14,12 @@ import (
 func main() {
 
 	// 初始化数据库
-	dbConfig, err := config.GetDBConfig("main")
+	dbConfig, err := config.GetDBConfig("sqlite")
 	if err != nil {
 		panic(err)
 	}
 
-	mainDB, err := gorm.Open(mysql.Open(dbConfig.GenerateDsn()))
+	mainDB, err := gorm.Open(sqlite.Open(dbConfig.GenerateDsn()))
 	if err != nil {
 		panic("database connect failed: " + err.Error())
 	}
