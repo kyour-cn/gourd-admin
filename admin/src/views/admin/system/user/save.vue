@@ -4,7 +4,7 @@
     <el-form :model="state.form" :rules="state.rules" :disabled="state.mode==='show'" ref="dialogForm"
              label-width="100px" label-position="left">
       <el-form-item label="头像" prop="avatar">
-        <sc-upload v-model="state.form.avatar" title="上传头像"></sc-upload>
+        <sc-upload v-model="state.form.avatar" :cropper="true" title="上传头像"></sc-upload>
       </el-form-item>
       <el-form-item label="登录账号" prop="username">
         <el-input v-model="state.form.username" placeholder="用于登录系统" clearable></el-input>
