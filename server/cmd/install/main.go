@@ -1,11 +1,12 @@
 package main
 
 import (
-	"app/internal/initialize"
-	"app/internal/orm/query"
 	"log/slog"
 	"os"
 	"strings"
+
+	"app/internal/initialize"
+	"app/internal/orm/query"
 )
 
 func main() {
@@ -16,12 +17,12 @@ func main() {
 	}
 
 	// 导入初始化数据
-	err = InportSql("assets/migrations/schema.sql")
+	err = ImportSql("assets/migrations/schema.sql")
 	if err != nil {
 		panic(err)
 	}
 	// 导入初始化数据
-	err = InportSql("assets/migrations/seed.sql")
+	err = ImportSql("assets/migrations/seed.sql")
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +30,7 @@ func main() {
 	slog.Info("初始化数据导入完成")
 }
 
-func InportSql(file string) error {
+func ImportSql(file string) error {
 	slog.Info("导入初始化数据", "file", file)
 	// 导入初始化数据
 	sqlBytes, _ := os.ReadFile(file)
