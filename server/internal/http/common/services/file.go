@@ -1,7 +1,7 @@
 package services
 
 import (
-	"app/internal/modules/common/upload"
+	"app/internal/modules/upload"
 	"context"
 	"mime/multipart"
 	"path/filepath"

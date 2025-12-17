@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"app/internal/http/common/services"
-	"app/internal/modules/common/dblog"
+	"app/internal/modules/dblog"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 	"app/internal/util/captcha"

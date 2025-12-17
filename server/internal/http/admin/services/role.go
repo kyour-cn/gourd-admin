@@ -87,7 +87,7 @@ func (s *RoleService) Update(req *dto.RoleUpdateReq) (gen.ResultInfo, error) {
 
 	// 适配不同更新场景
 	if req.Type == "permission" {
-		fields = append(fields, q.Rules, q.RulesCheckd)
+		fields = append(fields, q.Rules, q.RulesChecked)
 	} else {
 		fields = append(fields, q.Name, q.Remark, q.Status, q.IsAdmin, q.Sort)
 	}
@@ -95,13 +95,13 @@ func (s *RoleService) Update(req *dto.RoleUpdateReq) (gen.ResultInfo, error) {
 		Where(q.ID.Eq(req.ID)).
 		Select(fields...).
 		Updates(&model.Role{
-			IsAdmin:     req.IsAdmin,
-			Name:        req.Name,
-			Sort:        req.Sort,
-			Remark:      req.Remark,
-			Status:      req.Status,
-			Rules:       req.Rules,
-			RulesCheckd: req.RulesChecked,
+			IsAdmin:      req.IsAdmin,
+			Name:         req.Name,
+			Sort:         req.Sort,
+			Remark:       req.Remark,
+			Status:       req.Status,
+			Rules:        req.Rules,
+			RulesChecked: req.RulesChecked,
 		})
 }
 

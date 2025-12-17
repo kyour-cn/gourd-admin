@@ -31,7 +31,7 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 	_role.AppID = field.NewUint32(tableName, "app_id")
 	_role.Name = field.NewString(tableName, "name")
 	_role.Rules = field.NewString(tableName, "rules")
-	_role.RulesCheckd = field.NewString(tableName, "rules_checkd")
+	_role.RulesChecked = field.NewString(tableName, "rules_checked")
 	_role.Remark = field.NewString(tableName, "remark")
 	_role.Status = field.NewUint32(tableName, "status")
 	_role.Sort = field.NewUint32(tableName, "sort")
@@ -54,20 +54,20 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 type role struct {
 	roleDo
 
-	ALL         field.Asterisk
-	ID          field.Uint32
-	AppID       field.Uint32 // 应用ID
-	Name        field.String // 角色名称
-	Rules       field.String // 权限ID ,分割a
-	RulesCheckd field.String // 权限树选中的字节点ID
-	Remark      field.String // 简介
-	Status      field.Uint32 // 状态
-	Sort        field.Uint32 // 排序
-	IsAdmin     field.Uint32 // 是否为管理员（所有权限）
-	CreatedAt   field.Time   // 创建时间
-	UpdatedAt   field.Time   // 更新时间
-	DeletedAt   field.Field  // 删除时间
-	App         roleHasOneApp
+	ALL          field.Asterisk
+	ID           field.Uint32
+	AppID        field.Uint32 // 应用ID
+	Name         field.String // 角色名称
+	Rules        field.String // 权限ID ,分割
+	RulesChecked field.String // 权限树选中的字节点ID
+	Remark       field.String // 简介
+	Status       field.Uint32 // 状态
+	Sort         field.Uint32 // 排序
+	IsAdmin      field.Uint32 // 是否为管理员（所有权限）
+	CreatedAt    field.Time   // 创建时间
+	UpdatedAt    field.Time   // 更新时间
+	DeletedAt    field.Field  // 删除时间
+	App          roleHasOneApp
 
 	fieldMap map[string]field.Expr
 }
@@ -88,7 +88,7 @@ func (r *role) updateTableName(table string) *role {
 	r.AppID = field.NewUint32(table, "app_id")
 	r.Name = field.NewString(table, "name")
 	r.Rules = field.NewString(table, "rules")
-	r.RulesCheckd = field.NewString(table, "rules_checkd")
+	r.RulesChecked = field.NewString(table, "rules_checked")
 	r.Remark = field.NewString(table, "remark")
 	r.Status = field.NewUint32(table, "status")
 	r.Sort = field.NewUint32(table, "sort")
@@ -117,7 +117,7 @@ func (r *role) fillFieldMap() {
 	r.fieldMap["app_id"] = r.AppID
 	r.fieldMap["name"] = r.Name
 	r.fieldMap["rules"] = r.Rules
-	r.fieldMap["rules_checkd"] = r.RulesCheckd
+	r.fieldMap["rules_checked"] = r.RulesChecked
 	r.fieldMap["remark"] = r.Remark
 	r.fieldMap["status"] = r.Status
 	r.fieldMap["sort"] = r.Sort

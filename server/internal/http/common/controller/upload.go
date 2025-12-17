@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"app/internal/modules/common/upload"
+	"app/internal/modules/upload"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 )
