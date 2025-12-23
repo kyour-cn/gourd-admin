@@ -27,7 +27,7 @@ func (c *File) MenuList(w http.ResponseWriter, r *http.Request) {
 func (c *File) MenuAdd(w http.ResponseWriter, r *http.Request) {
 	req := &dto.FileMenuAddReq{}
 	if err := c.JsonReqUnmarshal(r, req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 
@@ -45,7 +45,7 @@ func (c *File) MenuDelete(w http.ResponseWriter, r *http.Request) {
 		ID uint32 `json:"id"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 
@@ -124,7 +124,7 @@ func (c *File) Delete(w http.ResponseWriter, r *http.Request) {
 		Ids []uint32 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 

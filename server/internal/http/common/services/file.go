@@ -1,10 +1,11 @@
 package services
 
 import (
-	"app/internal/modules/upload"
 	"context"
 	"mime/multipart"
 	"path/filepath"
+
+	"app/internal/modules/upload"
 )
 
 func NewFileService(ctx context.Context) *FileService {

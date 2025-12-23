@@ -32,7 +32,7 @@ func (c *App) List(w http.ResponseWriter, r *http.Request) {
 func (c *App) Add(w http.ResponseWriter, r *http.Request) {
 	req := &dto.AppCreateReq{}
 	if err := c.JsonReqUnmarshal(r, req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 
@@ -48,7 +48,7 @@ func (c *App) Add(w http.ResponseWriter, r *http.Request) {
 func (c *App) Edit(w http.ResponseWriter, r *http.Request) {
 	req := &dto.AppUpdateReq{}
 	if err := c.JsonReqUnmarshal(r, req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (c *App) Delete(w http.ResponseWriter, r *http.Request) {
 		Ids []uint32 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 

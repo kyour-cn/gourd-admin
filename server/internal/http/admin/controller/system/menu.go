@@ -34,7 +34,7 @@ func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
 func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 	req := &dto.MenuCreateReq{}
 	if err := c.JsonReqUnmarshal(r, req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 
@@ -50,7 +50,7 @@ func (c *Menu) Add(w http.ResponseWriter, r *http.Request) {
 func (c *Menu) Edit(w http.ResponseWriter, r *http.Request) {
 	req := &dto.MenuUpdateReq{}
 	if err := c.JsonReqUnmarshal(r, req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 
@@ -69,7 +69,7 @@ func (c *Menu) Delete(w http.ResponseWriter, r *http.Request) {
 		Ids []uint32 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 

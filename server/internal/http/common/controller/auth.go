@@ -42,7 +42,7 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		}
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 

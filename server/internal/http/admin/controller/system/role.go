@@ -32,7 +32,7 @@ func (c *Role) List(w http.ResponseWriter, r *http.Request) {
 func (c *Role) Add(w http.ResponseWriter, r *http.Request) {
 	req := &dto.RoleCreateReq{}
 	if err := c.JsonReqUnmarshal(r, req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 
@@ -47,7 +47,7 @@ func (c *Role) Add(w http.ResponseWriter, r *http.Request) {
 func (c *Role) Edit(w http.ResponseWriter, r *http.Request) {
 	req := &dto.RoleUpdateReq{}
 	if err := c.JsonReqUnmarshal(r, req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 	// 从查询参数读取 type（permission 或 空）
@@ -67,7 +67,7 @@ func (c *Role) Delete(w http.ResponseWriter, r *http.Request) {
 		Ids []uint32 `json:"ids"`
 	}{}
 	if err := c.JsonReqUnmarshal(r, &req); err != nil {
-		_ = c.Fail(w, 101, "请求参数异常", err.Error())
+		_ = c.Fail(w, 101, "请求参数异常："+err.Error(), nil)
 		return
 	}
 
