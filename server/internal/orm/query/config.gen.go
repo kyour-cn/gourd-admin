@@ -28,9 +28,9 @@ func newConfig(db *gorm.DB, opts ...gen.DOOption) config {
 	tableName := _config.configDo.TableName()
 	_config.ALL = field.NewAsterisk(tableName)
 	_config.ID = field.NewUint32(tableName, "id")
-	_config.Name = field.NewString(tableName, "name")
-	_config.Group_ = field.NewString(tableName, "group")
+	_config.Key = field.NewString(tableName, "key")
 	_config.Title = field.NewString(tableName, "title")
+	_config.Group_ = field.NewString(tableName, "group")
 	_config.Type = field.NewString(tableName, "type")
 	_config.Value = field.NewString(tableName, "value")
 
@@ -45,9 +45,9 @@ type config struct {
 
 	ALL    field.Asterisk
 	ID     field.Uint32
-	Name   field.String // 名称
+	Key    field.String // 标签
+	Title  field.String // 名称
 	Group_ field.String // 分组
-	Title  field.String // 变量标题
 	Type   field.String // 数据类型
 	Value  field.String // 变量值
 
@@ -67,9 +67,9 @@ func (c config) As(alias string) *config {
 func (c *config) updateTableName(table string) *config {
 	c.ALL = field.NewAsterisk(table)
 	c.ID = field.NewUint32(table, "id")
-	c.Name = field.NewString(table, "name")
-	c.Group_ = field.NewString(table, "group")
+	c.Key = field.NewString(table, "key")
 	c.Title = field.NewString(table, "title")
+	c.Group_ = field.NewString(table, "group")
 	c.Type = field.NewString(table, "type")
 	c.Value = field.NewString(table, "value")
 
@@ -90,9 +90,9 @@ func (c *config) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 func (c *config) fillFieldMap() {
 	c.fieldMap = make(map[string]field.Expr, 6)
 	c.fieldMap["id"] = c.ID
-	c.fieldMap["name"] = c.Name
-	c.fieldMap["group"] = c.Group_
+	c.fieldMap["key"] = c.Key
 	c.fieldMap["title"] = c.Title
+	c.fieldMap["group"] = c.Group_
 	c.fieldMap["type"] = c.Type
 	c.fieldMap["value"] = c.Value
 }

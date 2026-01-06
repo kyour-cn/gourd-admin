@@ -21,6 +21,9 @@ const DEFAULT_CONFIG = {
   //请求超时
   TIMEOUT: 10000,
 
+  //是否开启行为验证登录
+  LOGIN_VERIFY: true,
+
   //TokenName
   TOKEN_NAME: "Authorization",
 

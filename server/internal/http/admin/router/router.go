@@ -14,6 +14,12 @@ func Router(r chi.Router) {
 	// 跨域中间件
 	r.Use(middleware.CorsMiddleware)
 
+	// 站点相关路由
+	r.Route("/site", func(r chi.Router) {
+		c := common.Site{}
+		r.HandleFunc("/config", c.Config)
+	})
+
 	// 登录相关路由
 	r.Route("/auth", func(r chi.Router) {
 		c := common.Auth{}

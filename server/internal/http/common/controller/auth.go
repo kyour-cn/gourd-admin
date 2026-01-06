@@ -32,9 +32,9 @@ func (c *Auth) Captcha(w http.ResponseWriter, _ *http.Request) {
 // Login 登录
 func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	req := struct {
-		Username   string `json:"username" validate:"required|minLen:5|maxLen:20"`
-		Password   string `json:"password" validate:"required|minLen:6|maxLen:32"`
-		CaptchaKey string `json:"captcha_key" validate:"required"`
+		Username   string `json:"username" validate:"required|minLen:5|maxLen:20" label:"用户名"`
+		Password   string `json:"password" validate:"required|minLen:6|maxLen:32" label:"密码"`
+		CaptchaKey string `json:"captcha_key"`
 		Md5        bool   `json:"md5"`
 		Point      struct {
 			X int `json:"x"`
@@ -46,8 +46,16 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 获取站点配置
+	confServ := services.NewConfigService(r.Context())
+	sc, err := confServ.GetSite()
+	if err != nil {
+		_ = c.Fail(w, 1, "获取配置失败", err.Error())
+		return
+	}
+
 	// 验证码校验
-	if !captcha.VerifySlide(req.CaptchaKey, req.Point.X, req.Point.Y) {
+	if sc.AdminCaptchaSwitch && !captcha.VerifySlide(req.CaptchaKey, req.Point.X, req.Point.Y) {
 		_ = c.Fail(w, 102, "验证失败", nil)
 		return
 	}

@@ -121,6 +121,10 @@ const state = reactive({
 const selectedApp = ref(null)
 
 const refreshCaptcha = () => {
+  if(!config.LOGIN_VERIFY) {
+    confirmEvent()
+    return
+  }
   state.captchaShow = false
   authApi.captcha.get().then(res => {
     if (res.code === 0) {
@@ -160,7 +164,7 @@ const confirmEvent = async (point) => {
     password: tool.crypto.MD5(state.form.password),
     md5: true,
     point: point,
-    captcha_key: state.captchaData.captKey
+    captcha_key: state.captchaData?.captKey
   };
   //获取token
   const user = await authApi.login.post(data);

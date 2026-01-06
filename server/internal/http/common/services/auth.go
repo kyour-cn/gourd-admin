@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gen"
+	"gorm.io/gorm"
 
 	"app/internal/config"
 	"app/internal/http/common/dto"
@@ -100,6 +101,9 @@ func (s *AuthService) GetMenu(userInfo *model.User, appId uint32) (MenuTreeArr, 
 		Where(conds...).
 		Find()
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("暂无可用菜单")
+		}
 		return nil, err
 	}
 
