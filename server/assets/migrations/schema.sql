@@ -14,9 +14,9 @@ create table config
 (
     id      int unsigned auto_increment
         primary key,
-    name    varchar(30) default '' not null comment '名称',
+    `key`   varchar(50) default '' not null comment '标签',
+    title   varchar(30) default '' not null comment '名称',
     `group` varchar(30) default '' not null comment '分组',
-    title   varchar(50) default '' not null comment '变量标题',
     type    varchar(30) default '' not null comment '数据类型',
     value   longtext               null comment '变量值'
 )
@@ -198,6 +198,7 @@ create table user
         primary key,
     nickname   char(32)     default '' not null comment '昵称',
     username   char(32)     default '' not null comment '用户名(登录账号)',
+    mobile     char(15)                not null comment '手机号',
     avatar     varchar(255) default '' not null comment '头像',
     password   char(32)     default '' not null comment '密码 md5',
     status     tinyint      default 0  not null comment '状态',

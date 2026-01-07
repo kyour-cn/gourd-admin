@@ -1,6 +1,9 @@
 # table app
 INSERT INTO app (id, name, `key`, remark, status, sort) VALUES (1, '系统后台', 'admin', '系统总后台', 1, 0);
 
+# table config
+INSERT INTO config (`key`, title, `group`, type, value) VALUES ('site', '站点配置', 'base', 'json', '{"admin_captcha_switch":false}');
+
 # table file_storage
 INSERT INTO file_storage (id, name, `key`, config, is_default, status) VALUES (1, '本地储存', 'local', null, 1, 1);
 
@@ -48,7 +51,7 @@ INSERT INTO menu_api (app_id, menu_id, path, tag) VALUES (1, 8, '/admin/system/l
 INSERT INTO role (id, app_id, name, rules, rules_checked, remark, status, sort, is_admin, created_at, updated_at, deleted_at) VALUES (1, 1, '管理员', '', '', '', 1, 0, 1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', null);
 
 # table user
-INSERT INTO user (id, nickname, username, avatar, password, status, login_time, created_at, updated_at, deleted_at) VALUES (1, '管理员', 'admin', '', '767e955464233667bfd855686a55b352', 1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '2025-01-01 00:00:00', null);
+INSERT INTO user (id, nickname, username, mobile, avatar, password, status, login_time, created_at, updated_at, deleted_at) VALUES (1, '管理员', 'admin', '', '', '767e955464233667bfd855686a55b352', 1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '2025-01-01 00:00:00', null);
 
 # table user_role
 INSERT INTO user_role (user_id, role_id, created_at, deleted_at) VALUES (1, 1, '2025-01-01 00:00:00', null);
