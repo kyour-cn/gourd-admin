@@ -26,23 +26,17 @@ type Response struct {
 type Base struct{}
 
 // Success 成功时响应
-func (*Base) Success(w http.ResponseWriter, message string, data any) (err error) {
-	res := Response{
-		Data:    data,
-		Message: message,
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	str, err := json.Marshal(res)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(str)
-	return
+func (c *Base) Success(w http.ResponseWriter, message string, data any) error {
+	return c.WithData(w, 0, message, data)
 }
 
 // Fail 失败响应
-func (*Base) Fail(w http.ResponseWriter, code int, message string, data any) (err error) {
+func (c *Base) Fail(w http.ResponseWriter, code int, message string, data any) error {
+	return c.WithData(w, code, message, data)
+}
+
+// WithData 自定义响应内容
+func (*Base) WithData(w http.ResponseWriter, code int, message string, data any) error {
 	res := Response{
 		Code:    code,
 		Data:    data,
@@ -50,12 +44,14 @@ func (*Base) Fail(w http.ResponseWriter, code int, message string, data any) (er
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	str, err := json.Marshal(res)
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+
+	body, err := json.Marshal(res)
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(str)
-	return
+	_, err = w.Write(body)
+	return err
 }
 
 // JsonReqUnmarshal 解析json请求参数

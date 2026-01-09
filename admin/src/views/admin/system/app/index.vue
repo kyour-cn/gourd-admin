@@ -4,8 +4,7 @@
       <div class="left-panel">
         <el-button v-auth="'admin.system.app.add'" type="primary" icon="el-icon-plus" @click="add"/>
         <el-button v-auth="'admin.system.app.delete'" type="danger" plain icon="el-icon-delete"
-                   :disabled="!state.selection.length"
-                   @click="batchDel"/>
+                   :disabled="!state.selection.length" @click="batchDel"/>
       </div>
       <div class="right-panel">
         <div class="right-panel-search">
