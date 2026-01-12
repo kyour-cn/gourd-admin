@@ -23,7 +23,7 @@ func (c *Menu) List(w http.ResponseWriter, r *http.Request) {
 
 	serv := cs.NewAuthService(r.Context())
 
-	menus, err := serv.GetMenuFormApp(req.AppId)
+	menus, err := serv.GetMenuFromApp(req.AppId)
 	if err != nil {
 		return
 	}

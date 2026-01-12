@@ -148,9 +148,8 @@ func (s *AuthService) RecursionMenu(menus []*model.Menu, parentId uint32) MenuTr
 	return arr
 }
 
-// GetMenuFormApp 获取指定应用的菜单
-func (s *AuthService) GetMenuFormApp(appId uint32) (any, error) {
-
+// GetMenuFromApp 获取指定应用的菜单
+func (s *AuthService) GetMenuFromApp(appId uint32) (any, error) {
 	qm := query.Menu
 	conds := []gen.Condition{
 		qm.AppID.Eq(appId),
