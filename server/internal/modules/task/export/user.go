@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"path/filepath"
 
 	"gorm.io/gen"
 
+	"app/internal/config"
 	"app/internal/http/admin/dto"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
@@ -108,7 +110,22 @@ func UserExport(ctx context.Context, task *model.Task) error {
 		page++
 	}
 
-	err = e.Save("web/" + fileName)
+	// 保存路径
+	baseDir := "./web"
+	conf, err := config.GetHttpConfig()
+	if err == nil {
+		baseDir = conf.Static
+	}
+
+	// 如果是相对路径，转换为绝对路径
+	if !filepath.IsAbs(baseDir) {
+		abs, err := filepath.Abs(baseDir)
+		if err == nil {
+			baseDir = abs
+		}
+	}
+
+	err = e.Save(baseDir + "/" + fileName)
 	if err != nil {
 		return err
 	}
