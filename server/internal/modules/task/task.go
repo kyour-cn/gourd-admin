@@ -2,11 +2,13 @@ package task
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 
 	"github.com/go-gourd/gourd/event"
 
+	"app/internal/modules/task/export"
 	"app/internal/orm/model"
 	"app/internal/orm/query"
 )
@@ -15,6 +17,7 @@ func Init(ctx context.Context) {
 	go func() {
 		// 监听任务运行事件
 		event.Listen("task.run", func(_ context.Context) {
+			// 立即触发任务运行
 			go Run(ctx)
 		})
 		for {
@@ -68,46 +71,37 @@ func Run(ctx context.Context) {
 			slog.Error("handle task error.", "err", err)
 		}
 	}
-
 }
 
 func handleTask(ctx context.Context, task *model.Task) error {
 	q := query.Task
 	// 更新任务状态为处理中
-	res, err := q.WithContext(ctx).
+	_, err := q.WithContext(ctx).
 		Where(q.ID.Eq(task.ID)).
 		Update(q.Status, 1)
-	if err != nil && res.RowsAffected == 0 {
+	if err != nil {
 		return err
 	}
 
-	switch task.Type {
-	case "export":
-		// 导出任务
-		err := ExportTask(ctx, task)
-		if err != nil {
-			result := err.Error()
-			// 导出任务失败，更新任务状态为失败
-			_, err = q.WithContext(ctx).
-				Where(q.ID.Eq(task.ID)).
-				Updates(&model.Task{
-					Status: -1,
-					Result: &result,
-				})
-			return err
-		}
+	switch task.Label {
+	case "export_user":
+		// 导出用户任务
+		err = export.UserExport(ctx, task)
 	default:
 		result := "未知类型"
-		// 未知类型，改为失败
+		err = errors.New(result)
+	}
+
+	if err != nil {
+		result := err.Error()
+		// 导出任务失败，更新任务状态为失败
 		_, err = q.WithContext(ctx).
 			Where(q.ID.Eq(task.ID)).
 			Updates(&model.Task{
 				Status: -1,
 				Result: &result,
 			})
-		if err != nil {
-			return err
-		}
+		return err
 	}
 
 	return nil

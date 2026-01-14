@@ -69,14 +69,15 @@ func (s *UserService) Export(req *dto.UserExportReq) error {
 	}
 	content := string(_content)
 
-	err = query.Task.WithContext(s.ctx).Create(&model.Task{
-		Title:   "用户列表导出",
-		Group_:  "user",
-		Label:   "user",
-		UserID:  claims.Sub,
-		Type:    "export",
-		Content: &content,
-	})
+	err = query.Task.WithContext(s.ctx).
+		Create(&model.Task{
+			Title:   "用户列表导出",
+			Group_:  "user",
+			Label:   "export_user",
+			UserID:  claims.Sub,
+			Type:    "export",
+			Content: &content,
+		})
 
 	// 触发任务运行事件
 	event.Trigger("task.run", context.Background())
