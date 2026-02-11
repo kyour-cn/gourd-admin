@@ -73,9 +73,9 @@ func (s *UserService) Export(req *dto.UserExportReq) error {
 		Create(&model.Task{
 			Title:   "用户列表导出",
 			Group_:  "user",
+			Type:    "export",
 			Label:   "export_user",
 			UserID:  claims.Sub,
-			Type:    "export",
 			Content: &content,
 		})
 

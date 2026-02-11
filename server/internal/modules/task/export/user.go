@@ -88,12 +88,17 @@ func UserExport(ctx context.Context, task *model.Task) error {
 			if !user.LoginTime.IsZero() {
 				loginTime = user.LoginTime.Format("2006-01-02 15:04:05")
 			}
-			_ = loginTime
+
+			status := "正常"
+			if user.Status == 1 {
+				status = "禁用"
+			}
+
 			err = e.WriteLine(e.CurrentRow, []any{
 				user.ID,
 				user.Nickname,
 				user.Username,
-				user.Status,
+				status,
 				user.CreatedAt.Format("2006-01-02 15:04:05"),
 				loginTime,
 			})
