@@ -186,8 +186,8 @@ const confirmEvent = async (point) => {
   selectedApp.value = null
 
   // 获取应用
-  if (!user.data.apps) {
-    ElMessage.error("暂无应用权限！")
+  if (state.appList.length === 0) {
+    ElMessage.error("该账号暂无应用权限！")
     return
   } else if (state.appList.length === 1) {
     await getMenu(state.appList[0].id)

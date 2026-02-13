@@ -14,7 +14,7 @@
       label-position="left"
       label-width="100px"
     >
-      <el-form-item label="角色名称" prop="label">
+      <el-form-item label="角色名称" prop="name">
         <el-input v-model="state.form.name" clearable></el-input>
       </el-form-item>
       <el-form-item label="排序" prop="sort">

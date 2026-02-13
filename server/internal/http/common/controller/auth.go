@@ -81,7 +81,7 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 			RequestUser:   res.UserInfo.Nickname,
 		}).
 		WithRequest(r).
-		Write("登录后台", "")
+		Write("用户登录", "")
 
 	_ = c.Success(w, "", res)
 }
