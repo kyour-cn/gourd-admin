@@ -8,17 +8,17 @@ import (
 	"app/internal/modules/upload"
 )
 
-func NewFileService(ctx context.Context) *FileService {
-	return &FileService{
+func NewCloudUploadService(ctx context.Context) *CloudUploadService {
+	return &CloudUploadService{
 		ctx: ctx,
 	}
 }
 
-type FileService struct {
+type CloudUploadService struct {
 	ctx context.Context
 }
 
-func (s *FileService) CloudUpload(file multipart.File, handler *multipart.FileHeader, group string) (*upload.Output, error) {
+func (s *CloudUploadService) Upload(file multipart.File, handler *multipart.FileHeader, group string) (*upload.Output, error) {
 	// 检查文件类型（可选）
 	ext := filepath.Ext(handler.Filename)
 
@@ -31,6 +31,7 @@ func (s *FileService) CloudUpload(file multipart.File, handler *multipart.FileHe
 		Ext:      ext,
 	}
 
+	// 获取上传器
 	uploader, err := upload.GetUploader("")
 	if err != nil {
 		return nil, err

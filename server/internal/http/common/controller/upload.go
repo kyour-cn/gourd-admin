@@ -59,8 +59,8 @@ func (c *Upload) Image(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 保存路径 按日期分目录，避免单目录文件过多
-	service := services.NewFileService(r.Context())
-	output, err := service.CloudUpload(file, handler, "images")
+	service := services.NewCloudUploadService(r.Context())
+	output, err := service.Upload(file, handler, "images")
 	if err != nil {
 		_ = c.Fail(w, 502, "上传图片失败", err.Error())
 		return
@@ -129,8 +129,8 @@ func (c *Upload) File(w http.ResponseWriter, r *http.Request) {
 	//}
 
 	// 保存路径 按日期分目录，避免单目录文件过多
-	service := services.NewFileService(r.Context())
-	output, err := service.CloudUpload(file, handler, "files")
+	service := services.NewCloudUploadService(r.Context())
+	output, err := service.Upload(file, handler, "files")
 	if err != nil {
 		_ = c.Fail(w, 502, "上传图片失败", err.Error())
 		return

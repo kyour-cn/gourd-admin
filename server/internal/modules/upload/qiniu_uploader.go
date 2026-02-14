@@ -31,7 +31,7 @@ type QiniuResponse struct {
 
 func NewQiniuUploader(storage *model.FileStorage) Uploader {
 	return &QiniuUploader{
-		StoreKey: "qiniu", // 本地存储的唯一标识符
+		StoreKey: storage.Key, // 本地存储的唯一标识符
 		storage:  storage,
 	}
 }
@@ -39,10 +39,6 @@ func NewQiniuUploader(storage *model.FileStorage) Uploader {
 type QiniuUploader struct {
 	StoreKey string // 存储的唯一标识符
 	storage  *model.FileStorage
-}
-
-func (u QiniuUploader) GetStorageModel() *model.FileStorage {
-	return u.storage
 }
 
 func (u QiniuUploader) Upload(_ context.Context, input Input, savePath string) (*Output, error) {
@@ -62,6 +58,7 @@ func (u QiniuUploader) Upload(_ context.Context, input Input, savePath string) (
 	return &Output{
 		URL:       conf.Domain + savePath,
 		Path:      savePath,
+		Ext:       input.Ext,
 		FileName:  input.FileName,
 		Storage:   u.StoreKey,
 		StorageID: u.storage.ID,

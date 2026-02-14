@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gen"
 
-	"app/internal/orm/model"
 	"app/internal/orm/query"
 )
 
@@ -28,18 +27,17 @@ type Input struct {
 type Output struct {
 	URL       string `json:"url"`       // 可访问链接
 	Path      string `json:"path"`      // 存储路径
-	Ext       string `json:"ext"`       // 存储路径
+	Ext       string `json:"ext"`       // 文件后缀
 	FileName  string `json:"fileName"`  // 文件名（带后缀）
-	Hash      string `json:"hash"`      // 文件hash（如md5）
-	Storage   string `json:"storage"`   // 存储类型
-	StorageID uint32 `json:"storageID"` // 存储类型
+	Hash      string `json:"hash"`      // 文件hash值（如md5）
+	Storage   string `json:"storage"`   // 存储类型（对应file_storage表的key）
+	StorageID uint32 `json:"storageID"` // 存储类型ID（对应file_storage表的id）
 }
 
 // Uploader 接口定义了上传和删除文件的方法
 type Uploader interface {
 	Upload(ctx context.Context, input Input, savePath string) (*Output, error)
 	Delete(ctx context.Context, path string) error
-	GetStorageModel() *model.FileStorage // 获取存储模型
 }
 
 // GetUploader 获取上传器

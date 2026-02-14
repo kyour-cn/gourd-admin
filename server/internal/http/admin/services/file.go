@@ -83,8 +83,8 @@ func (s *FileService) Upload(req *dto.FileUploadReq) (*model.File, error) {
 	fileName := req.FileHeader.Filename
 
 	// 保存路径 按日期分目录，避免单目录文件过多
-	service := services.NewFileService(s.ctx)
-	output, err := service.CloudUpload(req.File, req.FileHeader, "files")
+	service := services.NewCloudUploadService(s.ctx)
+	output, err := service.Upload(req.File, req.FileHeader, "files")
 	if err != nil {
 		return nil, err
 	}

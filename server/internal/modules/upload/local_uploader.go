@@ -28,7 +28,7 @@ func NewLocalUploader(storage *model.FileStorage) Uploader {
 	}
 
 	return &LocalUploader{
-		StoreKey: "local",       // 本地存储的唯一标识符
+		StoreKey: storage.Key,   // 本地存储的唯一标识符
 		BaseDir:  baseDir + "/", // 本地存储的基础目录
 		storage:  storage,
 	}
@@ -38,10 +38,6 @@ type LocalUploader struct {
 	StoreKey string // 存储的唯一标识符
 	BaseDir  string // 本地存储的根目录
 	storage  *model.FileStorage
-}
-
-func (u LocalUploader) GetStorageModel() *model.FileStorage {
-	return u.storage
 }
 
 func (u LocalUploader) Upload(_ context.Context, input Input, savePath string) (*Output, error) {
@@ -72,6 +68,7 @@ func (u LocalUploader) Upload(_ context.Context, input Input, savePath string) (
 	return &Output{
 		URL:       savePath,
 		Path:      savePath,
+		Ext:       input.Ext,
 		FileName:  input.FileName,
 		Storage:   u.StoreKey,
 		StorageID: u.storage.ID,
