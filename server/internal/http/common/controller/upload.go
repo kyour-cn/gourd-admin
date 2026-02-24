@@ -76,7 +76,7 @@ func (c *Upload) Image(w http.ResponseWriter, r *http.Request) {
 		FilePath:   output.Path,
 		StorageID:  output.StorageID,
 		StorageKey: output.Storage,
-		HashMd5:    output.Hash,
+		Hash:       output.Hash,
 		UserID:     claims.Sub,
 	})
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *Upload) File(w http.ResponseWriter, r *http.Request) {
 		FilePath:   output.Path,
 		StorageID:  output.StorageID,
 		StorageKey: output.Storage,
-		HashMd5:    output.Hash,
+		Hash:       output.Hash,
 		UserID:     claims.Sub,
 	})
 	if err != nil {

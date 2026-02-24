@@ -37,7 +37,7 @@ func newFile(db *gorm.DB, opts ...gen.DOOption) file {
 	_file.MenuID = field.NewUint32(tableName, "menu_id")
 	_file.StorageID = field.NewUint32(tableName, "storage_id")
 	_file.StorageKey = field.NewString(tableName, "storage_key")
-	_file.HashMd5 = field.NewString(tableName, "hash_md5")
+	_file.Hash = field.NewString(tableName, "hash")
 	_file.UserID = field.NewUint32(tableName, "user_id")
 	_file.Status = field.NewInt32(tableName, "status")
 	_file.CreatedAt = field.NewTime(tableName, "created_at")
@@ -64,7 +64,7 @@ type file struct {
 	MenuID     field.Uint32
 	StorageID  field.Uint32 // 存储方式id
 	StorageKey field.String // 储存方式key
-	HashMd5    field.String // 文件内容的MD5
+	Hash       field.String // 文件的哈希值
 	UserID     field.Uint32 // 上传用户id
 	Status     field.Int32  // 状态 1=正常 0=停用
 	CreatedAt  field.Time   // 创建时间
@@ -96,7 +96,7 @@ func (f *file) updateTableName(table string) *file {
 	f.MenuID = field.NewUint32(table, "menu_id")
 	f.StorageID = field.NewUint32(table, "storage_id")
 	f.StorageKey = field.NewString(table, "storage_key")
-	f.HashMd5 = field.NewString(table, "hash_md5")
+	f.Hash = field.NewString(table, "hash")
 	f.UserID = field.NewUint32(table, "user_id")
 	f.Status = field.NewInt32(table, "status")
 	f.CreatedAt = field.NewTime(table, "created_at")
@@ -129,7 +129,7 @@ func (f *file) fillFieldMap() {
 	f.fieldMap["menu_id"] = f.MenuID
 	f.fieldMap["storage_id"] = f.StorageID
 	f.fieldMap["storage_key"] = f.StorageKey
-	f.fieldMap["hash_md5"] = f.HashMd5
+	f.fieldMap["hash"] = f.Hash
 	f.fieldMap["user_id"] = f.UserID
 	f.fieldMap["status"] = f.Status
 	f.fieldMap["created_at"] = f.CreatedAt

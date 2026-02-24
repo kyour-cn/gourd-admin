@@ -25,7 +25,7 @@ type File struct {
 	MenuID     uint32         `gorm:"column:menu_id;type:int unsigned;not null" json:"menu_id"`
 	StorageID  uint32         `gorm:"column:storage_id;type:int unsigned;not null;comment:存储方式id" json:"storage_id"`          // 存储方式id
 	StorageKey string         `gorm:"column:storage_key;type:varchar(20);not null;comment:储存方式key" json:"storage_key"`        // 储存方式key
-	HashMd5    string         `gorm:"column:hash_md5;type:char(32);not null;comment:文件内容的MD5" json:"hash_md5"`                // 文件内容的MD5
+	Hash       string         `gorm:"column:hash;type:char(32);not null;comment:文件的哈希值" json:"hash"`                          // 文件的哈希值
 	UserID     uint32         `gorm:"column:user_id;type:int unsigned;not null;comment:上传用户id" json:"user_id"`                // 上传用户id
 	Status     int32          `gorm:"column:status;type:tinyint;not null;default:1;comment:状态 1=正常 0=停用" json:"status"`       // 状态 1=正常 0=停用
 	CreatedAt  time.Time      `gorm:"column:created_at;type:datetime;not null;autoCreateTime;comment:创建时间" json:"created_at"` // 创建时间

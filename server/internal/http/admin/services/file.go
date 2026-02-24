@@ -98,7 +98,7 @@ func (s *FileService) Upload(req *dto.FileUploadReq) (*model.File, error) {
 		FilePath:   output.Path,
 		StorageID:  output.StorageID,
 		StorageKey: output.Storage,
-		HashMd5:    output.Hash,
+		Hash:       output.Hash,
 		UserID:     req.Claims.Sub,
 		MenuID:     req.MenuID,
 	}
