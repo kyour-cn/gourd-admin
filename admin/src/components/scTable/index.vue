@@ -37,7 +37,7 @@
           <template #reference>
             <el-button icon="el-icon-set-up" circle style="margin-left:15px"></el-button>
           </template>
-          <columnSetting v-if="customColumnShow" ref="columnSetting" @userChange="columnSettingChange" @save="columnSettingSave" @back="columnSettingBack" :column="userColumn"></columnSetting>
+          <columnSetting v-if="customColumnShow" ref="columnSettingRef" @userChange="columnSettingChange" @save="columnSettingSave" @back="columnSettingBack" :column="userColumn"></columnSetting>
         </el-popover>
         <el-popover v-if="!hideSetting" placement="top" title="表格设置" :width="400" trigger="click" :hide-after="0">
           <template #reference>
@@ -62,344 +62,403 @@
   </div>
 </template>
 
-<script>
-  import config from "@/config/table";
+<script setup>
+  import { ref, computed, watch, onMounted, onActivated, onDeactivated, getCurrentInstance } from 'vue'
+  import tableConfig from "@/config/table";
   import columnSetting from './columnSetting'
 
-  export default {
-    name: 'scTable',
-    components: {
-      columnSetting
-    },
-    props: {
-      tableName: { type: String, default: "" },
-      apiObj: { type: Object, default: () => {} },
-      params: { type: Object, default: () => ({}) },
-      data: { type: Object, default: () => {} },
-      height: { type: [String,Number], default: "100%" },
-      size: { type: String, default: "default" },
-      border: { type: Boolean, default: false },
-      stripe: { type: Boolean, default: false },
-      pageSize: { type: Number, default: config.pageSize },
-      pageSizes: { type: Array, default: config.pageSizes },
-      rowKey: { type: String, default: "" },
-      summaryMethod: { type: Function, default: null },
-      column: { type: Object, default: () => {} },
-      remoteSort: { type: Boolean, default: false },
-      remoteFilter: { type: Boolean, default: false },
-      remoteSummary: { type: Boolean, default: false },
-      hidePagination: { type: Boolean, default: false },
-      hideDo: { type: Boolean, default: false },
-      hideRefresh: { type: Boolean, default: false },
-      hideSetting: { type: Boolean, default: false },
-      paginationLayout: { type: String, default: config.paginationLayout },
-    },
-    watch: {
-      //监听从props里拿到值了
-      data(){
-        this.tableData = this.data;
-        this.total = this.tableData.length;
-      },
-      apiObj(){
-        this.tableParams = this.params;
-        this.refresh();
-      },
-      column(){
-        this.userColumn=this.column;
-      }
-    },
-    computed: {
-      _height() {
-        return Number(this.height)?Number(this.height)+'px':this.height
-      },
-      _table_height() {
-        return this.hidePagination && this.hideDo ? "100%" : "calc(100% - 50px)"
-      }
-    },
-    data() {
-      return {
-        scPageSize: this.pageSize,
-        isActivat: true,
-        emptyText: "暂无数据",
-        toggleIndex: 0,
-        tableData: [],
-        total: 0,
-        currentPage: 1,
-        prop: null,
-        order: null,
-        loading: false,
-        tableHeight:'100%',
-        tableParams: this.params,
-        userColumn: [],
-        customColumnShow: false,
-        summary: {},
-        config: {
-          size: this.size,
-          border: this.border,
-          stripe: this.stripe
-        }
-      }
-    },
-    mounted() {
-      //判断是否开启自定义列
-      if(this.column){
-        this.getCustomColumn()
-      }else{
-        this.userColumn = this.column
-      }
-      //判断是否静态数据
-      if(this.apiObj){
-        this.getData();
-      }else if(this.data){
-        this.tableData = this.data;
-        this.total = this.tableData.length
-      }
-    },
-    activated(){
-      if(!this.isActivat){
-        this.$refs.scTable.doLayout()
-      }
-    },
-    deactivated(){
-      this.isActivat = false;
-    },
-    methods: {
-      //获取列
-      async getCustomColumn(){
-        const userColumn = await config.columnSettingGet(this.tableName, this.column)
-        this.userColumn = userColumn
-      },
-      //获取数据
-      async getData(){
-        this.loading = true;
-        var reqData = {
-          [config.request.page]: this.currentPage,
-          [config.request.pageSize]: this.scPageSize,
-          [config.request.prop]: this.prop,
-          [config.request.order]: this.order
-        }
-        if(this.hidePagination){
-          delete reqData[config.request.page]
-          delete reqData[config.request.pageSize]
-        }
-        Object.assign(reqData, this.tableParams)
+  const { proxy } = getCurrentInstance()
 
-        try {
-          var res = await this.apiObj.get(reqData);
-        }catch(error){
-          this._clearData()
-          this.loading = false;
-          this.emptyText = error.statusText;
-          return false;
-        }
-        try {
-          var response = config.parseData(res);
-        }catch(error){
-          this._clearData()
-          this.loading = false;
-          this.emptyText = "数据格式错误";
-          return false;
-        }
-        if(response.code != config.successCode){
-          this._clearData()
-          this.loading = false;
-          this.emptyText = response.msg;
-        }else{
-          this.emptyText = "暂无数据";
-          if(this.hidePagination){
-            this.tableData = response.data || [];
-          }else{
-            this.tableData = response.rows || [];
-          }
-          this.total = response.total || 0;
-          this.summary = response.summary || {};
-          this.loading = false;
-        }
-        this.$refs.scTable.setScrollTop(0)
-        this.$emit('dataChange', res, this.tableData)
-      },
-      //清空数据
-      _clearData(){
-        this.tableData = []
-      },
-      //分页点击
-      paginationChange(){
-        this.getData();
-      },
-      //条数变化
-      pageSizeChange(size){
-        this.scPageSize = size
-        this.getData();
-      },
-      //刷新数据
-      refresh(){
-        this.$refs.scTable.clearSelection();
-        this.getData();
-      },
-      //更新数据 合并上一次params
-      upData(params, page=1){
-        this.currentPage = page;
-        this.$refs.scTable.clearSelection();
-        Object.assign(this.tableParams, params || {})
-        this.getData()
-      },
-      //重载数据 替换params
-      reload(params, page=1){
-        this.currentPage = page;
-        this.tableParams = params || {}
-        this.$refs.scTable.clearSelection();
-        this.$refs.scTable.clearSort()
-        this.$refs.scTable.clearFilter()
-        this.getData()
-      },
-      //自定义变化事件
-      columnSettingChange(userColumn){
-        this.userColumn = userColumn;
-        this.toggleIndex += 1;
-      },
-      //自定义列保存
-      async columnSettingSave(userColumn){
-        this.$refs.columnSetting.isSave = true
-        try {
-          await config.columnSettingSave(this.tableName, userColumn)
-        }catch(error){
-          this.$message.error('保存失败')
-          this.$refs.columnSetting.isSave = false
-        }
-        this.$message.success('保存成功')
-        this.$refs.columnSetting.isSave = false
-      },
-      //自定义列重置
-      async columnSettingBack(){
-        this.$refs.columnSetting.isSave = true
-        try {
-          const column = await config.columnSettingReset(this.tableName, this.column)
-          this.userColumn = column
-          this.$refs.columnSetting.usercolumn = JSON.parse(JSON.stringify(this.userColumn||[]))
-        }catch(error){
-          this.$message.error('重置失败')
-          this.$refs.columnSetting.isSave = false
-        }
-        this.$refs.columnSetting.isSave = false
-      },
-      //排序事件
-      sortChange(obj){
-        if(!this.remoteSort){
-          return false
-        }
-        if(obj.column && obj.prop){
-          this.prop = obj.prop
-          this.order = obj.order
-        }else{
-          this.prop = null
-          this.order = null
-        }
-        this.getData()
-      },
-      //本地过滤
-      filterHandler(value, row, column){
-        const property = column.property;
-        return row[property] === value;
-      },
-      //过滤事件
-      filterChange(filters){
-        if(!this.remoteFilter){
-          return false
-        }
-        Object.keys(filters).forEach(key => {
-          filters[key] = filters[key].join(',')
-        })
-        this.upData(filters)
-      },
-      //远程合计行处理
-      remoteSummaryMethod(param){
-        const {columns} = param
-        const sums = []
-        columns.forEach((column, index) => {
-          if(index === 0) {
-            sums[index] = '合计'
-            return
-          }
-          const values =  this.summary[column.property]
-          if(values){
-            sums[index] = values
-          }else{
-            sums[index] = ''
-          }
-        })
-        return sums
-      },
-      configSizeChange(){
-        this.$refs.scTable.doLayout()
-      },
-      //插入行 unshiftRow
-      unshiftRow(row){
-        this.tableData.unshift(row)
-      },
-      //插入行 pushRow
-      pushRow(row){
-        this.tableData.push(row)
-      },
-      //根据key覆盖数据
-      updateKey(row, rowKey=this.rowKey){
-        this.tableData.filter(item => item[rowKey]===row[rowKey] ).forEach(item => {
-          Object.assign(item, row)
-        })
-      },
-      //根据index覆盖数据
-      updateIndex(row, index){
-        Object.assign(this.tableData[index], row)
-      },
-      //根据index删除
-      removeIndex(index){
-        this.tableData.splice(index, 1)
-      },
-      //根据index批量删除
-      removeIndexes(indexes=[]){
-        indexes.forEach(index => {
-          this.tableData.splice(index, 1)
-        })
-      },
-      //根据key删除
-      removeKey(key, rowKey=this.rowKey){
-        this.tableData.splice(this.tableData.findIndex(item => item[rowKey]===key), 1)
-      },
-      //根据keys批量删除
-      removeKeys(keys=[], rowKey=this.rowKey){
-        keys.forEach(key => {
-          this.tableData.splice(this.tableData.findIndex(item => item[rowKey]===key), 1)
-        })
-      },
-      //原生方法转发
-      clearSelection(){
-        this.$refs.scTable.clearSelection()
-      },
-      toggleRowSelection(row, selected){
-        this.$refs.scTable.toggleRowSelection(row, selected)
-      },
-      toggleAllSelection(){
-        this.$refs.scTable.toggleAllSelection()
-      },
-      toggleRowExpansion(row, expanded){
-        this.$refs.scTable.toggleRowExpansion(row, expanded)
-      },
-      setCurrentRow(row){
-        this.$refs.scTable.setCurrentRow(row)
-      },
-      clearSort(){
-        this.$refs.scTable.clearSort()
-      },
-      clearFilter(columnKey){
-        this.$refs.scTable.clearFilter(columnKey)
-      },
-      doLayout(){
-        this.$refs.scTable.doLayout()
-      },
-      sort(prop, order){
-        this.$refs.scTable.sort(prop, order)
-      }
-    }
+  const props = defineProps({
+    tableName: { type: String, default: "" },
+    apiObj: { type: Object, default: () => {} },
+    params: { type: Object, default: () => ({}) },
+    data: { type: Object, default: () => {} },
+    height: { type: [String,Number], default: "100%" },
+    size: { type: String, default: "default" },
+    border: { type: Boolean, default: false },
+    stripe: { type: Boolean, default: false },
+    pageSize: { type: Number, default: tableConfig.pageSize },
+    pageSizes: { type: Array, default: tableConfig.pageSizes },
+    rowKey: { type: String, default: "" },
+    summaryMethod: { type: Function, default: null },
+    column: { type: Object, default: () => {} },
+    remoteSort: { type: Boolean, default: false },
+    remoteFilter: { type: Boolean, default: false },
+    remoteSummary: { type: Boolean, default: false },
+    hidePagination: { type: Boolean, default: false },
+    hideDo: { type: Boolean, default: false },
+    hideRefresh: { type: Boolean, default: false },
+    hideSetting: { type: Boolean, default: false },
+    paginationLayout: { type: String, default: tableConfig.paginationLayout },
+  })
+
+  const emit = defineEmits(['dataChange'])
+
+  const scPageSize = ref(props.pageSize)
+  const isActivat = ref(true)
+  const emptyText = ref("暂无数据")
+  const toggleIndex = ref(0)
+  const tableData = ref([])
+  const total = ref(0)
+  const currentPage = ref(1)
+  const prop = ref(null)
+  const order = ref(null)
+  const loading = ref(false)
+  const tableHeight = ref('100%')
+  const tableParams = ref(props.params)
+  const userColumn = ref([])
+  const customColumnShow = ref(false)
+  const summary = ref({})
+  const config = ref({
+    size: props.size,
+    border: props.border,
+    stripe: props.stripe
+  })
+
+  const scTableMain = ref(null)
+  const scTable = ref(null)
+  const columnSettingRef = ref(null)
+
+  const _height = computed(() => {
+    return Number(props.height)?Number(props.height)+'px':props.height
+  })
+
+  const _table_height = computed(() => {
+    return props.hidePagination && props.hideDo ? "100%" : "calc(100% - 50px)"
+  })
+
+  //监听从props里拿到值了
+  watch(() => props.data, () => {
+    tableData.value = props.data;
+    total.value = tableData.value.length;
+  })
+
+  watch(() => props.apiObj, () => {
+    tableParams.value = props.params;
+    refresh();
+  })
+
+  watch(() => props.column, () => {
+    userColumn.value = props.column;
+  })
+
+  //获取列
+  const getCustomColumn = async () => {
+    const userColumnData = await tableConfig.columnSettingGet(props.tableName, props.column)
+    userColumn.value = userColumnData
   }
+
+  //获取数据
+  const getData = async () => {
+    loading.value = true;
+    var reqData = {
+      [tableConfig.request.page]: currentPage.value,
+      [tableConfig.request.pageSize]: scPageSize.value,
+      [tableConfig.request.prop]: prop.value,
+      [tableConfig.request.order]: order.value
+    }
+    if(props.hidePagination){
+      delete reqData[tableConfig.request.page]
+      delete reqData[tableConfig.request.pageSize]
+    }
+    Object.assign(reqData, tableParams.value)
+
+    try {
+      var res = await props.apiObj.get(reqData);
+    }catch(error){
+      _clearData()
+      loading.value = false;
+      emptyText.value = error.statusText;
+      return false;
+    }
+    try {
+      var response = tableConfig.parseData(res);
+    }catch(error){
+      _clearData()
+      loading.value = false;
+      emptyText.value = "数据格式错误";
+      return false;
+    }
+    if(response.code != tableConfig.successCode){
+      _clearData()
+      loading.value = false;
+      emptyText.value = response.msg;
+    }else{
+      emptyText.value = "暂无数据";
+      if(props.hidePagination){
+        tableData.value = response.data || [];
+      }else{
+        tableData.value = response.rows || [];
+      }
+      total.value = response.total || 0;
+      summary.value = response.summary || {};
+      loading.value = false;
+    }
+    scTable.value.setScrollTop(0)
+    emit('dataChange', res, tableData.value)
+  }
+
+  //清空数据
+  const _clearData = () => {
+    tableData.value = []
+  }
+
+  //分页点击
+  const paginationChange = () => {
+    getData();
+  }
+
+  //条数变化
+  const pageSizeChange = (size) => {
+    scPageSize.value = size
+    getData();
+  }
+
+  //刷新数据
+  const refresh = () => {
+    scTable.value.clearSelection();
+    getData();
+  }
+
+  //更新数据 合并上一次params
+  const upData = (params, page=1) => {
+    currentPage.value = page;
+    scTable.value.clearSelection();
+    Object.assign(tableParams.value, params || {})
+    getData()
+  }
+
+  //重载数据 替换params
+  const reload = (params, page=1) => {
+    currentPage.value = page;
+    tableParams.value = params || {}
+    scTable.value.clearSelection();
+    scTable.value.clearSort()
+    scTable.value.clearFilter()
+    getData()
+  }
+
+  //自定义变化事件
+  const columnSettingChange = (userColumnData) => {
+    userColumn.value = userColumnData;
+    toggleIndex.value += 1;
+  }
+
+  //自定义列保存
+  const columnSettingSave = async (userColumnData) => {
+    columnSettingRef.value.isSave = true
+    try {
+      await tableConfig.columnSettingSave(props.tableName, userColumnData)
+    }catch(error){
+      proxy.$message.error('保存失败')
+      columnSettingRef.value.isSave = false
+    }
+    proxy.$message.success('保存成功')
+    columnSettingRef.value.isSave = false
+  }
+
+  //自定义列重置
+  const columnSettingBack = async () => {
+    columnSettingRef.value.isSave = true
+    try {
+      const column = await tableConfig.columnSettingReset(props.tableName, props.column)
+      userColumn.value = column
+      columnSettingRef.value.usercolumn = JSON.parse(JSON.stringify(userColumn.value||[]))
+    }catch(error){
+      proxy.$message.error('重置失败')
+      columnSettingRef.value.isSave = false
+    }
+    columnSettingRef.value.isSave = false
+  }
+
+  //排序事件
+  const sortChange = (obj) => {
+    if(!props.remoteSort){
+      return false
+    }
+    if(obj.column && obj.prop){
+      prop.value = obj.prop
+      order.value = obj.order
+    }else{
+      prop.value = null
+      order.value = null
+    }
+    getData()
+  }
+
+  //本地过滤
+  const filterHandler = (value, row, column) => {
+    const property = column.property;
+    return row[property] === value;
+  }
+
+  //过滤事件
+  const filterChange = (filters) => {
+    if(!props.remoteFilter){
+      return false
+    }
+    Object.keys(filters).forEach(key => {
+      filters[key] = filters[key].join(',')
+    })
+    upData(filters)
+  }
+
+  //远程合计行处理
+  const remoteSummaryMethod = (param) => {
+    const {columns} = param
+    const sums = []
+    columns.forEach((column, index) => {
+      if(index === 0) {
+        sums[index] = '合计'
+        return
+      }
+      const values =  summary.value[column.property]
+      if(values){
+        sums[index] = values
+      }else{
+        sums[index] = ''
+      }
+    })
+    return sums
+  }
+
+  const configSizeChange = () => {
+    scTable.value.doLayout()
+  }
+
+  //插入行 unshiftRow
+  const unshiftRow = (row) => {
+    tableData.value.unshift(row)
+  }
+
+  //插入行 pushRow
+  const pushRow = (row) => {
+    tableData.value.push(row)
+  }
+
+  //根据key覆盖数据
+  const updateKey = (row, rowKey=props.rowKey) => {
+    tableData.value.filter(item => item[rowKey]===row[rowKey] ).forEach(item => {
+      Object.assign(item, row)
+    })
+  }
+
+  //根据index覆盖数据
+  const updateIndex = (row, index) => {
+    Object.assign(tableData.value[index], row)
+  }
+
+  //根据index删除
+  const removeIndex = (index) => {
+    tableData.value.splice(index, 1)
+  }
+
+  //根据index批量删除
+  const removeIndexes = (indexes=[]) => {
+    indexes.forEach(index => {
+      tableData.value.splice(index, 1)
+    })
+  }
+
+  //根据key删除
+  const removeKey = (key, rowKey=props.rowKey) => {
+    tableData.value.splice(tableData.value.findIndex(item => item[rowKey]===key), 1)
+  }
+
+  //根据keys批量删除
+  const removeKeys = (keys=[], rowKey=props.rowKey) => {
+    keys.forEach(key => {
+      tableData.value.splice(tableData.value.findIndex(item => item[rowKey]===key), 1)
+    })
+  }
+
+  //原生方法转发
+  const clearSelection = () => {
+    scTable.value.clearSelection()
+  }
+
+  const toggleRowSelection = (row, selected) => {
+    scTable.value.toggleRowSelection(row, selected)
+  }
+
+  const toggleAllSelection = () => {
+    scTable.value.toggleAllSelection()
+  }
+
+  const toggleRowExpansion = (row, expanded) => {
+    scTable.value.toggleRowExpansion(row, expanded)
+  }
+
+  const setCurrentRow = (row) => {
+    scTable.value.setCurrentRow(row)
+  }
+
+  const clearSort = () => {
+    scTable.value.clearSort()
+  }
+
+  const clearFilter = (columnKey) => {
+    scTable.value.clearFilter(columnKey)
+  }
+
+  const doLayout = () => {
+    scTable.value.doLayout()
+  }
+
+  const sort = (prop, order) => {
+    scTable.value.sort(prop, order)
+  }
+
+  onMounted(() => {
+    //判断是否开启自定义列
+    if(props.column){
+      getCustomColumn()
+    }else{
+      userColumn.value = props.column
+    }
+    //判断是否静态数据
+    if(props.apiObj){
+      getData();
+    }else if(props.data){
+      tableData.value = props.data;
+      total.value = tableData.value.length
+    }
+  })
+
+  onActivated(() => {
+    if(!isActivat.value){
+      scTable.value.doLayout()
+    }
+  })
+
+  onDeactivated(() => {
+    isActivat.value = false;
+  })
+
+  // 暴露方法给父组件调用
+  defineExpose({
+    refresh,
+    upData,
+    reload,
+    unshiftRow,
+    pushRow,
+    updateKey,
+    updateIndex,
+    removeIndex,
+    removeIndexes,
+    removeKey,
+    removeKeys,
+    clearSelection,
+    toggleRowSelection,
+    toggleAllSelection,
+    toggleRowExpansion,
+    setCurrentRow,
+    clearSort,
+    clearFilter,
+    doLayout,
+    sort
+  })
 </script>
 
 <style scoped>

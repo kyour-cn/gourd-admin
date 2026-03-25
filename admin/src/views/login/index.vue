@@ -59,7 +59,8 @@
   </el-dialog>
 </template>
 
-<script>
+<script setup>
+import { ref, watch, getCurrentInstance } from 'vue'
 import passwordForm from './components/passwordForm'
 import phoneForm from './components/phoneForm'
 import tool from '@/utils/tool'
@@ -67,76 +68,71 @@ import { useKeepAliveStore } from '@/stores/useKeepAliveStore'
 import { useViewTagsStore } from '@/stores/useViewTagsStore'
 import { useIframeStore } from '@/stores/useIframeStore'
 
-export default {
-  components: {
-    passwordForm,
-    phoneForm,
+const { proxy } = getCurrentInstance()
+
+const config = ref({
+  lang: tool.data.get('APP_LANG') || proxy.$CONFIG.LANG,
+  dark: tool.data.get('APP_DARK') || false
+})
+
+const lang = ref([
+  {
+    name: '简体中文',
+    value: 'zh-cn',
   },
-  data() {
-    return {
-      config: {
-        lang: tool.data.get('APP_LANG') || this.$CONFIG.LANG,
-        dark: tool.data.get('APP_DARK') || false
-      },
-      lang: [
-        {
-          name: '简体中文',
-          value: 'zh-cn',
-        },
-        {
-          name: 'English',
-          value: 'en',
-        }
-      ],
-      WechatLoginCode: "",
-      showWechatLogin: false,
-      isWechatLoginResult: false
-    }
-  },
-  watch: {
-    'config.dark'(val) {
-      if (val) {
-        document.documentElement.classList.add("dark")
-        tool.data.set("APP_DARK", val)
-      } else {
-        document.documentElement.classList.remove("dark")
-        tool.data.remove("APP_DARK")
-      }
-    },
-    'config.lang'(val) {
-      this.$i18n.locale = val
-      tool.data.set("APP_LANG", val)
-    }
-  },
-  created: function () {
-    tool.cookie.remove("TOKEN")
-    tool.data.remove("USER_INFO")
-    tool.data.remove("MENU")
-    tool.data.remove("PERMISSIONS")
-    tool.data.remove("grid")
-    const viewTagsStore = useViewTagsStore()
-    const keepAliveStore = useKeepAliveStore()
-    const iframeStore = useIframeStore()
-    viewTagsStore.clearViewTags()
-    keepAliveStore.clearKeepLive()
-    iframeStore.clearIframeList()
-  },
-  methods: {
-    configDark() {
-      this.config.dark = !this.config.dark
-    },
-    configLang(command) {
-      this.config.lang = command.value
-    },
-    wechatLogin() {
-      this.showWechatLogin = true
-      this.WechatLoginCode = "GA-" + new Date().getTime()
-      this.isWechatLoginResult = false
-      setTimeout(() => {
-        this.isWechatLoginResult = true
-      }, 3000)
-    }
+  {
+    name: 'English',
+    value: 'en',
   }
+])
+
+const WechatLoginCode = ref("")
+const showWechatLogin = ref(false)
+const isWechatLoginResult = ref(false)
+
+watch(() => config.value.dark, (val) => {
+  if (val) {
+    document.documentElement.classList.add("dark")
+    tool.data.set("APP_DARK", val)
+  } else {
+    document.documentElement.classList.remove("dark")
+    tool.data.remove("APP_DARK")
+  }
+})
+
+watch(() => config.value.lang, (val) => {
+  proxy.$i18n.locale = val
+  tool.data.set("APP_LANG", val)
+})
+
+// 初始化清理
+tool.cookie.remove("TOKEN")
+tool.data.remove("USER_INFO")
+tool.data.remove("MENU")
+tool.data.remove("PERMISSIONS")
+tool.data.remove("grid")
+const viewTagsStore = useViewTagsStore()
+const keepAliveStore = useKeepAliveStore()
+const iframeStore = useIframeStore()
+viewTagsStore.clearViewTags()
+keepAliveStore.clearKeepLive()
+iframeStore.clearIframeList()
+
+const configDark = () => {
+  config.value.dark = !config.value.dark
+}
+
+const configLang = (command) => {
+  config.value.lang = command.value
+}
+
+const wechatLogin = () => {
+  showWechatLogin.value = true
+  WechatLoginCode.value = "GA-" + new Date().getTime()
+  isWechatLoginResult.value = false
+  setTimeout(() => {
+    isWechatLoginResult.value = true
+  }, 3000)
 }
 </script>
 

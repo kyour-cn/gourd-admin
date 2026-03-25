@@ -20,49 +20,38 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { ref, watch, nextTick, provide } from 'vue'
   import nodeWrap from './nodeWrap'
   import useSelect from './select'
 
-  export default {
-    provide(){
-      return {
-        select: this.selectHandle
-      }
-    },
-    props: {
-      modelValue: { type: Object, default: () => {} }
-    },
-    components: {
-      nodeWrap,
-      useSelect
-    },
-    data() {
-      return {
-        nodeConfig: this.modelValue,
-        selectVisible: false
-      }
-    },
-    watch:{
-      modelValue(val){
-        this.nodeConfig = val
-      },
-      nodeConfig(val){
-        this.$emit("update:modelValue", val)
-      }
-    },
-    mounted() {
+  const props = defineProps({
+    modelValue: { type: Object, default: () => {} }
+  })
 
-    },
-    methods: {
-      selectHandle(type, data){
-        this.selectVisible = true
-        this.$nextTick(() => {
-          this.$refs.useselect.open(type, data)
-        })
-      }
-    }
+  const emit = defineEmits(['update:modelValue'])
+
+  const nodeConfig = ref(props.modelValue)
+  const selectVisible = ref(false)
+  const useselect = ref(null)
+
+  // provide select方法给子组件
+  const selectHandle = (type, data) => {
+    selectVisible.value = true
+    nextTick(() => {
+      useselect.value.open(type, data)
+    })
   }
+
+  provide('select', selectHandle)
+
+  watch(() => props.modelValue, (val) => {
+    nodeConfig.value = val
+  })
+
+  watch(nodeConfig, (val) => {
+    emit("update:modelValue", val)
+  })
 </script>
 
 <style lang="scss">

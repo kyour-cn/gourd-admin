@@ -102,198 +102,201 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { ref, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
   import config from "@/config/filterBar"
   import pySelect from './pySelect'
   import my from './my'
 
-  export default {
-    name: 'filterBar',
-    components: {
-      pySelect,
-      my
-    },
-    props: {
-      filterName: { type: String, default: "" },
-      showOperator: { type: Boolean, default: true },
-      options: { type: Object, default: () => {} }
-    },
-    emits: ['filterChange'],
-    data() {
-      return {
-        drawer: false,
-        operator: config.operator,
-        fields: this.options,
-        filter: [],
-        myFilter: [],
-        filterObjLength: 0,
-        saveLoading: false
+  const { proxy } = getCurrentInstance()
+
+  const props = defineProps({
+    filterName: { type: String, default: "" },
+    showOperator: { type: Boolean, default: true },
+    options: { type: Object, default: () => {} }
+  })
+
+  const emit = defineEmits(['filterChange'])
+
+  const drawer = ref(false)
+  const operator = ref(config.operator)
+  const fields = ref(props.options)
+  const filter = ref([])
+  const myFilter = ref([])
+  const filterObjLength = ref(0)
+  const saveLoading = ref(false)
+  const myRef = ref(null)
+
+  const filterObj = computed(() => {
+    const obj = {}
+    filter.value.forEach((item) => {
+      if(props.showOperator){
+        var valueFormat = config.valueFormat.replace(/{key}/g, item.field.value)
+          valueFormat = valueFormat.replace(/{value}/g, item.value)
+          valueFormat = valueFormat.replace(/{separator}/g, config.separator)
+          valueFormat = valueFormat.replace(/{operator}/g, item.operator)
+        obj[valueFormat.split(':')[0]] = valueFormat.split(':')[1]
+      }else{
+        obj[item.field.value] = item.value
       }
-    },
-    computed: {
-      filterObj(){
-        const obj = {}
-        this.filter.forEach((item) => {
-          if(this.showOperator){
-            var valueFormat = config.valueFormat.replace(/{key}/g, item.field.value)
-              valueFormat = valueFormat.replace(/{value}/g, item.value)
-              valueFormat = valueFormat.replace(/{separator}/g, config.separator)
-              valueFormat = valueFormat.replace(/{operator}/g, item.operator)
-            obj[valueFormat.split(':')[0]] = valueFormat.split(':')[1]
-          }else{
-            obj[item.field.value] = item.value
-          }
-        })
-        return obj
-      }
-    },
-    mounted(){
-      //默认显示的过滤项
-      this.fields.forEach((item) => {
-        if(item.selected){
-          this.filter.push({
-            field: item,
-            operator: item.operator || 'include',
-            value: ''
-          })
-        }
-      })
-    },
-    methods: {
-      //打开过滤器
-      openFilter(){
-        this.drawer = true
-      },
-      //增加过滤项
-      addFilter(){
-        //下一组新增过滤
-        var filterArr = this.fields.filter(field => !this.filter.some(item => field.value == item.field.value && !item.field.repeat))
-        if(this.fields.length<=0 || filterArr.length<=0){
-          this.$message.warning('无过滤项');
-          return false
-        }
-        const filterNum = filterArr[0]
-        this.filter.push({
-          field: filterNum,
-          operator: filterNum.operator || 'include',
+    })
+    return obj
+  })
+
+  onMounted(() => {
+    //默认显示的过滤项
+    fields.value.forEach((item) => {
+      if(item.selected){
+        filter.value.push({
+          field: item,
+          operator: item.operator || 'include',
           value: ''
         })
-      },
-      //删除过滤项
-      delFilter(index){
-        this.filter.splice(index, 1)
-      },
-      //过滤项字段变更事件
-      fieldChange(tr){
-        let oldType = tr.field.type
-        tr.field.type = ''
-        this.$nextTick(() => {
-          tr.field.type = oldType
-        })
-        tr.operator = tr.field.operator || 'include'
-        tr.value = ''
-      },
-      //下拉框显示事件处理异步
-      async visibleChange(isopen, item){
-        if(isopen && item.field.extend.request && !item.field.extend.remote){
-          item.selectLoading = true;
-          try {
-            var data = await item.field.extend.request()
-          }catch (error) {
-            console.log(error);
-          }
-          item.field.extend.data = data;
-          item.selectLoading = false;
-        }
-      },
-      //下拉框显示事件处理异步搜索
-      async remoteMethod(query, item){
-        if(!item.field.extend.request) {
-          return false;
-        }
-        if(query !== ''){
-          item.selectLoading = true;
-          try {
-          var data = await item.field.extend.request(query);
-          }catch (error) {
-            console.log(error);
-          }
-          item.field.extend.data = data;
-          item.selectLoading = false;
-        }else{
-          item.field.extend.data = [];
-        }
-      },
-      //选择常用过滤
-      selectMyfilter(item){
-        //常用过滤回显当前过滤项
-        this.filter = []
-        this.fields.forEach((field) => {
-          var filterValue = item.filterObj[field.value]
-          if(filterValue){
-            var operator = filterValue.split("|")[1]
-            var value = filterValue.split("|")[0]
-            if(field.type=='select' && field.extend.multiple){
-              value = value.split(",")
-            }else if(field.type=='daterange'){
-              value = value.split(",")
-            }
-            this.filter.push({
-              field: field,
-              operator: operator,
-              value:  value
-            })
-          }
-        })
-        this.filterObjLength = Object.keys(item.filterObj).length
-        this.$emit('filterChange',item.filterObj)
-        this.drawer = false
-      },
-      //立即过滤
-      ok(){
-        this.filterObjLength = this.filter.length
-        this.$emit('filterChange',this.filterObj)
-        this.drawer = false
-      },
-      //保存常用
-      saveMy(){
-        this.$prompt('常用过滤名称', '另存为常用', {
-          inputPlaceholder: '请输入识别度较高的常用过滤名称',
-          inputPattern: /\S/,
-          inputErrorMessage: '名称不能为空'
-        })
-        .then(async ({ value }) => {
-          this.saveLoading = true
-          const saveObj = {
-            title: value,
-            filterObj: this.filterObj
-          }
-          try {
-            var save = await config.saveMy(this.filterName, saveObj)
-          }catch (error) {
-            this.saveLoading = false
-            console.log(error);
-            return false
-          }
-          if(!save){
-            return false
-          }
-
-          this.myFilter.push(saveObj)
-          this.$message.success(`${this.filterName} 保存常用成功`)
-          this.saveLoading = false
-        })
-        .catch(() => {
-          //
-        })
-      },
-      //清空过滤
-      clear(){
-        this.filter = []
-        this.filterObjLength = 0
-        this.$emit('filterChange',this.filterObj)
       }
+    })
+  })
+
+  //打开过滤器
+  const openFilter = () => {
+    drawer.value = true
+  }
+
+  //增加过滤项
+  const addFilter = () => {
+    //下一组新增过滤
+    var filterArr = fields.value.filter(field => !filter.value.some(item => field.value == item.field.value && !item.field.repeat))
+    if(fields.value.length<=0 || filterArr.length<=0){
+      proxy.$message.warning('无过滤项');
+      return false
     }
+    const filterNum = filterArr[0]
+    filter.value.push({
+      field: filterNum,
+      operator: filterNum.operator || 'include',
+      value: ''
+    })
+  }
+
+  //删除过滤项
+  const delFilter = (index) => {
+    filter.value.splice(index, 1)
+  }
+
+  //过滤项字段变更事件
+  const fieldChange = (tr) => {
+    let oldType = tr.field.type
+    tr.field.type = ''
+    nextTick(() => {
+      tr.field.type = oldType
+    })
+    tr.operator = tr.field.operator || 'include'
+    tr.value = ''
+  }
+
+  //下拉框显示事件处理异步
+  const visibleChange = async (isopen, item) => {
+    if(isopen && item.field.extend.request && !item.field.extend.remote){
+      item.selectLoading = true;
+      try {
+        var data = await item.field.extend.request()
+      }catch (error) {
+        console.log(error);
+      }
+      item.field.extend.data = data;
+      item.selectLoading = false;
+    }
+  }
+
+  //下拉框显示事件处理异步搜索
+  const remoteMethod = async (query, item) => {
+    if(!item.field.extend.request) {
+      return false;
+    }
+    if(query !== ''){
+      item.selectLoading = true;
+      try {
+      var data = await item.field.extend.request(query);
+      }catch (error) {
+        console.log(error);
+      }
+      item.field.extend.data = data;
+      item.selectLoading = false;
+    }else{
+      item.field.extend.data = [];
+    }
+  }
+
+  //选择常用过滤
+  const selectMyfilter = (item) => {
+    //常用过滤回显当前过滤项
+    filter.value = []
+    fields.value.forEach((field) => {
+      var filterValue = item.filterObj[field.value]
+      if(filterValue){
+        var operator = filterValue.split("|")[1]
+        var value = filterValue.split("|")[0]
+        if(field.type=='select' && field.extend.multiple){
+          value = value.split(",")
+        }else if(field.type=='daterange'){
+          value = value.split(",")
+        }
+        filter.value.push({
+          field: field,
+          operator: operator,
+          value:  value
+        })
+      }
+    })
+    filterObjLength.value = Object.keys(item.filterObj).length
+    emit('filterChange', item.filterObj)
+    drawer.value = false
+  }
+
+  //立即过滤
+  const ok = () => {
+    filterObjLength.value = filter.value.length
+    emit('filterChange', filterObj.value)
+    drawer.value = false
+  }
+
+  //保存常用
+  const saveMy = () => {
+    proxy.$prompt('常用过滤名称', '另存为常用', {
+      inputPlaceholder: '请输入识别度较高的常用过滤名称',
+      inputPattern: /\S/,
+      inputErrorMessage: '名称不能为空'
+    })
+    .then(async ({ value }) => {
+      saveLoading.value = true
+      const saveObj = {
+        title: value,
+        filterObj: filterObj.value
+      }
+      try {
+        var save = await config.saveMy(props.filterName, saveObj)
+      }catch (error) {
+        saveLoading.value = false
+        console.log(error);
+        return false
+      }
+      if(!save){
+        return false
+      }
+
+      myFilter.value.push(saveObj)
+      proxy.$message.success(`${props.filterName} 保存常用成功`)
+      saveLoading.value = false
+    })
+    .catch(() => {
+      //
+    })
+  }
+
+  //清空过滤
+  const clear = () => {
+    filter.value = []
+    filterObjLength.value = 0
+    emit('filterChange', filterObj.value)
   }
 </script>
 
