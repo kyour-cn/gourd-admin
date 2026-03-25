@@ -30,7 +30,7 @@
             </el-menu>
           </el-scrollbar>
         </div>
-        <div class="adminui-side-bottom" @click="store.commit('TOGGLE_menuIsCollapse')">
+        <div class="adminui-side-bottom" @click="globalStore.TOGGLE_menuIsCollapse()">
           <el-icon><el-icon-expand v-if="menuIsCollapse"/><el-icon-fold v-else /></el-icon>
         </div>
       </div>
@@ -40,8 +40,8 @@
         <Tags v-if="!ismobile && layoutTags"></Tags>
         <div class="adminui-main" id="adminui-main">
           <router-view v-slot="{ Component }">
-              <keep-alive :include="store.state.keepAlive.keepLiveRoute">
-                  <component :is="Component" :key="route.fullPath" v-if="store.state.keepAlive.routeShow"/>
+              <keep-alive :include="keepAliveStore.keepLiveRoute">
+                  <component :is="Component" :key="route.fullPath" v-if="keepAliveStore.routeShow"/>
               </keep-alive>
           </router-view>
           <iframe-view></iframe-view>
@@ -72,7 +72,7 @@
             </el-menu>
           </el-scrollbar>
         </div>
-        <div class="adminui-side-bottom" @click="store.commit('TOGGLE_menuIsCollapse')">
+        <div class="adminui-side-bottom" @click="globalStore.TOGGLE_menuIsCollapse()">
           <el-icon><el-icon-expand v-if="menuIsCollapse"/><el-icon-fold v-else /></el-icon>
         </div>
       </div>
@@ -82,8 +82,8 @@
         <Tags v-if="!ismobile && layoutTags"></Tags>
         <div class="adminui-main" id="adminui-main">
           <router-view v-slot="{ Component }">
-              <keep-alive :include="store.state.keepAlive.keepLiveRoute">
-                  <component :is="Component" :key="route.fullPath" v-if="store.state.keepAlive.routeShow"/>
+              <keep-alive :include="keepAliveStore.keepLiveRoute">
+                  <component :is="Component" :key="route.fullPath" v-if="keepAliveStore.routeShow"/>
               </keep-alive>
           </router-view>
           <iframe-view></iframe-view>
@@ -116,8 +116,8 @@
         <Tags v-if="!ismobile && layoutTags"></Tags>
         <div class="adminui-main" id="adminui-main">
           <router-view v-slot="{ Component }">
-              <keep-alive :include="store.state.keepAlive.keepLiveRoute">
-                  <component :is="Component" :key="route.fullPath" v-if="store.state.keepAlive.routeShow"/>
+              <keep-alive :include="keepAliveStore.keepLiveRoute">
+                  <component :is="Component" :key="route.fullPath" v-if="keepAliveStore.routeShow"/>
               </keep-alive>
           </router-view>
           <iframe-view></iframe-view>
@@ -158,7 +158,7 @@
             </el-menu>
           </el-scrollbar>
         </div>
-        <div class="adminui-side-bottom" @click="store.commit('TOGGLE_menuIsCollapse')">
+        <div class="adminui-side-bottom" @click="globalStore.TOGGLE_menuIsCollapse()">
           <el-icon><el-icon-expand v-if="menuIsCollapse"/><el-icon-fold v-else /></el-icon>
         </div>
       </div>
@@ -170,8 +170,8 @@
         <Tags v-if="!ismobile && layoutTags"></Tags>
         <div class="adminui-main" id="adminui-main">
           <router-view v-slot="{ Component }">
-              <keep-alive :include="store.state.keepAlive.keepLiveRoute">
-                  <component :is="Component" :key="route.fullPath" v-if="store.state.keepAlive.routeShow"/>
+              <keep-alive :include="keepAliveStore.keepLiveRoute">
+                  <component :is="Component" :key="route.fullPath" v-if="keepAliveStore.routeShow"/>
               </keep-alive>
           </router-view>
           <iframe-view></iframe-view>
@@ -194,8 +194,9 @@
 <script setup>
 import config from "@/config";
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
-import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
+import { useGlobalStore } from '@/stores/useGlobalStore'
+import { useKeepAliveStore } from '@/stores/useKeepAliveStore'
 import SideM from './components/sideM.vue'
 import Topbar from './components/topbar.vue'
 import Tags from './components/tags.vue'
@@ -206,7 +207,8 @@ import iframeView from './components/iframeView.vue'
 import autoExit from './other/autoExit.js'
 
 // 获取store、route、router实例
-const store = useStore()
+const globalStore = useGlobalStore()
+const keepAliveStore = useKeepAliveStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -218,10 +220,10 @@ const pmenu = ref({})
 const active = ref('')
 
 // 计算属性
-const ismobile = computed(() => store.state.global.ismobile)
-const layout = computed(() => store.state.global.layout)
-const layoutTags = computed(() => store.state.global.layoutTags)
-const menuIsCollapse = computed(() => store.state.global.menuIsCollapse)
+const ismobile = computed(() => globalStore.ismobile)
+const layout = computed(() => globalStore.layout)
+const layoutTags = computed(() => globalStore.layoutTags)
+const menuIsCollapse = computed(() => globalStore.menuIsCollapse)
 
 // 方法
 const openSetting = () => {
@@ -229,7 +231,7 @@ const openSetting = () => {
 }
 
 const onLayoutResize = () => {
-  store.commit("SET_ismobile", document.body.clientWidth < 992)
+  globalStore.SET_ismobile(document.body.clientWidth < 992)
 }
 
 // 路由监听高亮
@@ -274,7 +276,7 @@ const filterUrl = (map) => {
 
 // 退出最大化
 const exitMaximize = () => {
-  store.commit("SET_isMaximize", false)
+  globalStore.SET_isMaximize(false)
 }
 
 // 监听路由变化

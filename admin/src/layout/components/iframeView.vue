@@ -15,24 +15,26 @@
 
 <script setup>
 import { computed, watch, onMounted } from 'vue'
-import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
+import { useIframeStore } from '@/stores/useIframeStore'
+import { useGlobalStore } from '@/stores/useGlobalStore'
 
-const store = useStore()
+const iframeStore = useIframeStore()
+const globalStore = useGlobalStore()
 const route = useRoute()
 
 // 计算属性
-const iframeList = computed(() => store.state.iframe.iframeList)
-const ismobile = computed(() => store.state.global.ismobile)
-const layoutTags = computed(() => store.state.global.layoutTags)
+const iframeList = computed(() => iframeStore.iframeList)
+const ismobile = computed(() => globalStore.ismobile)
+const layoutTags = computed(() => globalStore.layoutTags)
 
 // 方法
 const push = (routeItem) => {
   if(routeItem.meta.type === 'iframe'){
     if(ismobile.value || !layoutTags.value){
-      store.commit("setIframeList", routeItem)
+      iframeStore.setIframeList(routeItem)
     }else{
-      store.commit("pushIframeList", routeItem)
+      iframeStore.pushIframeList(routeItem)
     }
   }
 }

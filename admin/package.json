@@ -18,13 +18,13 @@
     "element-plus": "^2.11.7",
     "go-captcha-vue": "^2.0.6",
     "nprogress": "^0.2.0",
+    "pinia": "^3.0.4",
     "pinyin-match": "^1.2.8",
     "sortablejs": "^1.15.6",
     "vue": "^3.5.16",
     "vue-i18n": "11.1.10",
     "vue-router": "^4.5.1",
-    "vuedraggable": "^4.1.0",
-    "vuex": "^4.1.0"
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",

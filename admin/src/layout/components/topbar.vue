@@ -23,10 +23,10 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
+import { useGlobalStore } from '@/stores/useGlobalStore'
 
-const store = useStore()
+const globalStore = useGlobalStore()
 const route = useRoute()
 
 // 响应式数据
@@ -36,7 +36,7 @@ const breadList = ref([])
 const show = computed(() => {
   // 不显示面包屑的布局类型
   const layouts = ['menu', 'header']
-  const layout = store.state.global.layout
+  const layout = globalStore.layout
   return !layouts.includes(layout)
 })
 

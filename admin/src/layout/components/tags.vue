@@ -53,6 +53,9 @@
 
 <script>
 import Sortable from 'sortablejs'
+import { useViewTagsStore } from '@/stores/useViewTagsStore'
+import { useKeepAliveStore } from '@/stores/useKeepAliveStore'
+import { useIframeStore } from '@/stores/useIframeStore'
 
 export default {
   name: "tags",
@@ -62,11 +65,16 @@ export default {
       contextMenuItem: null,
       left: 0,
       top: 0,
-      tagList: this.$store.state.viewTags.viewTags,
       tipDisplayed: false
     }
   },
   props: {},
+  computed: {
+    tagList() {
+      const viewTagsStore = useViewTagsStore()
+      return viewTagsStore.viewTags
+    }
+  },
   watch: {
     $route(e) {
       this.addViewTags(e);
@@ -142,8 +150,10 @@ export default {
     //增加tag
     addViewTags(route) {
       if (route.name && !route.meta.fullPage) {
-        this.$store.commit("pushViewTags", route)
-        this.$store.commit("pushKeepLive", route.name)
+        const viewTagsStore = useViewTagsStore()
+        const keepAliveStore = useKeepAliveStore()
+        viewTagsStore.pushViewTags(route)
+        keepAliveStore.pushKeepLive(route.name)
       }
     },
     //高亮tag
@@ -152,10 +162,13 @@ export default {
     },
     //关闭tag
     closeSelectedTag(tag, autoPushLatestView = true) {
+      const viewTagsStore = useViewTagsStore()
+      const keepAliveStore = useKeepAliveStore()
+      const iframeStore = useIframeStore()
       const nowTagIndex = this.tagList.findIndex(item => item.fullPath === tag.fullPath)
-      this.$store.commit("removeViewTags", tag)
-      this.$store.commit("removeIframeList", tag)
-      this.$store.commit("removeKeepLive", tag.name)
+      viewTagsStore.removeViewTags(tag)
+      iframeStore.removeIframeList(tag)
+      keepAliveStore.removeKeepLive(tag.name)
       if (autoPushLatestView && this.isActive(tag)) {
         const leftView = this.tagList[nowTagIndex - 1]
         if (leftView) {
@@ -188,6 +201,8 @@ export default {
     },
     //TAB 刷新
     refreshTab() {
+      const keepAliveStore = useKeepAliveStore()
+      const iframeStore = useIframeStore()
       this.contextMenuVisible = false
       const nowTag = this.contextMenuItem;
       //判断是否当前路由，否的话跳转
@@ -198,13 +213,13 @@ export default {
         })
       }
 
-      this.$store.commit("refreshIframe", nowTag)
+      iframeStore.refreshIframe(nowTag)
       setTimeout(() => {
-        this.$store.commit("removeKeepLive", nowTag.name)
-        this.$store.commit("setRouteShow", false)
+        keepAliveStore.removeKeepLive(nowTag.name)
+        keepAliveStore.setRouteShow(false)
         this.$nextTick(() => {
-          this.$store.commit("pushKeepLive", nowTag.name)
-          this.$store.commit("setRouteShow", true)
+          keepAliveStore.pushKeepLive(nowTag.name)
+          keepAliveStore.setRouteShow(true)
         })
       }, 0);
     },

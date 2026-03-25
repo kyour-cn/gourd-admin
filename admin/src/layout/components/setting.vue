@@ -36,20 +36,20 @@
 
 <script setup>
 import { ref, watch, getCurrentInstance } from 'vue'
-import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { useGlobalStore } from '@/stores/useGlobalStore'
 import colorTool from '@/utils/color'
 import tool from '@/utils/tool'
 
-const store = useStore()
+const globalStore = useGlobalStore()
 const { t } = useI18n()
 const { proxy } = getCurrentInstance()
 const formRef = ref()
 
 // 响应式数据
-const layout = ref(store.state.global.layout)
-const menuIsCollapse = ref(store.state.global.menuIsCollapse)
-const layoutTags = ref(store.state.global.layoutTags)
+const layout = ref(globalStore.layout)
+const menuIsCollapse = ref(globalStore.menuIsCollapse)
+const layoutTags = ref(globalStore.layoutTags)
 const lang = ref(tool.data.get('APP_LANG') || proxy.$CONFIG.LANG)
 const dark = ref(tool.data.get('APP_DARK') || false)
 const colorList = ref(['#409EFF', '#009688', '#536dfe', '#ff5c93', '#c62f2f', '#fd726d'])
@@ -57,15 +57,15 @@ const colorPrimary = ref(tool.data.get('APP_COLOR') || proxy.$CONFIG.COLOR || '#
 
 // 监听器
 watch(layout, (val) => {
-  store.commit("SET_layout", val)
+  globalStore.SET_layout(val)
 })
 
 watch(menuIsCollapse, () => {
-  store.commit("TOGGLE_menuIsCollapse")
+  globalStore.TOGGLE_menuIsCollapse()
 })
 
 watch(layoutTags, () => {
-  store.commit("TOGGLE_layoutTags")
+  globalStore.TOGGLE_layoutTags()
 })
 
 watch(dark, (val) => {

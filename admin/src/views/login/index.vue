@@ -63,6 +63,9 @@
 import passwordForm from './components/passwordForm'
 import phoneForm from './components/phoneForm'
 import tool from '@/utils/tool'
+import { useKeepAliveStore } from '@/stores/useKeepAliveStore'
+import { useViewTagsStore } from '@/stores/useViewTagsStore'
+import { useIframeStore } from '@/stores/useIframeStore'
 
 export default {
   components: {
@@ -111,9 +114,12 @@ export default {
     tool.data.remove("MENU")
     tool.data.remove("PERMISSIONS")
     tool.data.remove("grid")
-    this.$store.commit("clearViewTags")
-    this.$store.commit("clearKeepLive")
-    this.$store.commit("clearIframeList")
+    const viewTagsStore = useViewTagsStore()
+    const keepAliveStore = useKeepAliveStore()
+    const iframeStore = useIframeStore()
+    viewTagsStore.clearViewTags()
+    keepAliveStore.clearKeepLive()
+    iframeStore.clearIframeList()
   },
   methods: {
     configDark() {
