@@ -45,11 +45,11 @@
           </template>
           <el-form label-width="80px" label-position="left">
             <el-form-item label="表格尺寸">
-                            <el-radio-group v-model="config.size" size="small" @change="configSizeChange">
-                                <el-radio-button label="large" value="large">大</el-radio-button>
-                                <el-radio-button label="default" value="default">正常</el-radio-button>
-                                <el-radio-button label="small" value="small">小</el-radio-button>
-                            </el-radio-group>
+              <el-radio-group v-model="config.size" size="small" @change="configSizeChange">
+                <el-radio-button label="large" value="large">大</el-radio-button>
+                <el-radio-button label="default" value="default">正常</el-radio-button>
+                <el-radio-button label="small" value="small">小</el-radio-button>
+              </el-radio-group>
             </el-form-item>
             <el-form-item label="样式">
               <el-checkbox v-model="config.border" label="纵向边框"></el-checkbox>
@@ -63,11 +63,12 @@
 </template>
 
 <script setup>
-  import { ref, computed, watch, onMounted, onActivated, onDeactivated, getCurrentInstance } from 'vue'
-  import tableConfig from "@/config/table";
-  import columnSetting from './columnSetting'
+import {computed, getCurrentInstance, onActivated, onDeactivated, onMounted, ref, watch} from 'vue'
+import tableConfig from "@/config/table";
+import columnSetting from './columnSetting'
+import {ElMessage} from "element-plus";
 
-  const { proxy } = getCurrentInstance()
+const { proxy } = getCurrentInstance()
 
   const props = defineProps({
     tableName: { type: String, default: "" },
@@ -105,7 +106,6 @@
   const prop = ref(null)
   const order = ref(null)
   const loading = ref(false)
-  const tableHeight = ref('100%')
   const tableParams = ref(props.params)
   const userColumn = ref([])
   const customColumnShow = ref(false)
@@ -145,14 +145,13 @@
 
   //获取列
   const getCustomColumn = async () => {
-    const userColumnData = await tableConfig.columnSettingGet(props.tableName, props.column)
-    userColumn.value = userColumnData
+    userColumn.value = await tableConfig.columnSettingGet(props.tableName, props.column)
   }
 
   //获取数据
   const getData = async () => {
     loading.value = true;
-    var reqData = {
+    const reqData = {
       [tableConfig.request.page]: currentPage.value,
       [tableConfig.request.pageSize]: scPageSize.value,
       [tableConfig.request.prop]: prop.value,
@@ -164,8 +163,9 @@
     }
     Object.assign(reqData, tableParams.value)
 
+    let res,response;
     try {
-      var res = await props.apiObj.get(reqData);
+      res = await props.apiObj.get(reqData);
     }catch(error){
       _clearData()
       loading.value = false;
@@ -173,14 +173,14 @@
       return false;
     }
     try {
-      var response = tableConfig.parseData(res);
+      response = tableConfig.parseData(res);
     }catch(error){
       _clearData()
       loading.value = false;
       emptyText.value = "数据格式错误";
       return false;
     }
-    if(response.code != tableConfig.successCode){
+    if(response.code !== tableConfig.successCode){
       _clearData()
       loading.value = false;
       emptyText.value = response.msg;
@@ -251,7 +251,7 @@
     try {
       await tableConfig.columnSettingSave(props.tableName, userColumnData)
     }catch(error){
-      proxy.$message.error('保存失败')
+      ElMessage.error('保存失败')
       columnSettingRef.value.isSave = false
     }
     proxy.$message.success('保存成功')
@@ -262,11 +262,10 @@
   const columnSettingBack = async () => {
     columnSettingRef.value.isSave = true
     try {
-      const column = await tableConfig.columnSettingReset(props.tableName, props.column)
-      userColumn.value = column
+      userColumn.value = await tableConfig.columnSettingReset(props.tableName, props.column)
       columnSettingRef.value.usercolumn = JSON.parse(JSON.stringify(userColumn.value||[]))
     }catch(error){
-      proxy.$message.error('重置失败')
+      ElMessage.error('重置失败')
       columnSettingRef.value.isSave = false
     }
     columnSettingRef.value.isSave = false
@@ -470,14 +469,14 @@
   .scTable:deep(.el-table__body-wrapper) .el-scrollbar__bar.is-horizontal {height: 12px;border-radius: 12px;}
   .scTable:deep(.el-table__body-wrapper) .el-scrollbar__bar.is-vertical {width: 12px;border-radius: 12px;}
 
-    .scTable:deep(.el-table thead) {
-        border-radius: 5px;
-    }
-    .scTable:deep(.el-table th.el-table__cell) {
-        background: var(--el-color-info-light-8) !important;
-    }
+  .scTable:deep(.el-table thead) {
+    border-radius: 5px;
+  }
+  .scTable:deep(.el-table th.el-table__cell) {
+    background: var(--el-color-info-light-8) !important;
+  }
 
-    .scTable:deep(.el-table__inner-wrapper::before) {
-        display: none;
-    }
+  .scTable:deep(.el-table__inner-wrapper::before) {
+    display: none;
+  }
 </style>

@@ -18,25 +18,18 @@
         ref="table"
         :apiObj="apiObj"
         :params="state.tableParams"
+        :column="state.column"
         row-key="id"
         @selection-change="selectionChange"
         stripe
       >
         <el-table-column type="selection" width="50"/>
-        <el-table-column label="ID" prop="id" width="80" sortable='custom'/>
-        <el-table-column label="头像" width="80" column-key="filterAvatar">
-          <template #default="scope">
-            <el-avatar :src="tool.resUrl(scope.row.avatar)" size="small"></el-avatar>
-          </template>
-        </el-table-column>
-        <el-table-column label="登录账号" prop="username" width="150" column-key="filterUserName"/>
-        <el-table-column label="昵称" prop="nickname" width="150"/>
-        <el-table-column label="所属角色" prop="role_id" width="200">
-          <template #default="scope">
-            <span class="role-name" v-for="item in scope.row.user_role" :key="item.role_id">{{item.role.name}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="注册时间" prop="created_at" width="170"/>
+        <template #avatar="scope">
+          <el-avatar :src="tool.resUrl(scope.row.avatar)" size="small"></el-avatar>
+        </template>
+        <template #role="scope">
+          <span class="role-name" v-for="item in scope.row.user_role" :key="item.role_id">{{item.role.name}}</span>
+        </template>
         <el-table-column label="操作" fixed="right" align="right" width="165">
           <template #default="scope">
             <el-button-group>
@@ -86,7 +79,46 @@ const state = reactive({
   },
   tableParams: {
     keyword: null
-  }
+  },
+  column: [
+    {
+      label: "ID",
+      prop: "id",
+      width: "80",
+      sortable: true
+    },
+    {
+      label: "头像",
+      prop: "avatar",
+      width: "80",
+    },
+    {
+      label: "登录账号",
+      prop: "username",
+      width: "150",
+    },
+    {
+      label: "昵称",
+      prop: "nickname",
+      width: "150",
+    },
+    {
+      label: "手机号",
+      prop: "mobile",
+      width: "150",
+    },
+    {
+      label: "所属角色",
+      prop: "role",
+      width: "200",
+    },
+    {
+      label: "注册时间",
+      prop: "created_at",
+      width: "150",
+      sortable: true
+    }
+  ]
 })
 
 const apiObj = systemApi.user.list
