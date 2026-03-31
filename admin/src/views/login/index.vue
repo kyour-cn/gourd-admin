@@ -18,7 +18,7 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item v-for="item in lang" :key="item.value" :command="item"
-                              :class="{'selected':config.lang==item.value}">{{ item.name }}
+                              :class="{'selected':config.lang === item.value}">{{ item.name }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -39,24 +39,8 @@
           <phone-form></phone-form>
         </el-tab-pane>
       </el-tabs>
-      <template v-if="$CONFIG.SHOW_LOGIN_OAUTH">
-        <el-divider>{{ $t('login.signInOther') }}</el-divider>
-        <div class="login-oauth">
-          <el-button type="success" icon="sc-icon-wechat" circle @click="wechatLogin"></el-button>
-        </div>
-      </template>
     </div>
   </div>
-  <el-dialog v-model="showWechatLogin" :title="$t('login.wechatLoginTitle')" :width="400" destroy-on-close>
-    <div class="qrCodeLogin">
-      <sc-qr-code class="qrCode" :text="WechatLoginCode" :size="200"></sc-qr-code>
-      <p class="msg">{{ $tc('login.wechatLoginMsg', 1) }}<br/>{{ $tc('login.wechatLoginMsg', 2) }}</p>
-      <div class="qrCodeLogin-result" v-if="isWechatLoginResult">
-        <el-result icon="success" :title="$tc('login.wechatLoginResult', 1)"
-                   :sub-title="$tc('login.wechatLoginResult', 2)"></el-result>
-      </div>
-    </div>
-  </el-dialog>
 </template>
 
 <script setup>
@@ -85,10 +69,6 @@ const lang = ref([
     value: 'en',
   }
 ])
-
-const WechatLoginCode = ref("")
-const showWechatLogin = ref(false)
-const isWechatLoginResult = ref(false)
 
 watch(() => config.value.dark, (val) => {
   if (val) {
@@ -126,14 +106,6 @@ const configLang = (command) => {
   config.value.lang = command.value
 }
 
-const wechatLogin = () => {
-  showWechatLogin.value = true
-  WechatLoginCode.value = "GA-" + new Date().getTime()
-  isWechatLoginResult.value = false
-  setTimeout(() => {
-    isWechatLoginResult.value = true
-  }, 3000)
-}
 </script>
 
 <style lang="scss" scoped>

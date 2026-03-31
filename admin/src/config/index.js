@@ -84,7 +84,7 @@ const DEFAULT_CONFIG = {
   },
 
   //是否显示第三方授权登录
-  SHOW_LOGIN_OAUTH: false
+  SHOW_LOGIN_OAUTH: true
 }
 
 // 如果生产模式，就合并动态的APP_CONFIG

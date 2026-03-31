@@ -1,5 +1,5 @@
 <!--
- * @Descripttion: 处理iframe持久化，涉及store(VUEX)
+ * @Descripttion: 处理iframe持久化，涉及store(Pinia)
  * @version: 1.0
  * @Author: sakuya
  * @Date: 2021年6月30日13:20:41
