@@ -4,13 +4,30 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // StaticOrNext 静态文件处理
 func StaticOrNext(dir string) func(http.Handler) http.Handler {
+	absDir, err := filepath.Abs(dir)
+	if err != nil {
+		panic(err)
+	}
+
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			fPath := filepath.Join(dir, r.URL.Path)
+			fPath := filepath.Join(dir, filepath.Clean(r.URL.Path))
+			absPath, err := filepath.Abs(fPath)
+			if err != nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			// 验证路径在目录内
+			if !strings.HasPrefix(absPath, absDir+string(os.PathSeparator)) {
+				next.ServeHTTP(w, r)
+				return
+			}
 
 			info, err := os.Stat(fPath)
 			if err == nil {
