@@ -473,7 +473,7 @@ const { proxy } = getCurrentInstance()
     border-radius: 5px;
   }
   .scTable:deep(.el-table th.el-table__cell) {
-    background: var(--el-color-info-light-8) !important;
+    background: var(--el-color-primary-light-9) !important;
   }
 
   .scTable:deep(.el-table__inner-wrapper::before) {
